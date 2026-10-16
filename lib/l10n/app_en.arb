@@ -1,0 +1,111 @@
+{
+  "@@locale": "en",
+  "appTitle": "SME Copilot",
+  "navHome": "Home",
+  "navLedger": "Ledger",
+  "navSettings": "Settings",
+  "thisMonth": "This month",
+  "moneyIn": "Money in",
+  "moneyOut": "Money out",
+  "profitCash": "Profit (cash)",
+  "netCashFlow": "Net cash flow",
+  "ownerMovements": "Owner in / out",
+  "summaryFootnote": "Totals are shown per currency. KHR and USD are never added together.",
+  "entriesCount": "{count, plural, =1{1 record} other{{count} records}}",
+  "@entriesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeEmptyTitle": "No records yet",
+  "homeEmptyBody": "Record your first sale or expense to see this month's money in, money out and profit.",
+  "recent": "Recent",
+  "viewAll": "View all",
+  "typeIncome": "Income",
+  "typeExpense": "Expense",
+  "typeOwnerContribution": "Owner put money in",
+  "typeOwnerWithdrawal": "Owner took money out",
+  "ownerHelp": "Personal money moving into or out of the business. It changes cash but is not counted in profit.",
+  "newEntry": "New entry",
+  "editEntry": "Edit entry",
+  "entryDetails": "Entry details",
+  "amount": "Amount",
+  "currency": "Currency",
+  "category": "Category",
+  "date": "Date",
+  "description": "Description",
+  "descriptionHint": "e.g. Bought fertilizer",
+  "note": "Note",
+  "paymentMethod": "Paid by",
+  "pmCash": "Cash",
+  "pmBank": "Bank",
+  "pmMobileWallet": "Mobile wallet",
+  "pmOther": "Other",
+  "notSet": "Not set",
+  "uncategorized": "No category",
+  "save": "Save",
+  "cancel": "Cancel",
+  "edit": "Edit",
+  "voidAction": "Void",
+  "voidTitle": "Void this entry?",
+  "voidBody": "It stays in the history but no longer counts in any total.",
+  "voidReason": "Reason (optional)",
+  "voided": "Voided",
+  "errorAmountEmpty": "Enter an amount",
+  "errorAmountInvalid": "Enter a valid number",
+  "errorAmountDecimals": "Too many decimal places for {currency}",
+  "@errorAmountDecimals": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "errorAmountPositive": "Amount must be more than zero",
+  "errorAmountTooLarge": "Amount is too large",
+  "errorFutureDate": "The date can't be in the future",
+  "errorCategory": "Choose a category",
+  "duplicateTitle": "Possible duplicate",
+  "duplicateBody": "{count, plural, =1{An entry with the same amount, currency and date already exists.} other{{count} entries with the same amount, currency and date already exist.}} Save anyway?",
+  "@duplicateBody": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "saveAnyway": "Save anyway",
+  "savedMessage": "Saved",
+  "updatedMessage": "Updated",
+  "voidedMessage": "Entry voided",
+  "searchHint": "Search description or note",
+  "filterAll": "All",
+  "showVoided": "Show voided",
+  "ledgerEmptyFiltered": "No entries match these filters.",
+  "ledgerEmpty": "No entries yet. Tap + to record one.",
+  "clearFilters": "Clear filters",
+  "history": "History",
+  "revisionCreate": "Created",
+  "revisionEdit": "Edited",
+  "revisionVoided": "Voided",
+  "versionLabel": "Version {version}",
+  "@versionLabel": {
+    "placeholders": {
+      "version": {
+        "type": "int"
+      }
+    }
+  },
+  "source": "Source",
+  "sourceManual": "Entered by hand",
+  "sourceText": "Typed to assistant",
+  "sourceVoice": "Voice",
+  "sourceReceipt": "Receipt photo",
+  "language": "Language",
+  "today": "Today",
+  "yesterday": "Yesterday",
+  "somethingWrong": "Something went wrong. Please try again.",
+  "entryNotFound": "This entry no longer exists."
+}
