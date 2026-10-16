@@ -5,6 +5,7 @@ import '../core/date_only.dart';
 import '../core/money/money_parser.dart';
 import '../data/database.dart';
 import '../domain/enums.dart';
+import '../finance_core/period_math.dart';
 import '../l10n/app_localizations.dart';
 
 /// Localised labels for domain values.
@@ -36,6 +37,13 @@ extension DomainLabels on AppLocalizations {
         RevisionKind.voided => revisionVoided,
       };
 
+  String periodLabel(ReportPeriod period) => switch (period) {
+        ReportPeriod.thisMonth => periodThisMonth,
+        ReportPeriod.lastMonth => periodLastMonth,
+        ReportPeriod.last3Months => periodLast3Months,
+        ReportPeriod.thisYear => periodThisYear,
+      };
+
   String amountError(AmountError error, String currencyCode) => switch (error) {
         AmountError.empty => errorAmountEmpty,
         AmountError.invalid => errorAmountInvalid,
@@ -61,9 +69,15 @@ extension ContextHelpers on BuildContext {
     final date = fromDateKey(dateKey);
     final today = dateOnly(DateTime.now());
     if (date == today) return l10n.today;
-    if (date == today.subtract(const Duration(days: 1))) return l10n.yesterday;
+    if (date == addDays(today, -1)) return l10n.yesterday;
     return DateFormat.yMMMd(localeTag).format(date);
   }
+
+  /// "Oct 1, 2026 – Oct 31, 2026" for a range (end shown inclusive).
+  String rangeLabel(DateRange range) => l10n.filterActiveRange(
+        dayLabel(range.startKey),
+        dayLabel(toDateKey(addDays(range.end, -1))),
+      );
 
   String dateTimeLabel(DateTime value) =>
       DateFormat.yMMMd(localeTag).add_Hm().format(value.toLocal());

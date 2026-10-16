@@ -273,4 +273,106 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get entryNotFound => 'This entry no longer exists.';
+
+  @override
+  String get navDashboard => 'Dashboard';
+
+  @override
+  String get periodThisMonth => 'This month';
+
+  @override
+  String get periodLastMonth => 'Last month';
+
+  @override
+  String get periodLast3Months => 'Last 3 months';
+
+  @override
+  String get periodThisYear => 'This year';
+
+  @override
+  String get cashOnHand => 'Cash on hand';
+
+  @override
+  String get cashOnHandHint =>
+      'Set your opening cash to see how much money the business has now.';
+
+  @override
+  String get setOpeningCash => 'Set opening cash';
+
+  @override
+  String get openingCash => 'Opening cash';
+
+  @override
+  String get openingCashHelp =>
+      'How much cash the business had at the start of a date. Cash on hand = opening cash + money in − money out from that date.';
+
+  @override
+  String get asOf => 'As of';
+
+  @override
+  String asOfValue(String amount, String date) {
+    return '$amount as of $date';
+  }
+
+  @override
+  String get clear => 'Clear';
+
+  @override
+  String get negativeBalanceWarning =>
+      'Recorded cash is below zero. Some money in may be missing, or the opening cash may be wrong.';
+
+  @override
+  String vsComparison(String change) {
+    return '$change vs same days before';
+  }
+
+  @override
+  String vsComparisonFull(String change) {
+    return '$change vs previous period';
+  }
+
+  @override
+  String get noComparison => 'No earlier records to compare';
+
+  @override
+  String get trendTitle => 'Last 6 months';
+
+  @override
+  String get expenseBreakdown => 'Where money went';
+
+  @override
+  String get noExpenses => 'No expenses in this period.';
+
+  @override
+  String dashboardEmpty(String currency) {
+    return 'No $currency records in this period.';
+  }
+
+  @override
+  String otherCurrencyHint(String currency) {
+    return 'There are $currency records in this period.';
+  }
+
+  @override
+  String showCurrency(String currency) {
+    return 'Show $currency';
+  }
+
+  @override
+  String get dashboardFootnote =>
+      'Cash basis: money is counted on the day it is received or paid. Money the owner puts in or takes out is not counted in profit.';
+
+  @override
+  String get trendSemantics =>
+      'Bar chart of money in and money out for the last 6 months.';
+
+  @override
+  String percentOfTotal(int percent) {
+    return '$percent% of money out';
+  }
+
+  @override
+  String filterActiveRange(String start, String end) {
+    return '$start – $end';
+  }
 }

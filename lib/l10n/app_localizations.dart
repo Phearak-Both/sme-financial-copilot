@@ -577,6 +577,168 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This entry no longer exists.'**
   String get entryNotFound;
+
+  /// No description provided for @navDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard'**
+  String get navDashboard;
+
+  /// No description provided for @periodThisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'This month'**
+  String get periodThisMonth;
+
+  /// No description provided for @periodLastMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Last month'**
+  String get periodLastMonth;
+
+  /// No description provided for @periodLast3Months.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 3 months'**
+  String get periodLast3Months;
+
+  /// No description provided for @periodThisYear.
+  ///
+  /// In en, this message translates to:
+  /// **'This year'**
+  String get periodThisYear;
+
+  /// No description provided for @cashOnHand.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash on hand'**
+  String get cashOnHand;
+
+  /// No description provided for @cashOnHandHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Set your opening cash to see how much money the business has now.'**
+  String get cashOnHandHint;
+
+  /// No description provided for @setOpeningCash.
+  ///
+  /// In en, this message translates to:
+  /// **'Set opening cash'**
+  String get setOpeningCash;
+
+  /// No description provided for @openingCash.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening cash'**
+  String get openingCash;
+
+  /// No description provided for @openingCashHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'How much cash the business had at the start of a date. Cash on hand = opening cash + money in − money out from that date.'**
+  String get openingCashHelp;
+
+  /// No description provided for @asOf.
+  ///
+  /// In en, this message translates to:
+  /// **'As of'**
+  String get asOf;
+
+  /// No description provided for @asOfValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} as of {date}'**
+  String asOfValue(String amount, String date);
+
+  /// No description provided for @clear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get clear;
+
+  /// No description provided for @negativeBalanceWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Recorded cash is below zero. Some money in may be missing, or the opening cash may be wrong.'**
+  String get negativeBalanceWarning;
+
+  /// No description provided for @vsComparison.
+  ///
+  /// In en, this message translates to:
+  /// **'{change} vs same days before'**
+  String vsComparison(String change);
+
+  /// No description provided for @vsComparisonFull.
+  ///
+  /// In en, this message translates to:
+  /// **'{change} vs previous period'**
+  String vsComparisonFull(String change);
+
+  /// No description provided for @noComparison.
+  ///
+  /// In en, this message translates to:
+  /// **'No earlier records to compare'**
+  String get noComparison;
+
+  /// No description provided for @trendTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 6 months'**
+  String get trendTitle;
+
+  /// No description provided for @expenseBreakdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Where money went'**
+  String get expenseBreakdown;
+
+  /// No description provided for @noExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'No expenses in this period.'**
+  String get noExpenses;
+
+  /// No description provided for @dashboardEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No {currency} records in this period.'**
+  String dashboardEmpty(String currency);
+
+  /// No description provided for @otherCurrencyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'There are {currency} records in this period.'**
+  String otherCurrencyHint(String currency);
+
+  /// No description provided for @showCurrency.
+  ///
+  /// In en, this message translates to:
+  /// **'Show {currency}'**
+  String showCurrency(String currency);
+
+  /// No description provided for @dashboardFootnote.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash basis: money is counted on the day it is received or paid. Money the owner puts in or takes out is not counted in profit.'**
+  String get dashboardFootnote;
+
+  /// No description provided for @trendSemantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Bar chart of money in and money out for the last 6 months.'**
+  String get trendSemantics;
+
+  /// No description provided for @percentOfTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% of money out'**
+  String percentOfTotal(int percent);
+
+  /// No description provided for @filterActiveRange.
+  ///
+  /// In en, this message translates to:
+  /// **'{start} – {end}'**
+  String filterActiveRange(String start, String end);
 }
 
 class _AppLocalizationsDelegate

@@ -69,6 +69,21 @@ class EntryRevisions extends Table {
   DateTimeColumn get changedAt => dateTime()();
 }
 
+/// Cash the business held at the start of [asOf], one row per currency.
+/// The cash balance is only shown for currencies that have one.
+@DataClassName('OpeningBalanceRow')
+class OpeningBalances extends Table {
+  TextColumn get currency => text().withLength(min: 3, max: 3)();
+  IntColumn get amountMinor => integer()();
+
+  /// `yyyy-MM-dd`.
+  TextColumn get asOf => text().withLength(min: 10, max: 10)();
+  DateTimeColumn get updatedAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {currency};
+}
+
 /// Simple key–value app settings (e.g. language).
 @DataClassName('SettingRow')
 class AppSettings extends Table {
@@ -79,13 +94,15 @@ class AppSettings extends Table {
   Set<Column> get primaryKey => {key};
 }
 
-@DriftDatabase(tables: [Categories, LedgerEntries, EntryRevisions, AppSettings])
+@DriftDatabase(
+  tables: [Categories, LedgerEntries, EntryRevisions, OpeningBalances, AppSettings],
+)
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor])
       : super(executor ?? driftDatabase(name: 'sme_copilot'));
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -97,6 +114,9 @@ class AppDatabase extends _$AppDatabase {
                 'ON ledger_entries (occurred_on DESC, created_at DESC)',
           ));
           await batch((b) => b.insertAll(categories, defaultCategories()));
+        },
+        onUpgrade: (m, from, to) async {
+          if (from < 2) await m.createTable(openingBalances);
         },
         beforeOpen: (details) async {
           await customStatement('PRAGMA foreign_keys = ON');

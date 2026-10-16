@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../data/database.dart';
 import '../domain/enums.dart';
+import '../features/dashboard/dashboard_screen.dart';
 import '../features/entry_form/entry_form_screen.dart';
 import '../features/home/home_screen.dart';
 import '../features/ledger/entry_detail_screen.dart';
@@ -14,7 +15,7 @@ import '../l10n/app_localizations.dart';
 import 'labels.dart';
 import 'providers.dart';
 
-final _router = GoRouter(
+GoRouter _buildRouter() => GoRouter(
   routes: [
     StatefulShellRoute.indexedStack(
       builder: (context, state, shell) => _Shell(shell: shell),
@@ -24,6 +25,9 @@ final _router = GoRouter(
         ]),
         StatefulShellBranch(routes: [
           GoRoute(path: '/ledger', builder: (_, _) => const LedgerScreen()),
+        ]),
+        StatefulShellBranch(routes: [
+          GoRoute(path: '/dashboard', builder: (_, _) => const DashboardScreen()),
         ]),
         StatefulShellBranch(routes: [
           GoRoute(path: '/settings', builder: (_, _) => const SettingsScreen()),
@@ -50,11 +54,25 @@ final _router = GoRouter(
   ],
 );
 
-class SmeCopilotApp extends ConsumerWidget {
+class SmeCopilotApp extends ConsumerStatefulWidget {
   const SmeCopilotApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SmeCopilotApp> createState() => _SmeCopilotAppState();
+}
+
+class _SmeCopilotAppState extends ConsumerState<SmeCopilotApp> {
+  // Owned by the app instance so navigation state never outlives it.
+  late final GoRouter _router = _buildRouter();
+
+  @override
+  void dispose() {
+    _router.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final locale = ref.watch(localeProvider).value ?? defaultLocale;
     return MaterialApp.router(
       onGenerateTitle: (context) => context.l10n.appTitle,
@@ -111,6 +129,11 @@ class _Shell extends StatelessWidget {
             icon: const Icon(Icons.receipt_long_outlined),
             selectedIcon: const Icon(Icons.receipt_long),
             label: l10n.navLedger,
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.insights_outlined),
+            selectedIcon: const Icon(Icons.insights),
+            label: l10n.navDashboard,
           ),
           NavigationDestination(
             icon: const Icon(Icons.settings_outlined),

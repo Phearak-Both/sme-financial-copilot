@@ -271,4 +271,106 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get entryNotFound => 'កំណត់ត្រានេះលែងមានទៀតហើយ។';
+
+  @override
+  String get navDashboard => 'សង្ខេប';
+
+  @override
+  String get periodThisMonth => 'ខែនេះ';
+
+  @override
+  String get periodLastMonth => 'ខែមុន';
+
+  @override
+  String get periodLast3Months => '៣ ខែចុងក្រោយ';
+
+  @override
+  String get periodThisYear => 'ឆ្នាំនេះ';
+
+  @override
+  String get cashOnHand => 'សាច់ប្រាក់នៅសល់';
+
+  @override
+  String get cashOnHandHint =>
+      'កំណត់សាច់ប្រាក់ដើមគ្រា ដើម្បីមើលថាអាជីវកម្មមានប្រាក់ប៉ុន្មាននៅពេលនេះ។';
+
+  @override
+  String get setOpeningCash => 'កំណត់សាច់ប្រាក់ដើមគ្រា';
+
+  @override
+  String get openingCash => 'សាច់ប្រាក់ដើមគ្រា';
+
+  @override
+  String get openingCashHelp =>
+      'ចំនួនសាច់ប្រាក់ដែលអាជីវកម្មមាននៅដើមថ្ងៃណាមួយ។ សាច់ប្រាក់នៅសល់ = សាច់ប្រាក់ដើមគ្រា + ប្រាក់ចូល − ប្រាក់ចេញ ចាប់ពីថ្ងៃនោះ។';
+
+  @override
+  String get asOf => 'គិតត្រឹម';
+
+  @override
+  String asOfValue(String amount, String date) {
+    return '$amount គិតត្រឹម $date';
+  }
+
+  @override
+  String get clear => 'សម្អាត';
+
+  @override
+  String get negativeBalanceWarning =>
+      'សាច់ប្រាក់ដែលបានកត់ត្រាតិចជាងសូន្យ។ ប្រហែលជាខ្វះកំណត់ត្រាប្រាក់ចូល ឬសាច់ប្រាក់ដើមគ្រាមិនត្រឹមត្រូវ។';
+
+  @override
+  String vsComparison(String change) {
+    return '$change ធៀបនឹងចំនួនថ្ងៃដូចគ្នាមុននេះ';
+  }
+
+  @override
+  String vsComparisonFull(String change) {
+    return '$change ធៀបនឹងរយៈពេលមុន';
+  }
+
+  @override
+  String get noComparison => 'គ្មានកំណត់ត្រាមុននេះសម្រាប់ប្រៀបធៀប';
+
+  @override
+  String get trendTitle => '៦ ខែចុងក្រោយ';
+
+  @override
+  String get expenseBreakdown => 'ប្រាក់ចេញទៅណាខ្លះ';
+
+  @override
+  String get noExpenses => 'គ្មានការចំណាយក្នុងរយៈពេលនេះទេ។';
+
+  @override
+  String dashboardEmpty(String currency) {
+    return 'គ្មានកំណត់ត្រា $currency ក្នុងរយៈពេលនេះទេ។';
+  }
+
+  @override
+  String otherCurrencyHint(String currency) {
+    return 'មានកំណត់ត្រា $currency ក្នុងរយៈពេលនេះ។';
+  }
+
+  @override
+  String showCurrency(String currency) {
+    return 'បង្ហាញ $currency';
+  }
+
+  @override
+  String get dashboardFootnote =>
+      'គិតតាមសាច់ប្រាក់៖ ប្រាក់ត្រូវបានរាប់នៅថ្ងៃដែលទទួល ឬបង់។ ប្រាក់ដែលម្ចាស់ដាក់ចូល ឬដកចេញ មិនរាប់ជាប្រាក់ចំណេញទេ។';
+
+  @override
+  String get trendSemantics =>
+      'ក្រាហ្វប្រាក់ចូល និងប្រាក់ចេញ សម្រាប់ ៦ ខែចុងក្រោយ។';
+
+  @override
+  String percentOfTotal(int percent) {
+    return '$percent% នៃប្រាក់ចេញ';
+  }
+
+  @override
+  String filterActiveRange(String start, String end) {
+    return '$start – $end';
+  }
 }

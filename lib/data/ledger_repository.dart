@@ -8,6 +8,7 @@ import '../core/money/currency.dart';
 import '../domain/entry_draft.dart';
 import '../domain/enums.dart';
 import '../finance_core/ledger_math.dart';
+import '../finance_core/period_math.dart';
 import 'database.dart';
 
 /// Filters for the ledger list. All fields are optional and combine with AND.
@@ -16,6 +17,7 @@ class LedgerFilter {
     this.query = '',
     this.type,
     this.currency,
+    this.categoryId,
     this.range,
     this.includeVoided = false,
   });
@@ -23,6 +25,7 @@ class LedgerFilter {
   final String query;
   final EntryType? type;
   final Currency? currency;
+  final String? categoryId;
   final DateRange? range;
   final bool includeVoided;
 
@@ -30,6 +33,7 @@ class LedgerFilter {
     String? query,
     EntryType? Function()? type,
     Currency? Function()? currency,
+    String? Function()? categoryId,
     DateRange? Function()? range,
     bool? includeVoided,
   }) =>
@@ -37,6 +41,7 @@ class LedgerFilter {
         query: query ?? this.query,
         type: type != null ? type() : this.type,
         currency: currency != null ? currency() : this.currency,
+        categoryId: categoryId != null ? categoryId() : this.categoryId,
         range: range != null ? range() : this.range,
         includeVoided: includeVoided ?? this.includeVoided,
       );
@@ -45,6 +50,7 @@ class LedgerFilter {
       query.isEmpty &&
       type == null &&
       currency == null &&
+      categoryId == null &&
       range == null &&
       !includeVoided;
 
@@ -54,11 +60,13 @@ class LedgerFilter {
       other.query == query &&
       other.type == type &&
       other.currency == currency &&
+      other.categoryId == categoryId &&
       other.range == range &&
       other.includeVoided == includeVoided;
 
   @override
-  int get hashCode => Object.hash(query, type, currency, range, includeVoided);
+  int get hashCode =>
+      Object.hash(query, type, currency, categoryId, range, includeVoided);
 }
 
 class InvalidDraftException implements Exception {
@@ -102,6 +110,9 @@ class LedgerRepository {
         if (filter.type != null) conditions.add(e.type.equalsValue(filter.type));
         if (filter.currency != null) {
           conditions.add(e.currency.equals(filter.currency!.code));
+        }
+        if (filter.categoryId != null) {
+          conditions.add(e.categoryId.equals(filter.categoryId!));
         }
         if (filter.range != null) {
           conditions
@@ -232,6 +243,45 @@ class LedgerRepository {
       await _recordRevision(id, RevisionKind.voided, now);
     });
   }
+
+  // ------------------------------------------------------- opening cash
+
+  Stream<List<OpeningBalance>> watchOpeningBalances() =>
+      _db.select(_db.openingBalances).watch().map((rows) => [
+            for (final row in rows)
+              OpeningBalance(
+                currency: Currency.fromCode(row.currency),
+                amountMinor: row.amountMinor,
+                asOf: row.asOf,
+              ),
+          ]);
+
+  /// Sets the cash held at the start of [asOf]. Zero is a valid balance.
+  Future<void> setOpeningBalance(
+    Currency currency,
+    int amountMinor,
+    DateTime asOf,
+  ) {
+    if (amountMinor < 0) {
+      throw ArgumentError.value(amountMinor, 'amountMinor', 'must be >= 0');
+    }
+    if (dateOnly(asOf).isAfter(dateOnly(_clock()))) {
+      throw ArgumentError.value(asOf, 'asOf', 'cannot be in the future');
+    }
+    return _db.into(_db.openingBalances).insertOnConflictUpdate(
+          OpeningBalancesCompanion.insert(
+            currency: currency.code,
+            amountMinor: amountMinor,
+            asOf: toDateKey(asOf),
+            updatedAt: _clock(),
+          ),
+        );
+  }
+
+  Future<void> clearOpeningBalance(Currency currency) =>
+      (_db.delete(_db.openingBalances)
+            ..where((b) => b.currency.equals(currency.code)))
+          .go();
 
   // ------------------------------------------------------------- settings
 

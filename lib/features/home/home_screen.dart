@@ -96,14 +96,15 @@ class _QuickActions extends StatelessWidget {
   }
 }
 
-class _SummaryCard extends StatelessWidget {
+class _SummaryCard extends ConsumerWidget {
   const _SummaryCard(this.summary);
 
   final PeriodSummary summary;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
+    final balances = ref.watch(cashBalancesProvider).value ?? const {};
     final textTheme = Theme.of(context).textTheme;
     return Card(
       child: Padding(
@@ -120,10 +121,19 @@ class _SummaryCard extends StatelessWidget {
             ),
             for (final totals in summary.byCurrency.values) ...[
               const Divider(height: 24),
-              _CurrencyTotalsView(totals),
+              _CurrencyTotalsView(totals, cashOnHand: balances[totals.currency]),
             ],
             const SizedBox(height: 12),
             Text(l10n.summaryFootnote, style: textTheme.bodySmall),
+            if (balances.isEmpty)
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton.icon(
+                  onPressed: () => context.go('/settings'),
+                  icon: const Icon(Icons.account_balance_wallet_outlined),
+                  label: Text(l10n.setOpeningCash),
+                ),
+              ),
           ],
         ),
       ),
@@ -132,9 +142,12 @@ class _SummaryCard extends StatelessWidget {
 }
 
 class _CurrencyTotalsView extends StatelessWidget {
-  const _CurrencyTotalsView(this.totals);
+  const _CurrencyTotalsView(this.totals, {this.cashOnHand});
 
   final CurrencyTotals totals;
+
+  /// Null when no opening balance is set for this currency.
+  final Money? cashOnHand;
 
   @override
   Widget build(BuildContext context) {
@@ -163,6 +176,7 @@ class _CurrencyTotalsView extends StatelessWidget {
             l10n.ownerMovements,
             '+${fmt(totals.ownerContribution)} / -${fmt(totals.ownerWithdrawal)}',
           ),
+        if (cashOnHand != null) _Line(l10n.cashOnHand, fmt(cashOnHand!)),
       ],
     );
   }

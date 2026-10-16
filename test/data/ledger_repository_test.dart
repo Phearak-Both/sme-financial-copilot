@@ -120,4 +120,41 @@ void main() {
     ));
     expect((await repo.watchEntry(id).first)!.categoryId, isNull);
   });
+
+  test('filters by category', () async {
+    await repo.create(expense(5000));
+    await repo.create(EntryDraft(
+      type: EntryType.expense,
+      amountMinor: 300,
+      currency: Currency.usd,
+      occurredOn: DateTime(2026, 10, 16),
+      categoryId: 'transport',
+      categoryKind: CategoryKind.expense,
+    ));
+    final rows =
+        await repo.watchEntries(const LedgerFilter(categoryId: 'transport')).first;
+    expect(rows.single.amountMinor, 300);
+  });
+
+  test('opening balances can be set, replaced and cleared', () async {
+    await repo.setOpeningBalance(Currency.usd, 10000, DateTime(2026, 10, 1));
+    await repo.setOpeningBalance(Currency.usd, 12000, DateTime(2026, 10, 2));
+    await repo.setOpeningBalance(Currency.khr, 0, DateTime(2026, 10, 1));
+
+    var openings = await repo.watchOpeningBalances().first;
+    expect(openings, hasLength(2));
+    final usd = openings.firstWhere((o) => o.currency == Currency.usd);
+    expect([usd.amountMinor, usd.asOf], [12000, '2026-10-02']);
+
+    await repo.clearOpeningBalance(Currency.usd);
+    openings = await repo.watchOpeningBalances().first;
+    expect(openings.single.currency, Currency.khr);
+  });
+
+  test('opening balance rejects negative amounts and future dates', () {
+    expect(() => repo.setOpeningBalance(Currency.usd, -1, DateTime(2026, 10, 1)),
+        throwsArgumentError);
+    expect(() => repo.setOpeningBalance(Currency.usd, 1, DateTime(2026, 10, 17)),
+        throwsArgumentError);
+  });
 }

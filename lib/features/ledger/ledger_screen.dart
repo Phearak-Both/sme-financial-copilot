@@ -66,6 +66,7 @@ class _LedgerScreenState extends ConsumerState<LedgerScreen> {
             ),
           ),
           _FilterBar(filter: filter, onChanged: _update),
+          _ActiveFilters(filter: filter, onChanged: _update),
           const Divider(height: 1),
           Expanded(
             child: entries.when(
@@ -137,6 +138,45 @@ class _FilterBar extends StatelessWidget {
   }
 }
 
+/// Chips for filters set from elsewhere (e.g. dashboard drill-down) that the
+/// filter bar doesn't show, so the user can see and remove them.
+class _ActiveFilters extends ConsumerWidget {
+  const _ActiveFilters({required this.filter, required this.onChanged});
+
+  final LedgerFilter filter;
+  final void Function(LedgerFilter Function(LedgerFilter)) onChanged;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (filter.range == null && filter.categoryId == null) {
+      return const SizedBox.shrink();
+    }
+    final categories = ref.watch(categoriesByIdProvider);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        children: [
+          if (filter.range != null)
+            InputChip(
+              avatar: const Icon(Icons.date_range, size: 18),
+              label: Text(context.rangeLabel(filter.range!)),
+              onDeleted: () => onChanged((f) => f.copyWith(range: () => null)),
+            ),
+          if (filter.categoryId != null)
+            InputChip(
+              avatar: const Icon(Icons.label_outline, size: 18),
+              label: Text(context.categoryName(categories[filter.categoryId])),
+              onDeleted: () =>
+                  onChanged((f) => f.copyWith(categoryId: () => null)),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
 /// Entries grouped by day, with each day's net cash flow per currency.
 class _GroupedList extends StatelessWidget {
   const _GroupedList(this.rows);
@@ -170,10 +210,7 @@ class _DayHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dayRange = DateRange(
-      fromDateKey(day),
-      fromDateKey(day).add(const Duration(days: 1)),
-    );
+    final dayRange = DateRange(fromDateKey(day), addDays(fromDateKey(day), 1));
     final summary = summarize(rows.map(toLedgerEntry), dayRange);
     final totals = summary.byCurrency.values
         .map((t) => formatMoney(t.netCashFlow,

@@ -107,5 +107,94 @@
   "today": "Today",
   "yesterday": "Yesterday",
   "somethingWrong": "Something went wrong. Please try again.",
-  "entryNotFound": "This entry no longer exists."
+  "entryNotFound": "This entry no longer exists.",
+  "navDashboard": "Dashboard",
+  "periodThisMonth": "This month",
+  "periodLastMonth": "Last month",
+  "periodLast3Months": "Last 3 months",
+  "periodThisYear": "This year",
+  "cashOnHand": "Cash on hand",
+  "cashOnHandHint": "Set your opening cash to see how much money the business has now.",
+  "setOpeningCash": "Set opening cash",
+  "openingCash": "Opening cash",
+  "openingCashHelp": "How much cash the business had at the start of a date. Cash on hand = opening cash + money in − money out from that date.",
+  "asOf": "As of",
+  "asOfValue": "{amount} as of {date}",
+  "@asOfValue": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "clear": "Clear",
+  "negativeBalanceWarning": "Recorded cash is below zero. Some money in may be missing, or the opening cash may be wrong.",
+  "vsComparison": "{change} vs same days before",
+  "@vsComparison": {
+    "placeholders": {
+      "change": {
+        "type": "String"
+      }
+    }
+  },
+  "vsComparisonFull": "{change} vs previous period",
+  "@vsComparisonFull": {
+    "placeholders": {
+      "change": {
+        "type": "String"
+      }
+    }
+  },
+  "noComparison": "No earlier records to compare",
+  "trendTitle": "Last 6 months",
+  "expenseBreakdown": "Where money went",
+  "noExpenses": "No expenses in this period.",
+  "dashboardEmpty": "No {currency} records in this period.",
+  "@dashboardEmpty": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "otherCurrencyHint": "There are {currency} records in this period.",
+  "@otherCurrencyHint": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "showCurrency": "Show {currency}",
+  "@showCurrency": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "dashboardFootnote": "Cash basis: money is counted on the day it is received or paid. Money the owner puts in or takes out is not counted in profit.",
+  "trendSemantics": "Bar chart of money in and money out for the last 6 months.",
+  "percentOfTotal": "{percent}% of money out",
+  "@percentOfTotal": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "filterActiveRange": "{start} – {end}",
+  "@filterActiveRange": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  }
 }
