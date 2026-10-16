@@ -9,6 +9,7 @@ import '../../core/money/currency.dart';
 import '../../core/money/money.dart';
 import '../../core/money/money_format.dart';
 import '../../core/money/money_parser.dart';
+import '../../data/demo_data.dart';
 import '../../finance_core/period_math.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -22,6 +23,8 @@ class SettingsScreen extends ConsumerWidget {
     final l10n = context.l10n;
     final textTheme = Theme.of(context).textTheme;
     final current = ref.watch(localeProvider).value ?? defaultLocale;
+    final ledgerIsEmpty =
+        ref.watch(recentEntriesProvider).value?.isEmpty ?? false;
     final openings = {
       for (final o in ref.watch(openingBalancesProvider).value ?? const [])
         o.currency: o,
@@ -77,6 +80,28 @@ class SettingsScreen extends ConsumerWidget {
                 ),
               ),
             ),
+          const SizedBox(height: 32),
+          Text(l10n.demoSection, style: textTheme.titleMedium),
+          const SizedBox(height: 4),
+          Text(l10n.loadSampleDataBody, style: textTheme.bodySmall),
+          const SizedBox(height: 8),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: OutlinedButton.icon(
+              icon: const Icon(Icons.auto_awesome_outlined),
+              label: Text(l10n.loadSampleData),
+              onPressed: ledgerIsEmpty
+                  ? () async {
+                      final messenger = ScaffoldMessenger.of(context);
+                      final count =
+                          await loadDemoData(ref.read(ledgerRepositoryProvider));
+                      messenger.showSnackBar(SnackBar(
+                        content: Text(l10n.sampleDataLoaded(count)),
+                      ));
+                    }
+                  : null,
+            ),
+          ),
         ],
       ),
     );

@@ -373,4 +373,19 @@ class AppLocalizationsKm extends AppLocalizations {
   String filterActiveRange(String start, String end) {
     return '$start – $end';
   }
+
+  @override
+  String get demoSection => 'សាកល្បង';
+
+  @override
+  String get loadSampleData => 'បញ្ចូលទិន្នន័យគំរូ';
+
+  @override
+  String get loadSampleDataBody =>
+      'បន្ថែមកំណត់ត្រាគំរូរបស់ហាង និងកសិដ្ឋានប្រហែល ៣ ខែ ជាដុល្លារ និងរៀល រួមទាំងសាច់ប្រាក់ដើមគ្រា ដើម្បីសាកល្បងកម្មវិធី។ អាចប្រើបានតែពេលបញ្ជីប្រាក់នៅទទេប៉ុណ្ណោះ។';
+
+  @override
+  String sampleDataLoaded(int count) {
+    return 'បានបន្ថែមកំណត់ត្រាគំរូ $count';
+  }
 }

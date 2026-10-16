@@ -375,4 +375,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String filterActiveRange(String start, String end) {
     return '$start – $end';
   }
+
+  @override
+  String get demoSection => 'Demo';
+
+  @override
+  String get loadSampleData => 'Load sample data';
+
+  @override
+  String get loadSampleDataBody =>
+      'Adds about 3 months of example shop and farm records in USD and KHR, plus opening cash, so you can try the app. Only available while the ledger is empty.';
+
+  @override
+  String sampleDataLoaded(int count) {
+    return '$count sample records added';
+  }
 }

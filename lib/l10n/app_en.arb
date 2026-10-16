@@ -196,5 +196,16 @@
         "type": "String"
       }
     }
+  },
+  "demoSection": "Demo",
+  "loadSampleData": "Load sample data",
+  "loadSampleDataBody": "Adds about 3 months of example shop and farm records in USD and KHR, plus opening cash, so you can try the app. Only available while the ledger is empty.",
+  "sampleDataLoaded": "{count} sample records added",
+  "@sampleDataLoaded": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

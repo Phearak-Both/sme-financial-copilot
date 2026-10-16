@@ -739,6 +739,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{start} – {end}'**
   String filterActiveRange(String start, String end);
+
+  /// No description provided for @demoSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Demo'**
+  String get demoSection;
+
+  /// No description provided for @loadSampleData.
+  ///
+  /// In en, this message translates to:
+  /// **'Load sample data'**
+  String get loadSampleData;
+
+  /// No description provided for @loadSampleDataBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Adds about 3 months of example shop and farm records in USD and KHR, plus opening cash, so you can try the app. Only available while the ledger is empty.'**
+  String get loadSampleDataBody;
+
+  /// No description provided for @sampleDataLoaded.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} sample records added'**
+  String sampleDataLoaded(int count);
 }
 
 class _AppLocalizationsDelegate
