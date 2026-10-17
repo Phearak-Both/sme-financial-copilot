@@ -132,7 +132,7 @@
     }
   },
   "noComparison": "No earlier records to compare",
-  "trendTitle": "Last 6 months",
+  "trendTitle": "Money in and out",
   "expenseBreakdown": "Where money went",
   "noExpenses": "No expenses in this period.",
   "dashboardEmpty": "No {currency} records in this period.",
@@ -160,7 +160,7 @@
     }
   },
   "dashboardFootnote": "Cash basis: money is counted on the day it is received or paid. Money the owner puts in or takes out is not counted in profit.",
-  "trendSemantics": "Bar chart of money in and money out for the last 6 months.",
+  "trendSemantics": "Bar chart of money in and money out for the selected period.",
   "percentOfTotal": "{percent}% of money out",
   "@percentOfTotal": {
     "placeholders": {
@@ -180,17 +180,6 @@
       }
     }
   },
-  "demoSection": "Demo",
-  "loadSampleData": "Load sample data",
-  "loadSampleDataBody": "Adds about 3 months of example shop and farm records in USD and KHR, plus opening cash, so you can try the app. Only available while the ledger is empty.",
-  "sampleDataLoaded": "{count} sample records added",
-  "@sampleDataLoaded": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "navAsk": "Assistant",
   "askTitle": "Assistant",
   "askWelcomeTitle": "Hello!\nHow can I help you?",
@@ -202,15 +191,6 @@
   "askChoosePhoto": "Choose from photos",
   "askMicDenied": "Microphone access is off. Allow it in system settings to use voice.",
   "askThinking": "Thinking…",
-  "askHeard": "Heard: “{text}”",
-  "@askHeard": {
-    "placeholders": {
-      "text": {
-        "type": "String"
-      }
-    }
-  },
-  "askProposalTitle": "Here's what I understood. Check it before saving.",
   "askAmountMissing": "Amount not found",
   "askCurrencyUnknown": "Currency not stated. You'll choose it on the next screen.",
   "askNoRecords": "No records in this period yet.",

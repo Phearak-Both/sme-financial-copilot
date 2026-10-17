@@ -112,7 +112,7 @@ ThemeData buildAppTheme(Brightness brightness) {
         ),
       );
 
-  const radius = 18.0;
+  const radius = 16.0;
   final cardColor = dark ? Brand.nightSurface : Brand.ivory;
   final roundedField = OutlineInputBorder(
     borderRadius: BorderRadius.circular(14),
@@ -121,14 +121,20 @@ ThemeData buildAppTheme(Brightness brightness) {
 
   return base.copyWith(
     textTheme: text,
+    // A distinct top bar: ivory like the navigation bar, a hairline
+    // underneath, and a centred title.
     appBarTheme: AppBarTheme(
-      backgroundColor: scheme.surface,
+      backgroundColor: cardColor,
       foregroundColor: scheme.onSurface,
       surfaceTintColor: Colors.transparent,
       scrolledUnderElevation: 0,
       elevation: 0,
       centerTitle: true,
+      toolbarHeight: 56,
+      shape: Border(bottom: BorderSide(color: scheme.outlineVariant)),
       titleTextStyle: text.titleLarge?.copyWith(
+        fontSize: 19,
+        fontWeight: FontWeight.w700,
         color: dark ? Brand.parchment : Brand.forestDeep,
       ),
     ),
@@ -146,7 +152,7 @@ ThemeData buildAppTheme(Brightness brightness) {
       backgroundColor: cardColor,
       surfaceTintColor: Colors.transparent,
       elevation: 0,
-      height: 72,
+      height: 66,
       indicatorColor: scheme.primaryContainer,
       indicatorShape: const StadiumBorder(),
       labelTextStyle: WidgetStateProperty.resolveWith((states) {
@@ -190,13 +196,21 @@ ThemeData buildAppTheme(Brightness brightness) {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     ),
+    // Selected chips are solid brand green, without a checkmark.
     chipTheme: ChipThemeData(
       backgroundColor: cardColor,
-      selectedColor: scheme.primaryContainer,
-      side: BorderSide(color: scheme.outlineVariant),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      selectedColor: scheme.primary,
+      showCheckmark: false,
+      side: WidgetStateBorderSide.resolveWith(
+        (states) => states.contains(WidgetState.selected)
+            ? BorderSide(color: scheme.primary)
+            : BorderSide(color: scheme.outlineVariant),
+      ),
+      shape: const StadiumBorder(),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
       labelStyle: text.labelLarge?.copyWith(color: scheme.onSurface),
-      checkmarkColor: scheme.onPrimaryContainer,
+      secondaryLabelStyle: text.labelLarge?.copyWith(color: scheme.onPrimary),
+      iconTheme: IconThemeData(color: scheme.onSurfaceVariant, size: 18),
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,

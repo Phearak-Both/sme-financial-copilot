@@ -73,36 +73,46 @@ int? percentChange(Money current, Money previous) {
   return diff.isNegative ? -rounded : rounded;
 }
 
-/// Income and expense for one calendar month.
-class MonthTotals {
-  const MonthTotals(this.month, this.income, this.expense);
+/// Income and expense for one bar of the trend chart.
+class TrendBucket {
+  const TrendBucket(this.range, this.income, this.expense);
 
-  /// First day of the month.
-  final DateTime month;
+  final DateRange range;
   final Money income;
   final Money expense;
 }
 
-/// Income and expense per month for the [months] months ending with the
-/// month that contains [lastMonth], oldest first. Months with no entries are
-/// included as zero so gaps are visible.
-List<MonthTotals> monthlyTrend(
+/// Income and expense across [range], oldest first: one bucket per week
+/// (days 1-7, 8-14, 15-21, 22-28, 29-end) when [range] is a single month,
+/// otherwise one per month. Empty buckets are included so gaps are visible.
+List<TrendBucket> periodTrend(
   Iterable<LedgerEntry> entries,
-  Currency currency, {
-  required DateTime lastMonth,
-  int months = 6,
-}) {
-  final ranges = [
-    for (var i = months - 1; i >= 0; i--)
-      DateRange.monthOf(DateTime(lastMonth.year, lastMonth.month - i)),
-  ];
+  Currency currency,
+  DateRange range,
+) {
+  final s = range.start;
+  final ranges = <DateRange>[];
+  if (DateRange.monthOf(s) == range) {
+    for (var day = 1; ; day += 7) {
+      final start = DateTime(s.year, s.month, day);
+      if (!start.isBefore(range.end)) break;
+      final end = DateTime(s.year, s.month, day + 7);
+      ranges.add(DateRange(start, end.isAfter(range.end) ? range.end : end));
+    }
+  } else {
+    for (var m = DateTime(s.year, s.month);
+        m.isBefore(range.end);
+        m = DateTime(m.year, m.month + 1)) {
+      ranges.add(DateRange.monthOf(m));
+    }
+  }
   final relevant = entries.where((e) => e.currency == currency).toList();
   return [
-    for (final range in ranges)
+    for (final r in ranges)
       () {
-        final totals = summarize(relevant, range).byCurrency[currency] ??
+        final totals = summarize(relevant, r).byCurrency[currency] ??
             CurrencyTotals.empty(currency);
-        return MonthTotals(range.start, totals.income, totals.expense);
+        return TrendBucket(r, totals.income, totals.expense);
       }(),
   ];
 }

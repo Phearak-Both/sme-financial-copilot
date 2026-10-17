@@ -9,7 +9,6 @@ import '../../core/money/currency.dart';
 import '../../core/money/money.dart';
 import '../../core/money/money_format.dart';
 import '../../core/money/money_parser.dart';
-import '../../data/demo_data.dart';
 import '../../finance_core/period_math.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -21,10 +20,7 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final textTheme = Theme.of(context).textTheme;
     final current = ref.watch(localeProvider).value ?? defaultLocale;
-    final ledgerIsEmpty =
-        ref.watch(recentEntriesProvider).value?.isEmpty ?? false;
     final openings = {
       for (final o in ref.watch(openingBalancesProvider).value ?? const [])
         o.currency: o,
@@ -33,11 +29,11 @@ class SettingsScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.navSettings)),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
         children: [
-          Text(l10n.language, style: textTheme.titleMedium),
-          const SizedBox(height: 12),
+          _SectionHeader(l10n.language),
           SegmentedButton<String>(
+            showSelectedIcon: false,
             segments: [
               for (final locale in supportedAppLocales)
                 ButtonSegment(
@@ -50,62 +46,84 @@ class SettingsScreen extends ConsumerWidget {
                 .read(ledgerRepositoryProvider)
                 .setSetting(localeSettingKey, selection.first),
           ),
-          const SizedBox(height: 32),
-          Text(l10n.openingCash, style: textTheme.titleMedium),
-          const SizedBox(height: 4),
-          Text(l10n.openingCashHelp, style: textTheme.bodySmall),
-          const SizedBox(height: 8),
-          for (final currency in Currency.values)
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: CircleAvatar(child: Text(currency.symbol)),
-              title: Text(currency.code),
-              subtitle: Text(
-                openings[currency] == null
-                    ? l10n.notSet
-                    : l10n.asOfValue(
-                        formatMoney(
-                          Money(openings[currency]!.amountMinor, currency),
-                          locale: context.localeTag,
-                        ),
-                        context.dayLabel(openings[currency]!.asOf),
+          _SectionHeader(l10n.openingCash),
+          Card(
+            margin: EdgeInsets.zero,
+            clipBehavior: Clip.antiAlias,
+            child: Column(
+              children: [
+                for (final (i, currency) in Currency.values.indexed) ...[
+                  if (i > 0) const Divider(indent: 16, endIndent: 16),
+                  ListTile(
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 16),
+                    shape: const RoundedRectangleBorder(),
+                    leading: CircleAvatar(
+                      radius: 18,
+                      child: Text(currency.symbol),
+                    ),
+                    title: Text(currency.code),
+                    subtitle: Text(
+                      openings[currency] == null
+                          ? l10n.notSet
+                          : l10n.asOfValue(
+                              formatMoney(
+                                Money(
+                                  openings[currency]!.amountMinor,
+                                  currency,
+                                ),
+                                locale: context.localeTag,
+                              ),
+                              context.dayLabel(openings[currency]!.asOf),
+                            ),
+                    ),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => showDialog<void>(
+                      context: context,
+                      builder: (_) => _OpeningCashDialog(
+                        currency: currency,
+                        existing: openings[currency],
                       ),
-              ),
-              trailing: const Icon(Icons.edit_outlined),
-              onTap: () => showDialog<void>(
-                context: context,
-                builder: (_) => _OpeningCashDialog(
-                  currency: currency,
-                  existing: openings[currency],
-                ),
-              ),
-            ),
-          const SizedBox(height: 32),
-          Text(l10n.demoSection, style: textTheme.titleMedium),
-          const SizedBox(height: 4),
-          Text(l10n.loadSampleDataBody, style: textTheme.bodySmall),
-          const SizedBox(height: 8),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: OutlinedButton.icon(
-              icon: const Icon(Icons.auto_awesome_outlined),
-              label: Text(l10n.loadSampleData),
-              onPressed: ledgerIsEmpty
-                  ? () async {
-                      final messenger = ScaffoldMessenger.of(context);
-                      final count =
-                          await loadDemoData(ref.read(ledgerRepositoryProvider));
-                      messenger.showSnackBar(SnackBar(
-                        content: Text(l10n.sampleDataLoaded(count)),
-                      ));
-                    }
-                  : null,
+                    ),
+                  ),
+                ],
+              ],
             ),
           ),
+          _SectionNote(l10n.openingCashHelp),
         ],
       ),
     );
   }
+}
+
+class _SectionHeader extends StatelessWidget {
+  const _SectionHeader(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.fromLTRB(4, 24, 4, 8),
+    child: Text(text, style: Theme.of(context).textTheme.titleSmall),
+  );
+}
+
+class _SectionNote extends StatelessWidget {
+  const _SectionNote(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
+    child: Text(
+      text,
+      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
+      ),
+    ),
+  );
 }
 
 class _OpeningCashDialog extends ConsumerStatefulWidget {

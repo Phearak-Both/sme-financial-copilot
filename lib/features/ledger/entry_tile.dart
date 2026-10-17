@@ -43,6 +43,7 @@ class EntryTile extends ConsumerWidget {
     );
 
     return ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20),
       onTap: () => context.push('/entry/${entry.id}'),
       leading: CircleAvatar(
         backgroundColor: color.withValues(alpha: 0.12),

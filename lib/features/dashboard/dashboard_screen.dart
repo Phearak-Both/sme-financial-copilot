@@ -26,7 +26,7 @@ class DashboardScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.navDashboard)),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
         children: [
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -105,7 +105,9 @@ class _DashboardBody extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Row(
+        IntrinsicHeight(
+          child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(
               child: _KpiCard(
@@ -130,8 +132,11 @@ class _DashboardBody extends ConsumerWidget {
             ),
           ],
         ),
+        ),
         const SizedBox(height: 12),
-        Row(
+        IntrinsicHeight(
+          child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(
               child: _KpiCard(
@@ -152,10 +157,11 @@ class _DashboardBody extends ConsumerWidget {
             ),
           ],
         ),
+        ),
         const SizedBox(height: 24),
         Text(l10n.trendTitle, style: textTheme.titleMedium),
         const SizedBox(height: 12),
-        TrendChart(months: data.trend, currency: data.currency),
+        TrendChart(buckets: data.trend, currency: data.currency),
         const SizedBox(height: 24),
         Text(l10n.expenseBreakdown, style: textTheme.titleMedium),
         const SizedBox(height: 8),

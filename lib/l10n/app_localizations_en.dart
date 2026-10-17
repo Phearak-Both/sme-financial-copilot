@@ -296,7 +296,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noComparison => 'No earlier records to compare';
 
   @override
-  String get trendTitle => 'Last 6 months';
+  String get trendTitle => 'Money in and out';
 
   @override
   String get expenseBreakdown => 'Where money went';
@@ -325,7 +325,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get trendSemantics =>
-      'Bar chart of money in and money out for the last 6 months.';
+      'Bar chart of money in and money out for the selected period.';
 
   @override
   String percentOfTotal(int percent) {
@@ -335,21 +335,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String filterActiveRange(String start, String end) {
     return '$start – $end';
-  }
-
-  @override
-  String get demoSection => 'Demo';
-
-  @override
-  String get loadSampleData => 'Load sample data';
-
-  @override
-  String get loadSampleDataBody =>
-      'Adds about 3 months of example shop and farm records in USD and KHR, plus opening cash, so you can try the app. Only available while the ledger is empty.';
-
-  @override
-  String sampleDataLoaded(int count) {
-    return '$count sample records added';
   }
 
   @override
@@ -385,15 +370,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get askThinking => 'Thinking…';
-
-  @override
-  String askHeard(String text) {
-    return 'Heard: “$text”';
-  }
-
-  @override
-  String get askProposalTitle =>
-      'Here\'s what I understood. Check it before saving.';
 
   @override
   String get askAmountMissing => 'Amount not found';

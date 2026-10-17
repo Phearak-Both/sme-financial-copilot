@@ -295,7 +295,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get noComparison => 'គ្មានកំណត់ត្រាមុននេះសម្រាប់ប្រៀបធៀប';
 
   @override
-  String get trendTitle => '៦ ខែចុងក្រោយ';
+  String get trendTitle => 'ប្រាក់ចូល និងប្រាក់ចេញ';
 
   @override
   String get expenseBreakdown => 'ប្រាក់ចេញទៅណាខ្លះ';
@@ -324,7 +324,7 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get trendSemantics =>
-      'ក្រាហ្វប្រាក់ចូល និងប្រាក់ចេញ សម្រាប់ ៦ ខែចុងក្រោយ។';
+      'ក្រាហ្វប្រាក់ចូល និងប្រាក់ចេញ សម្រាប់រយៈពេលដែលបានជ្រើស។';
 
   @override
   String percentOfTotal(int percent) {
@@ -334,21 +334,6 @@ class AppLocalizationsKm extends AppLocalizations {
   @override
   String filterActiveRange(String start, String end) {
     return '$start – $end';
-  }
-
-  @override
-  String get demoSection => 'សាកល្បង';
-
-  @override
-  String get loadSampleData => 'បញ្ចូលទិន្នន័យគំរូ';
-
-  @override
-  String get loadSampleDataBody =>
-      'បន្ថែមកំណត់ត្រាគំរូរបស់ហាង និងកសិដ្ឋានប្រហែល ៣ ខែ ជាដុល្លារ និងរៀល រួមទាំងសាច់ប្រាក់ដើមគ្រា ដើម្បីសាកល្បងកម្មវិធី។ អាចប្រើបានតែពេលបញ្ជីប្រាក់នៅទទេប៉ុណ្ណោះ។';
-
-  @override
-  String sampleDataLoaded(int count) {
-    return 'បានបន្ថែមកំណត់ត្រាគំរូ $count';
   }
 
   @override
@@ -384,15 +369,6 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get askThinking => 'កំពុងគិត…';
-
-  @override
-  String askHeard(String text) {
-    return 'បានឮ៖ «$text»';
-  }
-
-  @override
-  String get askProposalTitle =>
-      'នេះជាអ្វីដែលខ្ញុំយល់។ សូមពិនិត្យមុនពេលរក្សាទុក។';
 
   @override
   String get askAmountMissing => 'រកមិនឃើញចំនួនទឹកប្រាក់';
