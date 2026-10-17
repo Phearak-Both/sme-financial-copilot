@@ -4,34 +4,48 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../data/database.dart';
+import '../domain/entry_proposal.dart';
 import '../domain/enums.dart';
+import '../features/ask/ask_screen.dart';
 import '../features/dashboard/dashboard_screen.dart';
 import '../features/entry_form/entry_form_screen.dart';
-import '../features/home/home_screen.dart';
 import '../features/ledger/entry_detail_screen.dart';
 import '../features/ledger/ledger_screen.dart';
 import '../features/settings/settings_screen.dart';
 import '../l10n/app_localizations.dart';
 import 'labels.dart';
 import 'providers.dart';
+import 'theme.dart';
 
 GoRouter _buildRouter() => GoRouter(
   routes: [
     StatefulShellRoute.indexedStack(
       builder: (context, state, shell) => _Shell(shell: shell),
       branches: [
-        StatefulShellBranch(routes: [
-          GoRoute(path: '/', builder: (_, _) => const HomeScreen()),
-        ]),
-        StatefulShellBranch(routes: [
-          GoRoute(path: '/ledger', builder: (_, _) => const LedgerScreen()),
-        ]),
-        StatefulShellBranch(routes: [
-          GoRoute(path: '/dashboard', builder: (_, _) => const DashboardScreen()),
-        ]),
-        StatefulShellBranch(routes: [
-          GoRoute(path: '/settings', builder: (_, _) => const SettingsScreen()),
-        ]),
+        StatefulShellBranch(
+          routes: [GoRoute(path: '/', builder: (_, _) => const AskScreen())],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(path: '/ledger', builder: (_, _) => const LedgerScreen()),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/dashboard',
+              builder: (_, _) => const DashboardScreen(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/settings',
+              builder: (_, _) => const SettingsScreen(),
+            ),
+          ],
+        ),
       ],
     ),
     GoRoute(
@@ -40,6 +54,9 @@ GoRouter _buildRouter() => GoRouter(
         initialType: EntryType.values
             .where((t) => t.name == state.uri.queryParameters['type'])
             .firstOrNull,
+        proposal: state.extra is EntryProposal
+            ? state.extra as EntryProposal
+            : null,
       ),
     ),
     GoRoute(
@@ -75,6 +92,7 @@ class _SmeCopilotAppState extends ConsumerState<SmeCopilotApp> {
   Widget build(BuildContext context) {
     final locale = ref.watch(localeProvider).value ?? defaultLocale;
     return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
       onGenerateTitle: (context) => context.l10n.appTitle,
       locale: locale,
       supportedLocales: supportedAppLocales,
@@ -84,23 +102,9 @@ class _SmeCopilotAppState extends ConsumerState<SmeCopilotApp> {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      theme: _theme(Brightness.light),
-      darkTheme: _theme(Brightness.dark),
+      theme: buildAppTheme(Brightness.light),
+      darkTheme: buildAppTheme(Brightness.dark),
       routerConfig: _router,
-    );
-  }
-
-  ThemeData _theme(Brightness brightness) {
-    final base = ThemeData(
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: const Color(0xFF0F766E),
-        brightness: brightness,
-      ),
-      useMaterial3: true,
-    );
-    // Khmer stacked consonants need extra line height to avoid clipping.
-    return base.copyWith(
-      textTheme: base.textTheme.apply(heightFactor: 1.15),
     );
   }
 }
@@ -121,9 +125,9 @@ class _Shell extends StatelessWidget {
             shell.goBranch(index, initialLocation: index == shell.currentIndex),
         destinations: [
           NavigationDestination(
-            icon: const Icon(Icons.home_outlined),
-            selectedIcon: const Icon(Icons.home),
-            label: l10n.navHome,
+            icon: const Icon(Icons.auto_awesome_outlined),
+            selectedIcon: const Icon(Icons.auto_awesome),
+            label: l10n.navAsk,
           ),
           NavigationDestination(
             icon: const Icon(Icons.receipt_long_outlined),
@@ -158,8 +162,10 @@ class _EditEntryLoader extends ConsumerStatefulWidget {
 
 class _EditEntryLoaderState extends ConsumerState<_EditEntryLoader> {
   // Read once: the form owns its state after opening.
-  late final Future<EntryRow?> _entry =
-      ref.read(ledgerRepositoryProvider).watchEntry(widget.entryId).first;
+  late final Future<EntryRow?> _entry = ref
+      .read(ledgerRepositoryProvider)
+      .watchEntry(widget.entryId)
+      .first;
 
   @override
   Widget build(BuildContext context) {
@@ -167,7 +173,9 @@ class _EditEntryLoaderState extends ConsumerState<_EditEntryLoader> {
       future: _entry,
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
-          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
         }
         final row = snapshot.data;
         if (row == null) {

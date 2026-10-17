@@ -78,10 +78,12 @@ void main() {
     final summary = summarize(await repo.watchLedgerEntries(range).first, range);
     expect(summary.byCurrency[Currency.usd]!.expense.minor, 5000);
 
-    final all = await repo
-        .watchEntries(const LedgerFilter(includeVoided: true))
-        .first;
+    final all = await repo.watchEntries(const LedgerFilter()).first;
     expect(all.map((e) => e.id), containsAll([keep, drop]));
+    final voided = await repo
+        .watchEntries(const LedgerFilter(voidedOnly: true))
+        .first;
+    expect(voided.map((e) => e.id), [drop]);
     await expectLater(repo.update(drop, expense(1)), throwsStateError);
   });
 

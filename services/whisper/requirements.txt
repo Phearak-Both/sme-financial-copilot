@@ -1,0 +1,9 @@
+ctranslate2==4.8.3
+faster-whisper==1.2.1
+tokenizers==0.23.3
+numpy<3
+scipy
+soundfile
+fastapi
+uvicorn
+python-multipart

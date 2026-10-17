@@ -104,12 +104,6 @@ abstract class AppLocalizations {
   /// **'SME Copilot'**
   String get appTitle;
 
-  /// No description provided for @navHome.
-  ///
-  /// In en, this message translates to:
-  /// **'Home'**
-  String get navHome;
-
   /// No description provided for @navLedger.
   ///
   /// In en, this message translates to:
@@ -121,12 +115,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Settings'**
   String get navSettings;
-
-  /// No description provided for @thisMonth.
-  ///
-  /// In en, this message translates to:
-  /// **'This month'**
-  String get thisMonth;
 
   /// No description provided for @moneyIn.
   ///
@@ -152,47 +140,11 @@ abstract class AppLocalizations {
   /// **'Net cash flow'**
   String get netCashFlow;
 
-  /// No description provided for @ownerMovements.
-  ///
-  /// In en, this message translates to:
-  /// **'Owner in / out'**
-  String get ownerMovements;
-
   /// No description provided for @summaryFootnote.
   ///
   /// In en, this message translates to:
   /// **'Totals are shown per currency. KHR and USD are never added together.'**
   String get summaryFootnote;
-
-  /// No description provided for @entriesCount.
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, =1{1 record} other{{count} records}}'**
-  String entriesCount(int count);
-
-  /// No description provided for @homeEmptyTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'No records yet'**
-  String get homeEmptyTitle;
-
-  /// No description provided for @homeEmptyBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Record your first sale or expense to see this month\'s money in, money out and profit.'**
-  String get homeEmptyBody;
-
-  /// No description provided for @recent.
-  ///
-  /// In en, this message translates to:
-  /// **'Recent'**
-  String get recent;
-
-  /// No description provided for @viewAll.
-  ///
-  /// In en, this message translates to:
-  /// **'View all'**
-  String get viewAll;
 
   /// No description provided for @typeIncome.
   ///
@@ -365,7 +317,7 @@ abstract class AppLocalizations {
   /// No description provided for @voidReason.
   ///
   /// In en, this message translates to:
-  /// **'Reason (optional)'**
+  /// **'Reason'**
   String get voidReason;
 
   /// No description provided for @voided.
@@ -455,7 +407,7 @@ abstract class AppLocalizations {
   /// No description provided for @searchHint.
   ///
   /// In en, this message translates to:
-  /// **'Search description or note'**
+  /// **'Search'**
   String get searchHint;
 
   /// No description provided for @filterAll.
@@ -463,12 +415,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All'**
   String get filterAll;
-
-  /// No description provided for @showVoided.
-  ///
-  /// In en, this message translates to:
-  /// **'Show voided'**
-  String get showVoided;
 
   /// No description provided for @ledgerEmptyFiltered.
   ///
@@ -620,12 +566,6 @@ abstract class AppLocalizations {
   /// **'Set your opening cash to see how much money the business has now.'**
   String get cashOnHandHint;
 
-  /// No description provided for @setOpeningCash.
-  ///
-  /// In en, this message translates to:
-  /// **'Set opening cash'**
-  String get setOpeningCash;
-
   /// No description provided for @openingCash.
   ///
   /// In en, this message translates to:
@@ -763,6 +703,210 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count} sample records added'**
   String sampleDataLoaded(int count);
+
+  /// No description provided for @navAsk.
+  ///
+  /// In en, this message translates to:
+  /// **'Assistant'**
+  String get navAsk;
+
+  /// No description provided for @askTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Assistant'**
+  String get askTitle;
+
+  /// No description provided for @askWelcomeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hello!\nHow can I help you?'**
+  String get askWelcomeTitle;
+
+  /// No description provided for @askHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Record or ask…'**
+  String get askHint;
+
+  /// No description provided for @askSend.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get askSend;
+
+  /// No description provided for @askMicTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Record a voice note'**
+  String get askMicTooltip;
+
+  /// No description provided for @askPhotoTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo of a receipt'**
+  String get askPhotoTooltip;
+
+  /// No description provided for @askTakePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a photo'**
+  String get askTakePhoto;
+
+  /// No description provided for @askChoosePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from photos'**
+  String get askChoosePhoto;
+
+  /// No description provided for @askMicDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Microphone access is off. Allow it in system settings to use voice.'**
+  String get askMicDenied;
+
+  /// No description provided for @askThinking.
+  ///
+  /// In en, this message translates to:
+  /// **'Thinking…'**
+  String get askThinking;
+
+  /// No description provided for @askHeard.
+  ///
+  /// In en, this message translates to:
+  /// **'Heard: “{text}”'**
+  String askHeard(String text);
+
+  /// No description provided for @askProposalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Here\'s what I understood. Check it before saving.'**
+  String get askProposalTitle;
+
+  /// No description provided for @askAmountMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount not found'**
+  String get askAmountMissing;
+
+  /// No description provided for @askCurrencyUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Currency not stated. You\'ll choose it on the next screen.'**
+  String get askCurrencyUnknown;
+
+  /// No description provided for @askNoRecords.
+  ///
+  /// In en, this message translates to:
+  /// **'No records in this period yet.'**
+  String get askNoRecords;
+
+  /// No description provided for @askCashUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash on hand is unknown. Set your opening cash in Settings first.'**
+  String get askCashUnknown;
+
+  /// No description provided for @askCalculatedFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No records used} =1{Calculated from 1 record} other{Calculated from {count} records}}'**
+  String askCalculatedFrom(int count);
+
+  /// No description provided for @askNewChat.
+  ///
+  /// In en, this message translates to:
+  /// **'New conversation'**
+  String get askNewChat;
+
+  /// No description provided for @askError.
+  ///
+  /// In en, this message translates to:
+  /// **'Sorry, something went wrong. Check your internet connection and try again.'**
+  String get askError;
+
+  /// No description provided for @askQuota.
+  ///
+  /// In en, this message translates to:
+  /// **'The free AI limit was reached. Please wait a minute and try again.'**
+  String get askQuota;
+
+  /// No description provided for @askNotConfigured.
+  ///
+  /// In en, this message translates to:
+  /// **'AI is not set up. Run the app with --dart-define-from-file=env/dev.json.'**
+  String get askNotConfigured;
+
+  /// No description provided for @aiConsentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Before using the assistant'**
+  String get aiConsentTitle;
+
+  /// No description provided for @aiConsentBody.
+  ///
+  /// In en, this message translates to:
+  /// **'To understand you, the text, voice recording or photo you send is processed by Google Gemini. Only the totals needed to answer a question are sent, never your whole ledger. On the free tier Google may use this data to improve its products, so use test data for now.'**
+  String get aiConsentBody;
+
+  /// No description provided for @aiConsentAgree.
+  ///
+  /// In en, this message translates to:
+  /// **'I understand'**
+  String get aiConsentAgree;
+
+  /// No description provided for @proposalReviewHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Filled in by the assistant. Check every field, then save.'**
+  String get proposalReviewHint;
+
+  /// No description provided for @confirmCurrency.
+  ///
+  /// In en, this message translates to:
+  /// **'Please choose the currency.'**
+  String get confirmCurrency;
+
+  /// No description provided for @askRecordingFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The recording couldn\'t be saved. Please try again.'**
+  String get askRecordingFailed;
+
+  /// No description provided for @askTranscribing.
+  ///
+  /// In en, this message translates to:
+  /// **'Turning your voice into text…'**
+  String get askTranscribing;
+
+  /// No description provided for @askTranscribeFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t turn the recording into text. Please try again or type it.'**
+  String get askTranscribeFailed;
+
+  /// No description provided for @askNothingHeard.
+  ///
+  /// In en, this message translates to:
+  /// **'I couldn\'t hear anything. Please try again.'**
+  String get askNothingHeard;
+
+  /// No description provided for @askListening.
+  ///
+  /// In en, this message translates to:
+  /// **'Listening… start talking'**
+  String get askListening;
+
+  /// No description provided for @askDoneTalking.
+  ///
+  /// In en, this message translates to:
+  /// **'Done talking'**
+  String get askDoneTalking;
+
+  /// No description provided for @askRead.
+  ///
+  /// In en, this message translates to:
+  /// **'Read: “{text}”'**
+  String askRead(String text);
 }
 
 class _AppLocalizationsDelegate

@@ -11,46 +11,46 @@ import '../l10n/app_localizations.dart';
 /// Localised labels for domain values.
 extension DomainLabels on AppLocalizations {
   String entryType(EntryType type) => switch (type) {
-        EntryType.income => typeIncome,
-        EntryType.expense => typeExpense,
-        EntryType.ownerContribution => typeOwnerContribution,
-        EntryType.ownerWithdrawal => typeOwnerWithdrawal,
-      };
+    EntryType.income => typeIncome,
+    EntryType.expense => typeExpense,
+    EntryType.ownerContribution => typeOwnerContribution,
+    EntryType.ownerWithdrawal => typeOwnerWithdrawal,
+  };
 
   String paymentMethodLabel(PaymentMethod method) => switch (method) {
-        PaymentMethod.cash => pmCash,
-        PaymentMethod.bank => pmBank,
-        PaymentMethod.mobileWallet => pmMobileWallet,
-        PaymentMethod.other => pmOther,
-      };
+    PaymentMethod.cash => pmCash,
+    PaymentMethod.bank => pmBank,
+    PaymentMethod.mobileWallet => pmMobileWallet,
+    PaymentMethod.other => pmOther,
+  };
 
   String sourceLabel(EntrySource source) => switch (source) {
-        EntrySource.manual => sourceManual,
-        EntrySource.text => sourceText,
-        EntrySource.voice => sourceVoice,
-        EntrySource.receipt => sourceReceipt,
-      };
+    EntrySource.manual => sourceManual,
+    EntrySource.text => sourceText,
+    EntrySource.voice => sourceVoice,
+    EntrySource.receipt => sourceReceipt,
+  };
 
   String revisionLabel(RevisionKind kind) => switch (kind) {
-        RevisionKind.create => revisionCreate,
-        RevisionKind.edit => revisionEdit,
-        RevisionKind.voided => revisionVoided,
-      };
+    RevisionKind.create => revisionCreate,
+    RevisionKind.edit => revisionEdit,
+    RevisionKind.voided => revisionVoided,
+  };
 
   String periodLabel(ReportPeriod period) => switch (period) {
-        ReportPeriod.thisMonth => periodThisMonth,
-        ReportPeriod.lastMonth => periodLastMonth,
-        ReportPeriod.last3Months => periodLast3Months,
-        ReportPeriod.thisYear => periodThisYear,
-      };
+    ReportPeriod.thisMonth => periodThisMonth,
+    ReportPeriod.lastMonth => periodLastMonth,
+    ReportPeriod.last3Months => periodLast3Months,
+    ReportPeriod.thisYear => periodThisYear,
+  };
 
   String amountError(AmountError error, String currencyCode) => switch (error) {
-        AmountError.empty => errorAmountEmpty,
-        AmountError.invalid => errorAmountInvalid,
-        AmountError.tooManyDecimals => errorAmountDecimals(currencyCode),
-        AmountError.notPositive => errorAmountPositive,
-        AmountError.tooLarge => errorAmountTooLarge,
-      };
+    AmountError.empty => errorAmountEmpty,
+    AmountError.invalid => errorAmountInvalid,
+    AmountError.tooManyDecimals => errorAmountDecimals(currencyCode),
+    AmountError.notPositive => errorAmountPositive,
+    AmountError.tooLarge => errorAmountTooLarge,
+  };
 }
 
 extension ContextHelpers on BuildContext {
@@ -75,9 +75,9 @@ extension ContextHelpers on BuildContext {
 
   /// "Oct 1, 2026 – Oct 31, 2026" for a range (end shown inclusive).
   String rangeLabel(DateRange range) => l10n.filterActiveRange(
-        dayLabel(range.startKey),
-        dayLabel(toDateKey(addDays(range.end, -1))),
-      );
+    dayLabel(range.startKey),
+    dayLabel(toDateKey(addDays(range.end, -1))),
+  );
 
   String dateTimeLabel(DateTime value) =>
       DateFormat.yMMMd(localeTag).add_Hm().format(value.toLocal());
@@ -88,18 +88,18 @@ extension ContextHelpers on BuildContext {
 class MoneyColors {
   static Color moneyIn(BuildContext context) =>
       Theme.of(context).brightness == Brightness.dark
-          ? const Color(0xFF7FD69B)
-          : const Color(0xFF1B7A3D);
+      ? const Color(0xFF8FD1A8)
+      : const Color(0xFF2E7D4F);
 
   static Color moneyOut(BuildContext context) =>
       Theme.of(context).brightness == Brightness.dark
-          ? const Color(0xFFFF9C8F)
-          : const Color(0xFFB3261E);
+      ? const Color(0xFFF0A48F)
+      : const Color(0xFFA63D2A);
 }
 
 IconData entryTypeIcon(EntryType type) => switch (type) {
-      EntryType.income => Icons.south_west,
-      EntryType.expense => Icons.north_east,
-      EntryType.ownerContribution => Icons.person_add_alt,
-      EntryType.ownerWithdrawal => Icons.person_remove_alt_1,
-    };
+  EntryType.income => Icons.south_west,
+  EntryType.expense => Icons.north_east,
+  EntryType.ownerContribution => Icons.person_add_alt,
+  EntryType.ownerWithdrawal => Icons.person_remove_alt_1,
+};

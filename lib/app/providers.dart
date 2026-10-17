@@ -37,13 +37,17 @@ const defaultLocale = Locale('km');
 const supportedAppLocales = [Locale('km'), Locale('en')];
 
 /// The user's chosen language, falling back to [defaultLocale].
-final localeProvider = StreamProvider<Locale>((ref) => ref
-    .watch(ledgerRepositoryProvider)
-    .watchSetting(localeSettingKey)
-    .map((code) => supportedAppLocales.firstWhere(
+final localeProvider = StreamProvider<Locale>(
+  (ref) => ref
+      .watch(ledgerRepositoryProvider)
+      .watchSetting(localeSettingKey)
+      .map(
+        (code) => supportedAppLocales.firstWhere(
           (locale) => locale.languageCode == code,
           orElse: () => defaultLocale,
-        )));
+        ),
+      ),
+);
 
 // ------------------------------------------------------------------- ledger
 
@@ -55,16 +59,20 @@ class LedgerFilterNotifier extends Notifier<LedgerFilter> {
 }
 
 final ledgerFilterProvider =
-    NotifierProvider<LedgerFilterNotifier, LedgerFilter>(LedgerFilterNotifier.new);
+    NotifierProvider<LedgerFilterNotifier, LedgerFilter>(
+      LedgerFilterNotifier.new,
+    );
 
 final ledgerEntriesProvider = StreamProvider<List<EntryRow>>((ref) {
   final filter = ref.watch(ledgerFilterProvider);
   return ref.watch(ledgerRepositoryProvider).watchEntries(filter);
 });
 
-final recentEntriesProvider = StreamProvider<List<EntryRow>>((ref) => ref
-    .watch(ledgerRepositoryProvider)
-    .watchEntries(const LedgerFilter(), limit: 5));
+final recentEntriesProvider = StreamProvider<List<EntryRow>>(
+  (ref) => ref
+      .watch(ledgerRepositoryProvider)
+      .watchEntries(const LedgerFilter(), limit: 5),
+);
 
 final entryProvider = StreamProvider.family<EntryRow?, String>(
   (ref, id) => ref.watch(ledgerRepositoryProvider).watchEntry(id),
@@ -73,16 +81,6 @@ final entryProvider = StreamProvider.family<EntryRow?, String>(
 final revisionsProvider = StreamProvider.family<List<RevisionRow>, String>(
   (ref, id) => ref.watch(ledgerRepositoryProvider).watchRevisions(id),
 );
-
-// ---------------------------------------------------------------- summaries
-
-final thisMonthSummaryProvider = StreamProvider<PeriodSummary>((ref) {
-  final range = DateRange.monthOf(DateTime.now());
-  return ref
-      .watch(ledgerRepositoryProvider)
-      .watchLedgerEntries(range)
-      .map((entries) => summarize(entries, range));
-});
 
 // ------------------------------------------------------------- cash balance
 
@@ -121,7 +119,8 @@ class DashboardPeriodNotifier extends Notifier<ReportPeriod> {
 
 final dashboardPeriodProvider =
     NotifierProvider<DashboardPeriodNotifier, ReportPeriod>(
-        DashboardPeriodNotifier.new);
+      DashboardPeriodNotifier.new,
+    );
 
 class DashboardCurrencyNotifier extends Notifier<Currency> {
   @override
@@ -132,7 +131,8 @@ class DashboardCurrencyNotifier extends Notifier<Currency> {
 
 final dashboardCurrencyProvider =
     NotifierProvider<DashboardCurrencyNotifier, Currency>(
-        DashboardCurrencyNotifier.new);
+      DashboardCurrencyNotifier.new,
+    );
 
 /// Everything the dashboard shows for one period and currency.
 class DashboardData {
@@ -175,10 +175,9 @@ final dashboardProvider = StreamProvider<DashboardData>((ref) {
   final starts = [range.start, comparison.start, trendStart]..sort();
   final window = DateRange(starts.first, range.end);
 
-  return ref
-      .watch(ledgerRepositoryProvider)
-      .watchLedgerEntries(window)
-      .map((entries) {
+  return ref.watch(ledgerRepositoryProvider).watchLedgerEntries(window).map((
+    entries,
+  ) {
     final current = summarize(entries, range);
     return DashboardData(
       period: period,
@@ -186,10 +185,12 @@ final dashboardProvider = StreamProvider<DashboardData>((ref) {
       range: range,
       comparisonRange: comparison,
       current: current.byCurrency[currency] ?? CurrencyTotals.empty(currency),
-      previous: summarize(entries, comparison).byCurrency[currency] ??
+      previous:
+          summarize(entries, comparison).byCurrency[currency] ??
           CurrencyTotals.empty(currency),
       trend: monthlyTrend(entries, currency, lastMonth: trendEnd),
-      expenseCategories: expensesByCategory(entries, range)[currency] ?? const [],
+      expenseCategories:
+          expensesByCategory(entries, range)[currency] ?? const [],
       currenciesWithData: current.byCurrency.keys.toSet(),
     );
   });

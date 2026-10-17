@@ -19,7 +19,7 @@ class LedgerFilter {
     this.currency,
     this.categoryId,
     this.range,
-    this.includeVoided = false,
+    this.voidedOnly = false,
   });
 
   final String query;
@@ -27,7 +27,7 @@ class LedgerFilter {
   final Currency? currency;
   final String? categoryId;
   final DateRange? range;
-  final bool includeVoided;
+  final bool voidedOnly;
 
   LedgerFilter copyWith({
     String? query,
@@ -35,7 +35,7 @@ class LedgerFilter {
     Currency? Function()? currency,
     String? Function()? categoryId,
     DateRange? Function()? range,
-    bool? includeVoided,
+    bool? voidedOnly,
   }) =>
       LedgerFilter(
         query: query ?? this.query,
@@ -43,7 +43,7 @@ class LedgerFilter {
         currency: currency != null ? currency() : this.currency,
         categoryId: categoryId != null ? categoryId() : this.categoryId,
         range: range != null ? range() : this.range,
-        includeVoided: includeVoided ?? this.includeVoided,
+        voidedOnly: voidedOnly ?? this.voidedOnly,
       );
 
   bool get isDefault =>
@@ -52,7 +52,7 @@ class LedgerFilter {
       currency == null &&
       categoryId == null &&
       range == null &&
-      !includeVoided;
+      !voidedOnly;
 
   @override
   bool operator ==(Object other) =>
@@ -62,11 +62,11 @@ class LedgerFilter {
       other.currency == currency &&
       other.categoryId == categoryId &&
       other.range == range &&
-      other.includeVoided == includeVoided;
+      other.voidedOnly == voidedOnly;
 
   @override
   int get hashCode =>
-      Object.hash(query, type, currency, categoryId, range, includeVoided);
+      Object.hash(query, type, currency, categoryId, range, voidedOnly);
 }
 
 class InvalidDraftException implements Exception {
@@ -104,8 +104,10 @@ class LedgerRepository {
     final query = _db.select(_db.ledgerEntries)
       ..where((e) {
         final conditions = <Expression<bool>>[];
-        if (!filter.includeVoided) {
-          conditions.add(e.status.equalsValue(EntryStatus.active));
+        // Voided entries are listed with the rest; [voidedOnly] shows them
+        // alone. (Totals never count them; that's done in ledger_math.)
+        if (filter.voidedOnly) {
+          conditions.add(e.status.equalsValue(EntryStatus.voided));
         }
         if (filter.type != null) conditions.add(e.type.equalsValue(filter.type));
         if (filter.currency != null) {
@@ -139,7 +141,8 @@ class LedgerRepository {
     return query.watch();
   }
 
-  /// Active entries in [range], for calculations.
+  /// Entries in [range], for calculations. Voided ones are included; the
+  /// finance_core math skips them.
   Stream<List<LedgerEntry>> watchLedgerEntries(DateRange range) =>
       watchEntries(LedgerFilter(range: range))
           .map((rows) => rows.map(toLedgerEntry).toList());

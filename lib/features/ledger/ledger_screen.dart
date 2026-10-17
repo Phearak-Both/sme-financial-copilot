@@ -127,10 +127,10 @@ class _FilterBar extends StatelessWidget {
                 () => onChanged((f) => f.copyWith(currency: () => currency))),
           const SizedBox(width: 8),
           FilterChip(
-            label: Text(l10n.showVoided),
-            selected: filter.includeVoided,
+            label: Text(l10n.voided),
+            selected: filter.voidedOnly,
             onSelected: (value) =>
-                onChanged((f) => f.copyWith(includeVoided: value)),
+                onChanged((f) => f.copyWith(voidedOnly: value)),
           ),
         ],
       ),

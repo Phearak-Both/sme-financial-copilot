@@ -49,3 +49,7 @@ app.*.map.json
 
 # Claude Code local files and worktrees
 .claude/
+
+# Local secrets (API keys). Copy env/dev.example.json to env/dev.json.
+/env/*.json
+!/env/*.example.json
