@@ -68,12 +68,6 @@ final ledgerEntriesProvider = StreamProvider<List<EntryRow>>((ref) {
   return ref.watch(ledgerRepositoryProvider).watchEntries(filter);
 });
 
-final recentEntriesProvider = StreamProvider<List<EntryRow>>(
-  (ref) => ref
-      .watch(ledgerRepositoryProvider)
-      .watchEntries(const LedgerFilter(), limit: 5),
-);
-
 final entryProvider = StreamProvider.family<EntryRow?, String>(
   (ref, id) => ref.watch(ledgerRepositoryProvider).watchEntry(id),
 );
@@ -154,7 +148,7 @@ class DashboardData {
   final DateRange comparisonRange;
   final CurrencyTotals current;
   final CurrencyTotals previous;
-  final List<MonthTotals> trend;
+  final List<TrendBucket> trend;
   final List<MapEntry<String?, Money>> expenseCategories;
 
   /// Currencies that have entries in [range], to hint at the other currency.
@@ -170,9 +164,7 @@ final dashboardProvider = StreamProvider<DashboardData>((ref) {
 
   final range = rangeFor(period, today);
   final comparison = comparisonRangeFor(period, today);
-  final trendEnd = addDays(elapsedPart(range, today).end, -1);
-  final trendStart = DateTime(trendEnd.year, trendEnd.month - 5);
-  final starts = [range.start, comparison.start, trendStart]..sort();
+  final starts = [range.start, comparison.start]..sort();
   final window = DateRange(starts.first, range.end);
 
   return ref.watch(ledgerRepositoryProvider).watchLedgerEntries(window).map((
@@ -188,7 +180,7 @@ final dashboardProvider = StreamProvider<DashboardData>((ref) {
       previous:
           summarize(entries, comparison).byCurrency[currency] ??
           CurrencyTotals.empty(currency),
-      trend: monthlyTrend(entries, currency, lastMonth: trendEnd),
+      trend: periodTrend(entries, currency, range),
       expenseCategories:
           expensesByCategory(entries, range)[currency] ?? const [],
       currenciesWithData: current.byCurrency.keys.toSet(),

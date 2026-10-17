@@ -94,6 +94,7 @@ class _ExportSheetState extends ConsumerState<_ExportSheet> {
             Text(l10n.exportCurrency, style: textTheme.titleSmall),
             const SizedBox(height: 8),
             SegmentedButton<Currency>(
+              showSelectedIcon: false,
               segments: [
                 for (final c in Currency.values)
                   ButtonSegment(

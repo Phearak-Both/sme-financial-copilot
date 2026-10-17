@@ -73,22 +73,46 @@ void main() {
     });
   });
 
-  test('monthly trend includes empty months and one currency only', () {
-    final trend = monthlyTrend(
-      [
-        _entry(EntryType.income, 1000, '2026-10-02'),
-        _entry(EntryType.expense, 400, '2026-10-05'),
-        _entry(EntryType.income, 700, '2026-08-20'),
-        _entry(EntryType.income, 999999, '2026-10-02', currency: Currency.khr),
-        _entry(EntryType.expense, 50, '2026-10-03', status: EntryStatus.voided),
-      ],
-      Currency.usd,
-      lastMonth: today,
-      months: 3,
-    );
-    expect(trend.map((m) => m.month.month), [8, 9, 10]);
-    expect(trend.map((m) => m.income.minor), [700, 0, 1000]);
-    expect(trend.map((m) => m.expense.minor), [0, 0, 400]);
+  group('period trend', () {
+    final entries = [
+      _entry(EntryType.income, 1000, '2026-10-02'),
+      _entry(EntryType.expense, 400, '2026-10-30'),
+      _entry(EntryType.income, 700, '2026-08-20'),
+      _entry(EntryType.income, 999999, '2026-10-02', currency: Currency.khr),
+      _entry(EntryType.expense, 50, '2026-10-03', status: EntryStatus.voided),
+    ];
+
+    test('one month is split into weeks, the last one short', () {
+      final trend = periodTrend(
+        entries,
+        Currency.usd,
+        rangeFor(ReportPeriod.thisMonth, today),
+      );
+      expect(trend.map((b) => b.range.start.day), [1, 8, 15, 22, 29]);
+      expect(trend.last.range.end, DateTime(2026, 11));
+      expect(trend.map((b) => b.income.minor), [1000, 0, 0, 0, 0]);
+      expect(trend.map((b) => b.expense.minor), [0, 0, 0, 0, 400]);
+    });
+
+    test('longer periods are split into months, empty ones included', () {
+      final trend = periodTrend(
+        entries,
+        Currency.usd,
+        rangeFor(ReportPeriod.last3Months, today),
+      );
+      expect(trend.map((b) => b.range.start.month), [8, 9, 10]);
+      expect(trend.map((b) => b.income.minor), [700, 0, 1000]);
+      expect(trend.map((b) => b.expense.minor), [0, 0, 400]);
+    });
+
+    test('this year has one bar per month', () {
+      final trend = periodTrend(
+        entries,
+        Currency.usd,
+        rangeFor(ReportPeriod.thisYear, today),
+      );
+      expect(trend, hasLength(12));
+    });
   });
 
   test('cash balance starts from the opening date', () {

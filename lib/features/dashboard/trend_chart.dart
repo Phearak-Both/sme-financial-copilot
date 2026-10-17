@@ -3,19 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../app/labels.dart';
+import '../../core/date_only.dart';
 import '../../core/money/currency.dart';
 import '../../core/money/money.dart';
 import '../../core/money/money_format.dart';
 import '../../finance_core/period_math.dart';
 
-/// Money in vs money out per month, for one currency.
+/// Money in vs money out per week or month, for one currency.
 ///
 /// The chart library needs doubles. They are derived from the integer totals
 /// only for drawing; every number shown as text comes from [formatMoney].
 class TrendChart extends StatelessWidget {
-  const TrendChart({super.key, required this.months, required this.currency});
+  const TrendChart({super.key, required this.buckets, required this.currency});
 
-  final List<MonthTotals> months;
+  final List<TrendBucket> buckets;
   final Currency currency;
 
   double _major(Money m) {
@@ -35,7 +36,7 @@ class TrendChart extends StatelessWidget {
     final textStyle = Theme.of(context).textTheme.bodySmall;
     final compact = NumberFormat.compact(locale: locale);
 
-    final maxValue = months.fold<double>(
+    final maxValue = buckets.fold<double>(
       0,
       (m, t) => [m, _major(t.income), _major(t.expense)].reduce(
         (a, b) => a > b ? a : b,
@@ -54,19 +55,19 @@ class TrendChart extends StatelessWidget {
                 gridData: const FlGridData(drawVerticalLine: false),
                 borderData: FlBorderData(show: false),
                 barGroups: [
-                  for (final (i, month) in months.indexed)
+                  for (final (i, bucket) in buckets.indexed)
                     BarChartGroupData(
                       x: i,
                       barsSpace: 3,
                       barRods: [
                         BarChartRodData(
-                          toY: _major(month.income),
+                          toY: _major(bucket.income),
                           color: inColor,
                           width: 10,
                           borderRadius: BorderRadius.circular(2),
                         ),
                         BarChartRodData(
-                          toY: _major(month.expense),
+                          toY: _major(bucket.expense),
                           color: outColor,
                           width: 10,
                           borderRadius: BorderRadius.circular(2),
@@ -92,13 +93,13 @@ class TrendChart extends StatelessWidget {
                       showTitles: true,
                       getTitlesWidget: (value, meta) {
                         final index = value.toInt();
-                        if (index < 0 || index >= months.length) {
+                        if (index < 0 || index >= buckets.length) {
                           return const SizedBox.shrink();
                         }
                         return Padding(
                           padding: const EdgeInsets.only(top: 6),
                           child: Text(
-                            DateFormat.MMM(locale).format(months[index].month),
+                            _label(buckets[index].range, locale),
                             style: textStyle,
                           ),
                         );
@@ -109,8 +110,8 @@ class TrendChart extends StatelessWidget {
                 barTouchData: BarTouchData(
                   touchTooltipData: BarTouchTooltipData(
                     getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                      final month = months[group.x];
-                      final amount = rodIndex == 0 ? month.income : month.expense;
+                      final bucket = buckets[group.x];
+                      final amount = rodIndex == 0 ? bucket.income : bucket.expense;
                       return BarTooltipItem(
                         '${rodIndex == 0 ? l10n.moneyIn : l10n.moneyOut}\n'
                         '${formatMoney(amount, locale: locale)}',
@@ -135,6 +136,16 @@ class TrendChart extends StatelessWidget {
       ),
     );
   }
+}
+
+/// `Oct` for a whole month, `1-7` for a week (days within the month).
+String _label(DateRange range, String locale) {
+  if (DateRange.monthOf(range.start) == range) {
+    return DateFormat.MMM(locale).format(range.start);
+  }
+  final days = NumberFormat('0', locale);
+  final last = addDays(range.end, -1);
+  return '${days.format(range.start.day)}-${days.format(last.day)}';
 }
 
 class _Legend extends StatelessWidget {

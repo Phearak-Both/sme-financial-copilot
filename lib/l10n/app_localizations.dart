@@ -623,7 +623,7 @@ abstract class AppLocalizations {
   /// No description provided for @trendTitle.
   ///
   /// In en, this message translates to:
-  /// **'Last 6 months'**
+  /// **'Money in and out'**
   String get trendTitle;
 
   /// No description provided for @expenseBreakdown.
@@ -665,7 +665,7 @@ abstract class AppLocalizations {
   /// No description provided for @trendSemantics.
   ///
   /// In en, this message translates to:
-  /// **'Bar chart of money in and money out for the last 6 months.'**
+  /// **'Bar chart of money in and money out for the selected period.'**
   String get trendSemantics;
 
   /// No description provided for @percentOfTotal.
@@ -679,30 +679,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{start} – {end}'**
   String filterActiveRange(String start, String end);
-
-  /// No description provided for @demoSection.
-  ///
-  /// In en, this message translates to:
-  /// **'Demo'**
-  String get demoSection;
-
-  /// No description provided for @loadSampleData.
-  ///
-  /// In en, this message translates to:
-  /// **'Load sample data'**
-  String get loadSampleData;
-
-  /// No description provided for @loadSampleDataBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Adds about 3 months of example shop and farm records in USD and KHR, plus opening cash, so you can try the app. Only available while the ledger is empty.'**
-  String get loadSampleDataBody;
-
-  /// No description provided for @sampleDataLoaded.
-  ///
-  /// In en, this message translates to:
-  /// **'{count} sample records added'**
-  String sampleDataLoaded(int count);
 
   /// No description provided for @navAsk.
   ///
@@ -769,18 +745,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Thinking…'**
   String get askThinking;
-
-  /// No description provided for @askHeard.
-  ///
-  /// In en, this message translates to:
-  /// **'Heard: “{text}”'**
-  String askHeard(String text);
-
-  /// No description provided for @askProposalTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Here\'s what I understood. Check it before saving.'**
-  String get askProposalTitle;
 
   /// No description provided for @askAmountMissing.
   ///

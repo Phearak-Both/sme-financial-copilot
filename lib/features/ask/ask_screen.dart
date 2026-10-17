@@ -353,10 +353,25 @@ class _AskScreenState extends ConsumerState<AskScreen> {
       body: Column(
         children: [
           if (!configured)
-            MaterialBanner(
-              leading: const Icon(Icons.key_off_outlined),
-              content: Text(l10n.askNotConfigured),
-              actions: const [SizedBox.shrink()],
+            Container(
+              margin: const EdgeInsets.fromLTRB(16, 4, 16, 0),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainerHigh,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.info_outline, size: 20),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      l10n.askNotConfigured,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ),
+                ],
+              ),
             ),
           Expanded(
             child: messages.isEmpty
@@ -487,141 +502,127 @@ class _Composer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final scheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
     final hasText = controller.text.trim().isNotEmpty;
-    final pill = OutlineInputBorder(
-      borderRadius: BorderRadius.circular(28),
-      borderSide: BorderSide(color: scheme.outlineVariant),
+    // The field sits borderless inside the bar; the bar draws the outline.
+    const bare = InputDecoration(
+      filled: false,
+      border: InputBorder.none,
+      enabledBorder: InputBorder.none,
+      focusedBorder: InputBorder.none,
+      disabledBorder: InputBorder.none,
+      isDense: true,
+      contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 12),
     );
 
-    final Widget content;
+    final List<Widget> children;
     if (recording) {
       final time =
           '${elapsed.inMinutes}:${(elapsed.inSeconds % 60).toString().padLeft(2, '0')}';
-      content = Row(
-        children: [
-          IconButton(
-            tooltip: l10n.cancel,
-            icon: const Icon(Icons.delete_outline),
-            onPressed: onCancelRecording,
-          ),
-          Expanded(
-            child: TextField(
-              controller: controller,
-              readOnly: true,
-              minLines: 1,
-              maxLines: 4,
-              decoration: InputDecoration(
-                hintText: l10n.askListening,
-                border: pill,
-                enabledBorder: pill,
-                focusedBorder: pill,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
-                ),
-                prefixIcon: Padding(
-                  padding: const EdgeInsets.only(left: 14, right: 8),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.fiber_manual_record,
-                        color: scheme.error,
-                        size: 14,
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        time,
-                        style: TextStyle(
-                          color: scheme.onSurfaceVariant,
-                          fontFeatures: const [FontFeature.tabularFigures()],
-                        ),
-                      ),
-                    ],
-                  ),
+      children = [
+        IconButton(
+          tooltip: l10n.cancel,
+          icon: const Icon(Icons.delete_outline),
+          onPressed: onCancelRecording,
+        ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 14, right: 6),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.fiber_manual_record, color: scheme.error, size: 12),
+              const SizedBox(width: 4),
+              Text(
+                time,
+                style: theme.textTheme.labelLarge?.copyWith(
+                  color: scheme.onSurfaceVariant,
+                  fontFeatures: const [FontFeature.tabularFigures()],
                 ),
               ),
-            ),
+            ],
           ),
-          const SizedBox(width: 8),
-          IconButton.filled(
-            tooltip: l10n.askDoneTalking,
-            iconSize: 28,
-            icon: const Icon(Icons.check_rounded),
-            onPressed: onStopRecording,
+        ),
+        Expanded(
+          child: TextField(
+            controller: controller,
+            readOnly: true,
+            minLines: 1,
+            maxLines: 4,
+            decoration: bare.copyWith(hintText: l10n.askListening),
           ),
-        ],
-      );
+        ),
+        IconButton.filled(
+          tooltip: l10n.askDoneTalking,
+          icon: const Icon(Icons.check_rounded),
+          onPressed: onStopRecording,
+        ),
+      ];
     } else {
-      content = Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          IconButton(
-            tooltip: l10n.askPhotoTooltip,
-            icon: const Icon(Icons.photo_camera_outlined),
-            onPressed: busy || transcribing ? null : onPhoto,
-          ),
-          Expanded(
-            child: TextField(
-              controller: controller,
-              focusNode: focusNode,
-              enabled: !transcribing,
-              minLines: 1,
-              maxLines: 4,
-              textInputAction: TextInputAction.send,
-              onSubmitted: (_) => onSend(),
-              decoration: InputDecoration(
-                hintText: transcribing ? l10n.askTranscribing : l10n.askHint,
-                hintMaxLines: 1,
-                border: pill,
-                enabledBorder: pill,
-                focusedBorder: pill.copyWith(
-                  borderSide: BorderSide(color: scheme.primary, width: 1.6),
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 14,
-                ),
-              ),
+      children = [
+        IconButton(
+          tooltip: l10n.askPhotoTooltip,
+          icon: const Icon(Icons.photo_camera_outlined),
+          onPressed: busy || transcribing ? null : onPhoto,
+        ),
+        Expanded(
+          child: TextField(
+            controller: controller,
+            focusNode: focusNode,
+            enabled: !transcribing,
+            minLines: 1,
+            maxLines: 4,
+            textInputAction: TextInputAction.send,
+            onSubmitted: (_) => onSend(),
+            decoration: bare.copyWith(
+              hintText: transcribing ? l10n.askTranscribing : l10n.askHint,
+              hintMaxLines: 1,
             ),
           ),
-          const SizedBox(width: 8),
-          transcribing
-              ? const SizedBox.square(
-                  dimension: 48,
-                  child: Padding(
-                    padding: EdgeInsets.all(12),
-                    child: CircularProgressIndicator(strokeWidth: 2.5),
-                  ),
-                )
-              : hasText
-              ? IconButton.filled(
-                  tooltip: l10n.askSend,
-                  iconSize: 28,
-                  icon: const Icon(Icons.send),
-                  onPressed: busy ? null : onSend,
-                )
-              : IconButton.filled(
-                  tooltip: l10n.askMicTooltip,
-                  iconSize: 28,
-                  icon: const Icon(Icons.mic),
-                  onPressed: busy ? null : onStartRecording,
-                ),
-        ],
-      );
+        ),
+        if (transcribing)
+          const SizedBox.square(
+            dimension: 40,
+            child: Padding(
+              padding: EdgeInsets.all(10),
+              child: CircularProgressIndicator(strokeWidth: 2.5),
+            ),
+          )
+        else if (hasText)
+          IconButton.filled(
+            tooltip: l10n.askSend,
+            icon: const Icon(Icons.arrow_upward_rounded),
+            onPressed: busy ? null : onSend,
+          )
+        else
+          IconButton.filled(
+            tooltip: l10n.askMicTooltip,
+            icon: const Icon(Icons.mic_none_rounded),
+            onPressed: busy ? null : onStartRecording,
+          ),
+      ];
     }
 
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: scheme.surface,
-        border: Border(top: BorderSide(color: scheme.outlineVariant)),
-      ),
+    return ColoredBox(
+      color: scheme.surface,
       child: SafeArea(
         top: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(8, 10, 12, 10),
-          child: content,
+          padding: const EdgeInsets.fromLTRB(12, 6, 12, 10),
+          child: Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: scheme.surfaceContainerLowest,
+              borderRadius: BorderRadius.circular(28),
+              border: Border.all(
+                color: recording ? scheme.error : scheme.outlineVariant,
+              ),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: children,
+            ),
+          ),
         ),
       ),
     );
@@ -761,16 +762,16 @@ class _AssistantCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (transcript != null) ...[
+                if (transcript != null && fromPhoto) ...[
                   Text(
-                    fromPhoto
-                        ? context.l10n.askRead(transcript!)
-                        : context.l10n.askHeard(transcript!),
+                    context.l10n.askRead(transcript!),
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
                     style: textTheme.bodySmall?.copyWith(
-                      fontStyle: FontStyle.italic,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 10),
                 ],
                 child,
               ],
@@ -879,8 +880,16 @@ class _ProposalViewState extends ConsumerState<_ProposalView> {
         ? MoneyColors.moneyIn(context)
         : MoneyColors.moneyOut(context);
 
+    final parsed = proposal.amountText == null || proposal.currency == null
+        ? null
+        : parseAmount(proposal.amountText!, proposal.currency!);
     final amount = proposal.amountText == null
         ? null
+        : parsed?.minor != null
+        ? formatMoney(
+            Money(parsed!.minor!, proposal.currency!),
+            locale: context.localeTag,
+          )
         : proposal.currency == null
         ? proposal.amountText!
         : '${proposal.amountText} ${proposal.currency!.code}';
@@ -904,8 +913,6 @@ class _ProposalViewState extends ConsumerState<_ProposalView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(l10n.askProposalTitle, style: textTheme.titleSmall),
-        const SizedBox(height: 8),
         Row(
           children: [
             Icon(entryTypeIcon(proposal.type), color: color),

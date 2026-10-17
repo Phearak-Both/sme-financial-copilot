@@ -252,7 +252,13 @@ class _EntryFormScreenState extends ConsumerState<EntryFormScreen> {
               children: [
                 for (final type in EntryType.values)
                   ChoiceChip(
-                    avatar: Icon(entryTypeIcon(type), size: 18),
+                    avatar: Icon(
+                      entryTypeIcon(type),
+                      size: 18,
+                      color: _type == type
+                          ? Theme.of(context).colorScheme.onPrimary
+                          : null,
+                    ),
                     label: Text(l10n.entryType(type)),
                     selected: _type == type,
                     onSelected: (_) => _setType(type),

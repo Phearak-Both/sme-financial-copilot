@@ -63,7 +63,7 @@ class _LedgerScreenState extends ConsumerState<LedgerScreen> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
             child: TextField(
               controller: _search,
               decoration: InputDecoration(
@@ -226,11 +226,13 @@ class _DayHeader extends StatelessWidget {
         .map((t) => formatMoney(t.netCashFlow,
             locale: context.localeTag, signed: true))
         .join('  ·  ');
-    final style = Theme.of(context).textTheme.labelLarge;
+    final style = Theme.of(context).textTheme.labelLarge?.copyWith(
+      color: Theme.of(context).colorScheme.onSurfaceVariant,
+    );
 
-    return Container(
-      color: Theme.of(context).colorScheme.surfaceContainerHighest,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+    // A light text heading instead of a filled band.
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 18, 20, 6),
       child: Row(
         children: [
           Expanded(child: Text(context.dayLabel(day), style: style)),
