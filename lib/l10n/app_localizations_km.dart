@@ -475,4 +475,74 @@ class AppLocalizationsKm extends AppLocalizations {
   String askRead(String text) {
     return 'បានអាន៖ «$text»';
   }
+
+  @override
+  String get exportPdf => 'ទាញយក PDF';
+
+  @override
+  String get exportFailed => 'មិនអាចបង្កើត PDF បានទេ។ សូមព្យាយាមម្តងទៀត។';
+
+  @override
+  String get glTitle => 'សៀវភៅគណនី';
+
+  @override
+  String glAccount(String currency) {
+    return 'គណនីសាច់ប្រាក់ ($currency)';
+  }
+
+  @override
+  String get glNo => 'ល.រ';
+
+  @override
+  String get glDebit => 'ឥណពន្ធ (ចូល)';
+
+  @override
+  String get glCredit => 'ឥណទាន (ចេញ)';
+
+  @override
+  String get glBalance => 'សមតុល្យ';
+
+  @override
+  String get glOpening => 'សមតុល្យដើមគ្រា';
+
+  @override
+  String get glTotals => 'សរុប';
+
+  @override
+  String get glClosing => 'សមតុល្យចុងគ្រា';
+
+  @override
+  String glPeriod(String from, String to) {
+    return 'រយៈពេល៖ $from – $to';
+  }
+
+  @override
+  String glGenerated(String date) {
+    return 'បង្កើតនៅ៖ $date';
+  }
+
+  @override
+  String get glVoidedNote =>
+      'មិនរាប់បញ្ចូលកំណត់ត្រាមោឃៈ។ ប្រាក់រៀល និងដុល្លារ ត្រូវបានកត់ក្នុងគណនីដាច់ដោយឡែក។';
+
+  @override
+  String get glNoEntries => 'មិនទាន់មានកំណត់ត្រានៅឡើយ។';
+
+  @override
+  String get exportTitle => 'ទាញយកសៀវភៅគណនី';
+
+  @override
+  String get exportCurrency => 'រូបិយប័ណ្ណ';
+
+  @override
+  String get exportPeriod => 'រយៈពេល';
+
+  @override
+  String get periodLast6Months => '៦ ខែចុងក្រោយ';
+
+  @override
+  String get periodLastYear => '១ ឆ្នាំចុងក្រោយ';
+
+  @override
+  String get exportSaved => 'បានរក្សាទុក PDF';
 }

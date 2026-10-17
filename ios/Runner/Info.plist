@@ -8,6 +8,13 @@
 	<string>Photograph receipts so the assistant can read them.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Choose receipt photos so the assistant can read them.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Connect to the speech and receipt service running on your computer.</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>

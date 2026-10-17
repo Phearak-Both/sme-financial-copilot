@@ -477,4 +477,74 @@ class AppLocalizationsEn extends AppLocalizations {
   String askRead(String text) {
     return 'Read: “$text”';
   }
+
+  @override
+  String get exportPdf => 'Export PDF';
+
+  @override
+  String get exportFailed => 'Couldn\'t create the PDF. Please try again.';
+
+  @override
+  String get glTitle => 'General Ledger';
+
+  @override
+  String glAccount(String currency) {
+    return 'Cash account ($currency)';
+  }
+
+  @override
+  String get glNo => 'No.';
+
+  @override
+  String get glDebit => 'Debit (in)';
+
+  @override
+  String get glCredit => 'Credit (out)';
+
+  @override
+  String get glBalance => 'Balance';
+
+  @override
+  String get glOpening => 'Opening balance';
+
+  @override
+  String get glTotals => 'Totals';
+
+  @override
+  String get glClosing => 'Closing balance';
+
+  @override
+  String glPeriod(String from, String to) {
+    return 'Period: $from – $to';
+  }
+
+  @override
+  String glGenerated(String date) {
+    return 'Generated: $date';
+  }
+
+  @override
+  String get glVoidedNote =>
+      'Voided entries are not included. KHR and USD are kept in separate accounts.';
+
+  @override
+  String get glNoEntries => 'No records yet.';
+
+  @override
+  String get exportTitle => 'Export general ledger';
+
+  @override
+  String get exportCurrency => 'Currency';
+
+  @override
+  String get exportPeriod => 'Period';
+
+  @override
+  String get periodLast6Months => 'Last 6 months';
+
+  @override
+  String get periodLastYear => 'Last year';
+
+  @override
+  String get exportSaved => 'PDF saved';
 }
