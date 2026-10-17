@@ -12,6 +12,7 @@ import '../../domain/enums.dart';
 import '../../finance_core/ledger_math.dart';
 import '../../core/date_only.dart';
 import 'entry_tile.dart';
+import 'ledger_export.dart';
 
 class LedgerScreen extends ConsumerStatefulWidget {
   const LedgerScreen({super.key});
@@ -43,7 +44,16 @@ class _LedgerScreenState extends ConsumerState<LedgerScreen> {
     final entries = ref.watch(ledgerEntriesProvider);
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.navLedger)),
+      appBar: AppBar(
+        title: Text(l10n.navLedger),
+        actions: [
+          IconButton(
+            tooltip: l10n.exportPdf,
+            icon: const Icon(Icons.ios_share),
+            onPressed: () => showExportSheet(context),
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         tooltip: l10n.newEntry,
         onPressed: () =>

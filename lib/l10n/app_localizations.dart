@@ -907,6 +907,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Read: “{text}”'**
   String askRead(String text);
+
+  /// No description provided for @exportPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Export PDF'**
+  String get exportPdf;
+
+  /// No description provided for @exportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t create the PDF. Please try again.'**
+  String get exportFailed;
+
+  /// No description provided for @glTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'General Ledger'**
+  String get glTitle;
+
+  /// No description provided for @glAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash account ({currency})'**
+  String glAccount(String currency);
+
+  /// No description provided for @glNo.
+  ///
+  /// In en, this message translates to:
+  /// **'No.'**
+  String get glNo;
+
+  /// No description provided for @glDebit.
+  ///
+  /// In en, this message translates to:
+  /// **'Debit (in)'**
+  String get glDebit;
+
+  /// No description provided for @glCredit.
+  ///
+  /// In en, this message translates to:
+  /// **'Credit (out)'**
+  String get glCredit;
+
+  /// No description provided for @glBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance'**
+  String get glBalance;
+
+  /// No description provided for @glOpening.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening balance'**
+  String get glOpening;
+
+  /// No description provided for @glTotals.
+  ///
+  /// In en, this message translates to:
+  /// **'Totals'**
+  String get glTotals;
+
+  /// No description provided for @glClosing.
+  ///
+  /// In en, this message translates to:
+  /// **'Closing balance'**
+  String get glClosing;
+
+  /// No description provided for @glPeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'Period: {from} – {to}'**
+  String glPeriod(String from, String to);
+
+  /// No description provided for @glGenerated.
+  ///
+  /// In en, this message translates to:
+  /// **'Generated: {date}'**
+  String glGenerated(String date);
+
+  /// No description provided for @glVoidedNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Voided entries are not included. KHR and USD are kept in separate accounts.'**
+  String get glVoidedNote;
+
+  /// No description provided for @glNoEntries.
+  ///
+  /// In en, this message translates to:
+  /// **'No records yet.'**
+  String get glNoEntries;
+
+  /// No description provided for @exportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Export general ledger'**
+  String get exportTitle;
+
+  /// No description provided for @exportCurrency.
+  ///
+  /// In en, this message translates to:
+  /// **'Currency'**
+  String get exportCurrency;
+
+  /// No description provided for @exportPeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'Period'**
+  String get exportPeriod;
+
+  /// No description provided for @periodLast6Months.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 6 months'**
+  String get periodLast6Months;
+
+  /// No description provided for @periodLastYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Last year'**
+  String get periodLastYear;
+
+  /// No description provided for @exportSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'PDF saved'**
+  String get exportSaved;
 }
 
 class _AppLocalizationsDelegate

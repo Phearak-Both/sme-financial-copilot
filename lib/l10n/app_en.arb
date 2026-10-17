@@ -245,5 +245,29 @@
         "type": "String"
       }
     }
-  }
+  },
+  "exportPdf": "Export PDF",
+  "exportFailed": "Couldn't create the PDF. Please try again.",
+  "glTitle": "General Ledger",
+  "glAccount": "Cash account ({currency})",
+  "@glAccount": {"placeholders": {"currency": {"type": "String"}}},
+  "glNo": "No.",
+  "glDebit": "Debit (in)",
+  "glCredit": "Credit (out)",
+  "glBalance": "Balance",
+  "glOpening": "Opening balance",
+  "glTotals": "Totals",
+  "glClosing": "Closing balance",
+  "glPeriod": "Period: {from} – {to}",
+  "@glPeriod": {"placeholders": {"from": {"type": "String"}, "to": {"type": "String"}}},
+  "glGenerated": "Generated: {date}",
+  "@glGenerated": {"placeholders": {"date": {"type": "String"}}},
+  "glVoidedNote": "Voided entries are not included. KHR and USD are kept in separate accounts.",
+  "glNoEntries": "No records yet.",
+  "exportTitle": "Export general ledger",
+  "exportCurrency": "Currency",
+  "exportPeriod": "Period",
+  "periodLast6Months": "Last 6 months",
+  "periodLastYear": "Last year",
+  "exportSaved": "PDF saved"
 }
