@@ -8,6 +8,7 @@ import '../core/money/currency.dart';
 import '../domain/entry_draft.dart';
 import '../domain/enums.dart';
 import '../finance_core/ledger_math.dart';
+import '../finance_core/period_math.dart';
 import 'database.dart';
 
 /// Filters for the ledger list. All fields are optional and combine with AND.
@@ -16,37 +17,42 @@ class LedgerFilter {
     this.query = '',
     this.type,
     this.currency,
+    this.categoryId,
     this.range,
-    this.includeVoided = false,
+    this.voidedOnly = false,
   });
 
   final String query;
   final EntryType? type;
   final Currency? currency;
+  final String? categoryId;
   final DateRange? range;
-  final bool includeVoided;
+  final bool voidedOnly;
 
   LedgerFilter copyWith({
     String? query,
     EntryType? Function()? type,
     Currency? Function()? currency,
+    String? Function()? categoryId,
     DateRange? Function()? range,
-    bool? includeVoided,
+    bool? voidedOnly,
   }) =>
       LedgerFilter(
         query: query ?? this.query,
         type: type != null ? type() : this.type,
         currency: currency != null ? currency() : this.currency,
+        categoryId: categoryId != null ? categoryId() : this.categoryId,
         range: range != null ? range() : this.range,
-        includeVoided: includeVoided ?? this.includeVoided,
+        voidedOnly: voidedOnly ?? this.voidedOnly,
       );
 
   bool get isDefault =>
       query.isEmpty &&
       type == null &&
       currency == null &&
+      categoryId == null &&
       range == null &&
-      !includeVoided;
+      !voidedOnly;
 
   @override
   bool operator ==(Object other) =>
@@ -54,11 +60,13 @@ class LedgerFilter {
       other.query == query &&
       other.type == type &&
       other.currency == currency &&
+      other.categoryId == categoryId &&
       other.range == range &&
-      other.includeVoided == includeVoided;
+      other.voidedOnly == voidedOnly;
 
   @override
-  int get hashCode => Object.hash(query, type, currency, range, includeVoided);
+  int get hashCode =>
+      Object.hash(query, type, currency, categoryId, range, voidedOnly);
 }
 
 class InvalidDraftException implements Exception {
@@ -96,12 +104,17 @@ class LedgerRepository {
     final query = _db.select(_db.ledgerEntries)
       ..where((e) {
         final conditions = <Expression<bool>>[];
-        if (!filter.includeVoided) {
-          conditions.add(e.status.equalsValue(EntryStatus.active));
+        // Voided entries are listed with the rest; [voidedOnly] shows them
+        // alone. (Totals never count them; that's done in ledger_math.)
+        if (filter.voidedOnly) {
+          conditions.add(e.status.equalsValue(EntryStatus.voided));
         }
         if (filter.type != null) conditions.add(e.type.equalsValue(filter.type));
         if (filter.currency != null) {
           conditions.add(e.currency.equals(filter.currency!.code));
+        }
+        if (filter.categoryId != null) {
+          conditions.add(e.categoryId.equals(filter.categoryId!));
         }
         if (filter.range != null) {
           conditions
@@ -128,7 +141,8 @@ class LedgerRepository {
     return query.watch();
   }
 
-  /// Active entries in [range], for calculations.
+  /// Entries in [range], for calculations. Voided ones are included; the
+  /// finance_core math skips them.
   Stream<List<LedgerEntry>> watchLedgerEntries(DateRange range) =>
       watchEntries(LedgerFilter(range: range))
           .map((rows) => rows.map(toLedgerEntry).toList());
@@ -232,6 +246,45 @@ class LedgerRepository {
       await _recordRevision(id, RevisionKind.voided, now);
     });
   }
+
+  // ------------------------------------------------------- opening cash
+
+  Stream<List<OpeningBalance>> watchOpeningBalances() =>
+      _db.select(_db.openingBalances).watch().map((rows) => [
+            for (final row in rows)
+              OpeningBalance(
+                currency: Currency.fromCode(row.currency),
+                amountMinor: row.amountMinor,
+                asOf: row.asOf,
+              ),
+          ]);
+
+  /// Sets the cash held at the start of [asOf]. Zero is a valid balance.
+  Future<void> setOpeningBalance(
+    Currency currency,
+    int amountMinor,
+    DateTime asOf,
+  ) {
+    if (amountMinor < 0) {
+      throw ArgumentError.value(amountMinor, 'amountMinor', 'must be >= 0');
+    }
+    if (dateOnly(asOf).isAfter(dateOnly(_clock()))) {
+      throw ArgumentError.value(asOf, 'asOf', 'cannot be in the future');
+    }
+    return _db.into(_db.openingBalances).insertOnConflictUpdate(
+          OpeningBalancesCompanion.insert(
+            currency: currency.code,
+            amountMinor: amountMinor,
+            asOf: toDateKey(asOf),
+            updatedAt: _clock(),
+          ),
+        );
+  }
+
+  Future<void> clearOpeningBalance(Currency currency) =>
+      (_db.delete(_db.openingBalances)
+            ..where((b) => b.currency.equals(currency.code)))
+          .go();
 
   // ------------------------------------------------------------- settings
 

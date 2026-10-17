@@ -1,28 +1,13 @@
 {
   "@@locale": "en",
   "appTitle": "SME Copilot",
-  "navHome": "Home",
   "navLedger": "Ledger",
   "navSettings": "Settings",
-  "thisMonth": "This month",
   "moneyIn": "Money in",
   "moneyOut": "Money out",
   "profitCash": "Profit (cash)",
   "netCashFlow": "Net cash flow",
-  "ownerMovements": "Owner in / out",
   "summaryFootnote": "Totals are shown per currency. KHR and USD are never added together.",
-  "entriesCount": "{count, plural, =1{1 record} other{{count} records}}",
-  "@entriesCount": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "homeEmptyTitle": "No records yet",
-  "homeEmptyBody": "Record your first sale or expense to see this month's money in, money out and profit.",
-  "recent": "Recent",
-  "viewAll": "View all",
   "typeIncome": "Income",
   "typeExpense": "Expense",
   "typeOwnerContribution": "Owner put money in",
@@ -51,7 +36,7 @@
   "voidAction": "Void",
   "voidTitle": "Void this entry?",
   "voidBody": "It stays in the history but no longer counts in any total.",
-  "voidReason": "Reason (optional)",
+  "voidReason": "Reason",
   "voided": "Voided",
   "errorAmountEmpty": "Enter an amount",
   "errorAmountInvalid": "Enter a valid number",
@@ -80,9 +65,8 @@
   "savedMessage": "Saved",
   "updatedMessage": "Updated",
   "voidedMessage": "Entry voided",
-  "searchHint": "Search description or note",
+  "searchHint": "Search",
   "filterAll": "All",
-  "showVoided": "Show voided",
   "ledgerEmptyFiltered": "No entries match these filters.",
   "ledgerEmpty": "No entries yet. Tap + to record one.",
   "clearFilters": "Clear filters",
@@ -107,5 +91,159 @@
   "today": "Today",
   "yesterday": "Yesterday",
   "somethingWrong": "Something went wrong. Please try again.",
-  "entryNotFound": "This entry no longer exists."
+  "entryNotFound": "This entry no longer exists.",
+  "navDashboard": "Dashboard",
+  "periodThisMonth": "This month",
+  "periodLastMonth": "Last month",
+  "periodLast3Months": "Last 3 months",
+  "periodThisYear": "This year",
+  "cashOnHand": "Cash on hand",
+  "cashOnHandHint": "Set your opening cash to see how much money the business has now.",
+  "openingCash": "Opening cash",
+  "openingCashHelp": "How much cash the business had at the start of a date. Cash on hand = opening cash + money in − money out from that date.",
+  "asOf": "As of",
+  "asOfValue": "{amount} as of {date}",
+  "@asOfValue": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "clear": "Clear",
+  "negativeBalanceWarning": "Recorded cash is below zero. Some money in may be missing, or the opening cash may be wrong.",
+  "vsComparison": "{change} vs same days before",
+  "@vsComparison": {
+    "placeholders": {
+      "change": {
+        "type": "String"
+      }
+    }
+  },
+  "vsComparisonFull": "{change} vs previous period",
+  "@vsComparisonFull": {
+    "placeholders": {
+      "change": {
+        "type": "String"
+      }
+    }
+  },
+  "noComparison": "No earlier records to compare",
+  "trendTitle": "Last 6 months",
+  "expenseBreakdown": "Where money went",
+  "noExpenses": "No expenses in this period.",
+  "dashboardEmpty": "No {currency} records in this period.",
+  "@dashboardEmpty": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "otherCurrencyHint": "There are {currency} records in this period.",
+  "@otherCurrencyHint": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "showCurrency": "Show {currency}",
+  "@showCurrency": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "dashboardFootnote": "Cash basis: money is counted on the day it is received or paid. Money the owner puts in or takes out is not counted in profit.",
+  "trendSemantics": "Bar chart of money in and money out for the last 6 months.",
+  "percentOfTotal": "{percent}% of money out",
+  "@percentOfTotal": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "filterActiveRange": "{start} – {end}",
+  "@filterActiveRange": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "demoSection": "Demo",
+  "loadSampleData": "Load sample data",
+  "loadSampleDataBody": "Adds about 3 months of example shop and farm records in USD and KHR, plus opening cash, so you can try the app. Only available while the ledger is empty.",
+  "sampleDataLoaded": "{count} sample records added",
+  "@sampleDataLoaded": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "navAsk": "Assistant",
+  "askTitle": "Assistant",
+  "askWelcomeTitle": "Hello!\nHow can I help you?",
+  "askHint": "Record or ask…",
+  "askSend": "Send",
+  "askMicTooltip": "Record a voice note",
+  "askPhotoTooltip": "Photo of a receipt",
+  "askTakePhoto": "Take a photo",
+  "askChoosePhoto": "Choose from photos",
+  "askMicDenied": "Microphone access is off. Allow it in system settings to use voice.",
+  "askThinking": "Thinking…",
+  "askHeard": "Heard: “{text}”",
+  "@askHeard": {
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "askProposalTitle": "Here's what I understood. Check it before saving.",
+  "askAmountMissing": "Amount not found",
+  "askCurrencyUnknown": "Currency not stated. You'll choose it on the next screen.",
+  "askNoRecords": "No records in this period yet.",
+  "askCashUnknown": "Cash on hand is unknown. Set your opening cash in Settings first.",
+  "askCalculatedFrom": "{count, plural, =0{No records used} =1{Calculated from 1 record} other{Calculated from {count} records}}",
+  "@askCalculatedFrom": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "askNewChat": "New conversation",
+  "askError": "Sorry, something went wrong. Check your internet connection and try again.",
+  "askQuota": "The free AI limit was reached. Please wait a minute and try again.",
+  "askNotConfigured": "AI is not set up. Run the app with --dart-define-from-file=env/dev.json.",
+  "aiConsentTitle": "Before using the assistant",
+  "aiConsentBody": "To understand you, the text, voice recording or photo you send is processed by Google Gemini. Only the totals needed to answer a question are sent, never your whole ledger. On the free tier Google may use this data to improve its products, so use test data for now.",
+  "aiConsentAgree": "I understand",
+  "proposalReviewHint": "Filled in by the assistant. Check every field, then save.",
+  "confirmCurrency": "Please choose the currency.",
+  "askRecordingFailed": "The recording couldn't be saved. Please try again.",
+  "askTranscribing": "Turning your voice into text…",
+  "askTranscribeFailed": "Couldn't turn the recording into text. Please try again or type it.",
+  "askNothingHeard": "I couldn't hear anything. Please try again.",
+  "askListening": "Listening… start talking",
+  "askDoneTalking": "Done talking",
+  "askRead": "Read: “{text}”",
+  "@askRead": {
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  }
 }

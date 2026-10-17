@@ -2,6 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Record voice notes so the assistant can prepare your income and expense records.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Photograph receipts so the assistant can read them.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Choose receipt photos so the assistant can read them.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>

@@ -1780,6 +1780,340 @@ class EntryRevisionsCompanion extends UpdateCompanion<RevisionRow> {
   }
 }
 
+class $OpeningBalancesTable extends OpeningBalances
+    with TableInfo<$OpeningBalancesTable, OpeningBalanceRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $OpeningBalancesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _currencyMeta = const VerificationMeta(
+    'currency',
+  );
+  @override
+  late final GeneratedColumn<String> currency = GeneratedColumn<String>(
+    'currency',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 3,
+      maxTextLength: 3,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _amountMinorMeta = const VerificationMeta(
+    'amountMinor',
+  );
+  @override
+  late final GeneratedColumn<int> amountMinor = GeneratedColumn<int>(
+    'amount_minor',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _asOfMeta = const VerificationMeta('asOf');
+  @override
+  late final GeneratedColumn<String> asOf = GeneratedColumn<String>(
+    'as_of',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 10,
+      maxTextLength: 10,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    currency,
+    amountMinor,
+    asOf,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'opening_balances';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<OpeningBalanceRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('currency')) {
+      context.handle(
+        _currencyMeta,
+        currency.isAcceptableOrUnknown(data['currency']!, _currencyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_currencyMeta);
+    }
+    if (data.containsKey('amount_minor')) {
+      context.handle(
+        _amountMinorMeta,
+        amountMinor.isAcceptableOrUnknown(
+          data['amount_minor']!,
+          _amountMinorMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_amountMinorMeta);
+    }
+    if (data.containsKey('as_of')) {
+      context.handle(
+        _asOfMeta,
+        asOf.isAcceptableOrUnknown(data['as_of']!, _asOfMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_asOfMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {currency};
+  @override
+  OpeningBalanceRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return OpeningBalanceRow(
+      currency: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}currency'],
+      )!,
+      amountMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}amount_minor'],
+      )!,
+      asOf: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}as_of'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $OpeningBalancesTable createAlias(String alias) {
+    return $OpeningBalancesTable(attachedDatabase, alias);
+  }
+}
+
+class OpeningBalanceRow extends DataClass
+    implements Insertable<OpeningBalanceRow> {
+  final String currency;
+  final int amountMinor;
+
+  /// `yyyy-MM-dd`.
+  final String asOf;
+  final DateTime updatedAt;
+  const OpeningBalanceRow({
+    required this.currency,
+    required this.amountMinor,
+    required this.asOf,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['currency'] = Variable<String>(currency);
+    map['amount_minor'] = Variable<int>(amountMinor);
+    map['as_of'] = Variable<String>(asOf);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  OpeningBalancesCompanion toCompanion(bool nullToAbsent) {
+    return OpeningBalancesCompanion(
+      currency: Value(currency),
+      amountMinor: Value(amountMinor),
+      asOf: Value(asOf),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory OpeningBalanceRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return OpeningBalanceRow(
+      currency: serializer.fromJson<String>(json['currency']),
+      amountMinor: serializer.fromJson<int>(json['amountMinor']),
+      asOf: serializer.fromJson<String>(json['asOf']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'currency': serializer.toJson<String>(currency),
+      'amountMinor': serializer.toJson<int>(amountMinor),
+      'asOf': serializer.toJson<String>(asOf),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  OpeningBalanceRow copyWith({
+    String? currency,
+    int? amountMinor,
+    String? asOf,
+    DateTime? updatedAt,
+  }) => OpeningBalanceRow(
+    currency: currency ?? this.currency,
+    amountMinor: amountMinor ?? this.amountMinor,
+    asOf: asOf ?? this.asOf,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  OpeningBalanceRow copyWithCompanion(OpeningBalancesCompanion data) {
+    return OpeningBalanceRow(
+      currency: data.currency.present ? data.currency.value : this.currency,
+      amountMinor: data.amountMinor.present
+          ? data.amountMinor.value
+          : this.amountMinor,
+      asOf: data.asOf.present ? data.asOf.value : this.asOf,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('OpeningBalanceRow(')
+          ..write('currency: $currency, ')
+          ..write('amountMinor: $amountMinor, ')
+          ..write('asOf: $asOf, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(currency, amountMinor, asOf, updatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is OpeningBalanceRow &&
+          other.currency == this.currency &&
+          other.amountMinor == this.amountMinor &&
+          other.asOf == this.asOf &&
+          other.updatedAt == this.updatedAt);
+}
+
+class OpeningBalancesCompanion extends UpdateCompanion<OpeningBalanceRow> {
+  final Value<String> currency;
+  final Value<int> amountMinor;
+  final Value<String> asOf;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const OpeningBalancesCompanion({
+    this.currency = const Value.absent(),
+    this.amountMinor = const Value.absent(),
+    this.asOf = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  OpeningBalancesCompanion.insert({
+    required String currency,
+    required int amountMinor,
+    required String asOf,
+    required DateTime updatedAt,
+    this.rowid = const Value.absent(),
+  }) : currency = Value(currency),
+       amountMinor = Value(amountMinor),
+       asOf = Value(asOf),
+       updatedAt = Value(updatedAt);
+  static Insertable<OpeningBalanceRow> custom({
+    Expression<String>? currency,
+    Expression<int>? amountMinor,
+    Expression<String>? asOf,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (currency != null) 'currency': currency,
+      if (amountMinor != null) 'amount_minor': amountMinor,
+      if (asOf != null) 'as_of': asOf,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  OpeningBalancesCompanion copyWith({
+    Value<String>? currency,
+    Value<int>? amountMinor,
+    Value<String>? asOf,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return OpeningBalancesCompanion(
+      currency: currency ?? this.currency,
+      amountMinor: amountMinor ?? this.amountMinor,
+      asOf: asOf ?? this.asOf,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (currency.present) {
+      map['currency'] = Variable<String>(currency.value);
+    }
+    if (amountMinor.present) {
+      map['amount_minor'] = Variable<int>(amountMinor.value);
+    }
+    if (asOf.present) {
+      map['as_of'] = Variable<String>(asOf.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('OpeningBalancesCompanion(')
+          ..write('currency: $currency, ')
+          ..write('amountMinor: $amountMinor, ')
+          ..write('asOf: $asOf, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $AppSettingsTable extends AppSettings
     with TableInfo<$AppSettingsTable, SettingRow> {
   @override
@@ -1994,6 +2328,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $CategoriesTable categories = $CategoriesTable(this);
   late final $LedgerEntriesTable ledgerEntries = $LedgerEntriesTable(this);
   late final $EntryRevisionsTable entryRevisions = $EntryRevisionsTable(this);
+  late final $OpeningBalancesTable openingBalances = $OpeningBalancesTable(
+    this,
+  );
   late final $AppSettingsTable appSettings = $AppSettingsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
@@ -2003,6 +2340,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     categories,
     ledgerEntries,
     entryRevisions,
+    openingBalances,
     appSettings,
   ];
 }
@@ -3301,6 +3639,204 @@ typedef $$EntryRevisionsTableProcessedTableManager =
       RevisionRow,
       PrefetchHooks Function({bool entryId})
     >;
+typedef $$OpeningBalancesTableCreateCompanionBuilder =
+    OpeningBalancesCompanion Function({
+      required String currency,
+      required int amountMinor,
+      required String asOf,
+      required DateTime updatedAt,
+      Value<int> rowid,
+    });
+typedef $$OpeningBalancesTableUpdateCompanionBuilder =
+    OpeningBalancesCompanion Function({
+      Value<String> currency,
+      Value<int> amountMinor,
+      Value<String> asOf,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+
+class $$OpeningBalancesTableFilterComposer
+    extends Composer<_$AppDatabase, $OpeningBalancesTable> {
+  $$OpeningBalancesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get currency => $composableBuilder(
+    column: $table.currency,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get amountMinor => $composableBuilder(
+    column: $table.amountMinor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get asOf => $composableBuilder(
+    column: $table.asOf,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$OpeningBalancesTableOrderingComposer
+    extends Composer<_$AppDatabase, $OpeningBalancesTable> {
+  $$OpeningBalancesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get currency => $composableBuilder(
+    column: $table.currency,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get amountMinor => $composableBuilder(
+    column: $table.amountMinor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get asOf => $composableBuilder(
+    column: $table.asOf,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$OpeningBalancesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $OpeningBalancesTable> {
+  $$OpeningBalancesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get currency =>
+      $composableBuilder(column: $table.currency, builder: (column) => column);
+
+  GeneratedColumn<int> get amountMinor => $composableBuilder(
+    column: $table.amountMinor,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get asOf =>
+      $composableBuilder(column: $table.asOf, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$OpeningBalancesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $OpeningBalancesTable,
+          OpeningBalanceRow,
+          $$OpeningBalancesTableFilterComposer,
+          $$OpeningBalancesTableOrderingComposer,
+          $$OpeningBalancesTableAnnotationComposer,
+          $$OpeningBalancesTableCreateCompanionBuilder,
+          $$OpeningBalancesTableUpdateCompanionBuilder,
+          (
+            OpeningBalanceRow,
+            BaseReferences<
+              _$AppDatabase,
+              $OpeningBalancesTable,
+              OpeningBalanceRow
+            >,
+          ),
+          OpeningBalanceRow,
+          PrefetchHooks Function()
+        > {
+  $$OpeningBalancesTableTableManager(
+    _$AppDatabase db,
+    $OpeningBalancesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$OpeningBalancesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$OpeningBalancesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$OpeningBalancesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> currency = const Value.absent(),
+                Value<int> amountMinor = const Value.absent(),
+                Value<String> asOf = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => OpeningBalancesCompanion(
+                currency: currency,
+                amountMinor: amountMinor,
+                asOf: asOf,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String currency,
+                required int amountMinor,
+                required String asOf,
+                required DateTime updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => OpeningBalancesCompanion.insert(
+                currency: currency,
+                amountMinor: amountMinor,
+                asOf: asOf,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$OpeningBalancesTable, OpeningBalanceRow>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $OpeningBalancesTable,
+                    OpeningBalanceRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$OpeningBalancesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $OpeningBalancesTable,
+      OpeningBalanceRow,
+      $$OpeningBalancesTableFilterComposer,
+      $$OpeningBalancesTableOrderingComposer,
+      $$OpeningBalancesTableAnnotationComposer,
+      $$OpeningBalancesTableCreateCompanionBuilder,
+      $$OpeningBalancesTableUpdateCompanionBuilder,
+      (
+        OpeningBalanceRow,
+        BaseReferences<_$AppDatabase, $OpeningBalancesTable, OpeningBalanceRow>,
+      ),
+      OpeningBalanceRow,
+      PrefetchHooks Function()
+    >;
 typedef $$AppSettingsTableCreateCompanionBuilder =
     AppSettingsCompanion Function({
       required String key,
@@ -3458,6 +3994,8 @@ class $AppDatabaseManager {
       $$LedgerEntriesTableTableManager(_db, _db.ledgerEntries);
   $$EntryRevisionsTableTableManager get entryRevisions =>
       $$EntryRevisionsTableTableManager(_db, _db.entryRevisions);
+  $$OpeningBalancesTableTableManager get openingBalances =>
+      $$OpeningBalancesTableTableManager(_db, _db.openingBalances);
   $$AppSettingsTableTableManager get appSettings =>
       $$AppSettingsTableTableManager(_db, _db.appSettings);
 }

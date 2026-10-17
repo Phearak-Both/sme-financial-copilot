@@ -10,16 +10,24 @@ import '../../core/money/currency.dart';
 import '../../core/money/money_parser.dart';
 import '../../data/database.dart';
 import '../../domain/entry_draft.dart';
+import '../../domain/entry_proposal.dart';
 import '../../domain/enums.dart';
 
 const lastCurrencySettingKey = 'last_currency';
 
-/// Add a new entry, or edit [initial] when given.
+/// Add a new entry, or edit [initial] when given. A [proposal] from the
+/// assistant pre-fills a new entry for the user to check and save.
 class EntryFormScreen extends ConsumerStatefulWidget {
-  const EntryFormScreen({super.key, this.initial, this.initialType});
+  const EntryFormScreen({
+    super.key,
+    this.initial,
+    this.initialType,
+    this.proposal,
+  });
 
   final EntryRow? initial;
   final EntryType? initialType;
+  final EntryProposal? proposal;
 
   @override
   ConsumerState<EntryFormScreen> createState() => _EntryFormScreenState();
@@ -41,6 +49,10 @@ class _EntryFormScreenState extends ConsumerState<EntryFormScreen> {
   bool _dateError = false;
   bool _saving = false;
 
+  /// True while the assistant didn't know the currency and the user
+  /// hasn't picked one yet.
+  bool _currencyUnconfirmed = false;
+
   bool get _isEdit => widget.initial != null;
 
   @override
@@ -56,6 +68,20 @@ class _EntryFormScreenState extends ConsumerState<EntryFormScreen> {
       _description.text = initial.description;
       _note.text = initial.note ?? '';
       _paymentMethod = initial.paymentMethod;
+    } else if (widget.proposal case final proposal?) {
+      _type = proposal.type;
+      _amount.text = proposal.amountText ?? '';
+      _categoryId = proposal.categoryId;
+      _date = proposal.occurredOn ?? _date;
+      _description.text = proposal.description;
+      _note.text = proposal.rawInput ?? '';
+      _paymentMethod = proposal.paymentMethod;
+      if (proposal.currency case final currency?) {
+        _currency = currency;
+      } else {
+        _currencyUnconfirmed = true;
+        _loadLastCurrency();
+      }
     } else {
       _type = widget.initialType ?? EntryType.expense;
       _loadLastCurrency();
@@ -120,6 +146,7 @@ class _EntryFormScreenState extends ConsumerState<EntryFormScreen> {
       description: _description.text,
       note: _note.text,
       paymentMethod: _paymentMethod,
+      source: widget.proposal?.source ?? EntrySource.manual,
     );
     final errors = validateDraft(draft, today: DateTime.now());
 
@@ -127,11 +154,12 @@ class _EntryFormScreenState extends ConsumerState<EntryFormScreen> {
       _amountError = parsed.isOk
           ? null
           : l10n.amountError(parsed.error!, _currency.code);
-      _categoryError = errors.contains(DraftError.categoryRequired) ||
+      _categoryError =
+          errors.contains(DraftError.categoryRequired) ||
           errors.contains(DraftError.categoryMismatch);
       _dateError = errors.contains(DraftError.futureDate);
     });
-    if (!parsed.isOk || errors.isNotEmpty) return;
+    if (!parsed.isOk || errors.isNotEmpty || _currencyUnconfirmed) return;
 
     setState(() => _saving = true);
     try {
@@ -153,10 +181,12 @@ class _EntryFormScreenState extends ConsumerState<EntryFormScreen> {
 
       if (!mounted) return;
       final messenger = ScaffoldMessenger.of(context);
-      context.pop();
-      messenger.showSnackBar(SnackBar(
-        content: Text(_isEdit ? l10n.updatedMessage : l10n.savedMessage),
-      ));
+      context.pop(true);
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(_isEdit ? l10n.updatedMessage : l10n.savedMessage),
+        ),
+      );
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context)
@@ -195,8 +225,9 @@ class _EntryFormScreenState extends ConsumerState<EntryFormScreen> {
     final textTheme = Theme.of(context).textTheme;
     final categories = ref.watch(categoriesProvider).value ?? const [];
     final kind = _type.categoryKind;
-    final visibleCategories =
-        kind == null ? const <CategoryRow>[] : categories.where((c) => c.kind == kind);
+    final visibleCategories = kind == null
+        ? const <CategoryRow>[]
+        : categories.where((c) => c.kind == kind);
 
     return Scaffold(
       appBar: AppBar(title: Text(_isEdit ? l10n.editEntry : l10n.newEntry)),
@@ -204,6 +235,17 @@ class _EntryFormScreenState extends ConsumerState<EntryFormScreen> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
+            if (widget.proposal != null) ...[
+              Card(
+                margin: EdgeInsets.zero,
+                color: Theme.of(context).colorScheme.secondaryContainer,
+                child: ListTile(
+                  leading: const Icon(Icons.auto_awesome),
+                  title: Text(l10n.proposalReviewHint),
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
             Wrap(
               spacing: 8,
               runSpacing: 8,
@@ -257,10 +299,21 @@ class _EntryFormScreenState extends ConsumerState<EntryFormScreen> {
                   onSelectionChanged: (selection) => setState(() {
                     _currency = selection.first;
                     _amountError = null;
+                    _currencyUnconfirmed = false;
                   }),
                 ),
               ],
             ),
+            if (_currencyUnconfirmed)
+              Padding(
+                padding: const EdgeInsets.only(top: 6),
+                child: Text(
+                  l10n.confirmCurrency,
+                  style: textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+                ),
+              ),
             if (kind != null) ...[
               const SizedBox(height: 20),
               Text(l10n.category, style: textTheme.titleSmall),
@@ -285,8 +338,9 @@ class _EntryFormScreenState extends ConsumerState<EntryFormScreen> {
                   padding: const EdgeInsets.only(top: 6),
                   child: Text(
                     l10n.errorCategory,
-                    style: textTheme.bodySmall
-                        ?.copyWith(color: Theme.of(context).colorScheme.error),
+                    style: textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
                   ),
                 ),
             ],
@@ -296,8 +350,12 @@ class _EntryFormScreenState extends ConsumerState<EntryFormScreen> {
               leading: const Icon(Icons.calendar_today_outlined),
               title: Text(l10n.date),
               subtitle: _dateError
-                  ? Text(l10n.errorFutureDate,
-                      style: TextStyle(color: Theme.of(context).colorScheme.error))
+                  ? Text(
+                      l10n.errorFutureDate,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                    )
                   : null,
               trailing: Text(
                 DateFormat.yMMMd(context.localeTag).format(_date),
@@ -345,7 +403,9 @@ class _EntryFormScreenState extends ConsumerState<EntryFormScreen> {
             const SizedBox(height: 24),
             FilledButton(
               onPressed: _saving ? null : _save,
-              style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
+              style: FilledButton.styleFrom(
+                minimumSize: const Size.fromHeight(52),
+              ),
               child: _saving
                   ? const SizedBox.square(
                       dimension: 20,

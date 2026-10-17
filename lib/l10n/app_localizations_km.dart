@@ -13,16 +13,10 @@ class AppLocalizationsKm extends AppLocalizations {
   String get appTitle => 'SME Copilot';
 
   @override
-  String get navHome => 'ទំព័រដើម';
-
-  @override
   String get navLedger => 'បញ្ជីប្រាក់';
 
   @override
   String get navSettings => 'ការកំណត់';
-
-  @override
-  String get thisMonth => 'ខែនេះ';
 
   @override
   String get moneyIn => 'ប្រាក់ចូល';
@@ -37,34 +31,8 @@ class AppLocalizationsKm extends AppLocalizations {
   String get netCashFlow => 'លំហូរសាច់ប្រាក់សុទ្ធ';
 
   @override
-  String get ownerMovements => 'ម្ចាស់ដាក់ចូល / ដកចេញ';
-
-  @override
   String get summaryFootnote =>
       'សរុបត្រូវបានបង្ហាញតាមរូបិយប័ណ្ណនីមួយៗ។ ប្រាក់រៀល និងដុល្លារ មិនត្រូវបានបូកបញ្ចូលគ្នាទេ។';
-
-  @override
-  String entriesCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count កំណត់ត្រា',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get homeEmptyTitle => 'មិនទាន់មានកំណត់ត្រានៅឡើយ';
-
-  @override
-  String get homeEmptyBody =>
-      'កត់ត្រាការលក់ ឬការចំណាយដំបូងរបស់អ្នក ដើម្បីមើលប្រាក់ចូល ប្រាក់ចេញ និងប្រាក់ចំណេញក្នុងខែនេះ។';
-
-  @override
-  String get recent => 'ថ្មីៗ';
-
-  @override
-  String get viewAll => 'មើលទាំងអស់';
 
   @override
   String get typeIncome => 'ចំណូល';
@@ -153,7 +121,7 @@ class AppLocalizationsKm extends AppLocalizations {
       'វានៅតែមានក្នុងប្រវត្តិ ប៉ុន្តែលែងរាប់បញ្ចូលក្នុងសរុបទៀតហើយ។';
 
   @override
-  String get voidReason => 'មូលហេតុ (ស្រេចចិត្ត)';
+  String get voidReason => 'មូលហេតុ';
 
   @override
   String get voided => 'មោឃៈ';
@@ -208,13 +176,10 @@ class AppLocalizationsKm extends AppLocalizations {
   String get voidedMessage => 'បានទុកជាមោឃៈ';
 
   @override
-  String get searchHint => 'ស្វែងរកការពិពណ៌នា ឬកំណត់សម្គាល់';
+  String get searchHint => 'ស្វែងរក';
 
   @override
   String get filterAll => 'ទាំងអស់';
-
-  @override
-  String get showVoided => 'បង្ហាញមោឃៈ';
 
   @override
   String get ledgerEmptyFiltered => 'គ្មានកំណត់ត្រាត្រូវនឹងតម្រងនេះទេ។';
@@ -271,4 +236,243 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get entryNotFound => 'កំណត់ត្រានេះលែងមានទៀតហើយ។';
+
+  @override
+  String get navDashboard => 'សង្ខេប';
+
+  @override
+  String get periodThisMonth => 'ខែនេះ';
+
+  @override
+  String get periodLastMonth => 'ខែមុន';
+
+  @override
+  String get periodLast3Months => '៣ ខែចុងក្រោយ';
+
+  @override
+  String get periodThisYear => 'ឆ្នាំនេះ';
+
+  @override
+  String get cashOnHand => 'សាច់ប្រាក់នៅសល់';
+
+  @override
+  String get cashOnHandHint =>
+      'កំណត់សាច់ប្រាក់ដើមគ្រា ដើម្បីមើលថាអាជីវកម្មមានប្រាក់ប៉ុន្មាននៅពេលនេះ។';
+
+  @override
+  String get openingCash => 'សាច់ប្រាក់ដើមគ្រា';
+
+  @override
+  String get openingCashHelp =>
+      'ចំនួនសាច់ប្រាក់ដែលអាជីវកម្មមាននៅដើមថ្ងៃណាមួយ។ សាច់ប្រាក់នៅសល់ = សាច់ប្រាក់ដើមគ្រា + ប្រាក់ចូល − ប្រាក់ចេញ ចាប់ពីថ្ងៃនោះ។';
+
+  @override
+  String get asOf => 'គិតត្រឹម';
+
+  @override
+  String asOfValue(String amount, String date) {
+    return '$amount គិតត្រឹម $date';
+  }
+
+  @override
+  String get clear => 'សម្អាត';
+
+  @override
+  String get negativeBalanceWarning =>
+      'សាច់ប្រាក់ដែលបានកត់ត្រាតិចជាងសូន្យ។ ប្រហែលជាខ្វះកំណត់ត្រាប្រាក់ចូល ឬសាច់ប្រាក់ដើមគ្រាមិនត្រឹមត្រូវ។';
+
+  @override
+  String vsComparison(String change) {
+    return '$change ធៀបនឹងចំនួនថ្ងៃដូចគ្នាមុននេះ';
+  }
+
+  @override
+  String vsComparisonFull(String change) {
+    return '$change ធៀបនឹងរយៈពេលមុន';
+  }
+
+  @override
+  String get noComparison => 'គ្មានកំណត់ត្រាមុននេះសម្រាប់ប្រៀបធៀប';
+
+  @override
+  String get trendTitle => '៦ ខែចុងក្រោយ';
+
+  @override
+  String get expenseBreakdown => 'ប្រាក់ចេញទៅណាខ្លះ';
+
+  @override
+  String get noExpenses => 'គ្មានការចំណាយក្នុងរយៈពេលនេះទេ។';
+
+  @override
+  String dashboardEmpty(String currency) {
+    return 'គ្មានកំណត់ត្រា $currency ក្នុងរយៈពេលនេះទេ។';
+  }
+
+  @override
+  String otherCurrencyHint(String currency) {
+    return 'មានកំណត់ត្រា $currency ក្នុងរយៈពេលនេះ។';
+  }
+
+  @override
+  String showCurrency(String currency) {
+    return 'បង្ហាញ $currency';
+  }
+
+  @override
+  String get dashboardFootnote =>
+      'គិតតាមសាច់ប្រាក់៖ ប្រាក់ត្រូវបានរាប់នៅថ្ងៃដែលទទួល ឬបង់។ ប្រាក់ដែលម្ចាស់ដាក់ចូល ឬដកចេញ មិនរាប់ជាប្រាក់ចំណេញទេ។';
+
+  @override
+  String get trendSemantics =>
+      'ក្រាហ្វប្រាក់ចូល និងប្រាក់ចេញ សម្រាប់ ៦ ខែចុងក្រោយ។';
+
+  @override
+  String percentOfTotal(int percent) {
+    return '$percent% នៃប្រាក់ចេញ';
+  }
+
+  @override
+  String filterActiveRange(String start, String end) {
+    return '$start – $end';
+  }
+
+  @override
+  String get demoSection => 'សាកល្បង';
+
+  @override
+  String get loadSampleData => 'បញ្ចូលទិន្នន័យគំរូ';
+
+  @override
+  String get loadSampleDataBody =>
+      'បន្ថែមកំណត់ត្រាគំរូរបស់ហាង និងកសិដ្ឋានប្រហែល ៣ ខែ ជាដុល្លារ និងរៀល រួមទាំងសាច់ប្រាក់ដើមគ្រា ដើម្បីសាកល្បងកម្មវិធី។ អាចប្រើបានតែពេលបញ្ជីប្រាក់នៅទទេប៉ុណ្ណោះ។';
+
+  @override
+  String sampleDataLoaded(int count) {
+    return 'បានបន្ថែមកំណត់ត្រាគំរូ $count';
+  }
+
+  @override
+  String get navAsk => 'ជំនួយការ';
+
+  @override
+  String get askTitle => 'ជំនួយការ';
+
+  @override
+  String get askWelcomeTitle => 'សួស្តី!\nតើខ្ញុំអាចជួយអ្វីបាន?';
+
+  @override
+  String get askHint => 'កត់ត្រា ឬសួរ…';
+
+  @override
+  String get askSend => 'ផ្ញើ';
+
+  @override
+  String get askMicTooltip => 'ថតសារជាសំឡេង';
+
+  @override
+  String get askPhotoTooltip => 'រូបថតវិក្កយបត្រ';
+
+  @override
+  String get askTakePhoto => 'ថតរូប';
+
+  @override
+  String get askChoosePhoto => 'ជ្រើសពីរូបថត';
+
+  @override
+  String get askMicDenied =>
+      'មីក្រូហ្វូនត្រូវបានបិទ។ សូមអនុញ្ញាតក្នុងការកំណត់ប្រព័ន្ធ ដើម្បីប្រើសំឡេង។';
+
+  @override
+  String get askThinking => 'កំពុងគិត…';
+
+  @override
+  String askHeard(String text) {
+    return 'បានឮ៖ «$text»';
+  }
+
+  @override
+  String get askProposalTitle =>
+      'នេះជាអ្វីដែលខ្ញុំយល់។ សូមពិនិត្យមុនពេលរក្សាទុក។';
+
+  @override
+  String get askAmountMissing => 'រកមិនឃើញចំនួនទឹកប្រាក់';
+
+  @override
+  String get askCurrencyUnknown =>
+      'មិនបានបញ្ជាក់រូបិយប័ណ្ណ។ អ្នកនឹងជ្រើសនៅអេក្រង់បន្ទាប់។';
+
+  @override
+  String get askNoRecords => 'មិនទាន់មានកំណត់ត្រាក្នុងរយៈពេលនេះទេ។';
+
+  @override
+  String get askCashUnknown =>
+      'មិនដឹងសាច់ប្រាក់ក្នុងដៃទេ។ សូមកំណត់សាច់ប្រាក់ដំបូងក្នុងការកំណត់ជាមុនសិន។';
+
+  @override
+  String askCalculatedFrom(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'គណនាពីកំណត់ត្រា $count',
+      zero: 'មិនបានប្រើកំណត់ត្រា',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get askNewChat => 'ការសន្ទនាថ្មី';
+
+  @override
+  String get askError =>
+      'សូមទោស មានបញ្ហា។ សូមពិនិត្យអ៊ីនធឺណិត ហើយព្យាយាមម្តងទៀត។';
+
+  @override
+  String get askQuota =>
+      'បានដល់កម្រិត AI ឥតគិតថ្លៃហើយ។ សូមរង់ចាំមួយនាទី រួចព្យាយាមម្តងទៀត។';
+
+  @override
+  String get askNotConfigured =>
+      'AI មិនទាន់បានរៀបចំទេ។ សូមដំណើរការកម្មវិធីជាមួយ --dart-define-from-file=env/dev.json។';
+
+  @override
+  String get aiConsentTitle => 'មុនពេលប្រើជំនួយការ';
+
+  @override
+  String get aiConsentBody =>
+      'ដើម្បីយល់ពីអ្នក អត្ថបទ ការថតសំឡេង ឬរូបថតដែលអ្នកផ្ញើ នឹងត្រូវដំណើរការដោយ Google Gemini។ មានតែចំនួនសរុបដែលត្រូវការសម្រាប់ឆ្លើយសំណួរប៉ុណ្ណោះដែលត្រូវបានផ្ញើ មិនមែនបញ្ជីទាំងមូលទេ។ ក្នុងកម្រិតឥតគិតថ្លៃ Google អាចប្រើទិន្នន័យនេះដើម្បីកែលម្អផលិតផលរបស់ខ្លួន ដូច្នេះសូមប្រើទិន្នន័យសាកល្បងសិន។';
+
+  @override
+  String get aiConsentAgree => 'ខ្ញុំយល់ហើយ';
+
+  @override
+  String get proposalReviewHint =>
+      'បំពេញដោយជំនួយការ។ សូមពិនិត្យគ្រប់ចន្លោះ រួចរក្សាទុក។';
+
+  @override
+  String get confirmCurrency => 'សូមជ្រើសរូបិយប័ណ្ណ។';
+
+  @override
+  String get askRecordingFailed =>
+      'មិនអាចរក្សាទុកការថតបានទេ។ សូមព្យាយាមម្តងទៀត។';
+
+  @override
+  String get askTranscribing => 'កំពុងបម្លែងសំឡេងទៅជាអក្សរ…';
+
+  @override
+  String get askTranscribeFailed =>
+      'មិនអាចបម្លែងការថតទៅជាអក្សរបានទេ។ សូមព្យាយាមម្តងទៀត ឬវាយអក្សរ។';
+
+  @override
+  String get askNothingHeard => 'ខ្ញុំមិនឮអ្វីទេ។ សូមព្យាយាមម្តងទៀត។';
+
+  @override
+  String get askListening => 'កំពុងស្តាប់… សូមនិយាយ';
+
+  @override
+  String get askDoneTalking => 'និយាយរួចហើយ';
+
+  @override
+  String askRead(String text) {
+    return 'បានអាន៖ «$text»';
+  }
 }

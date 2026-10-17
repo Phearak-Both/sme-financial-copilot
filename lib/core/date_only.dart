@@ -17,6 +17,17 @@ DateTime fromDateKey(String key) {
 DateTime dateOnly(DateTime dateTime) =>
     DateTime(dateTime.year, dateTime.month, dateTime.day);
 
+/// Calendar-day arithmetic that is safe across daylight-saving changes
+/// (unlike adding a `Duration`).
+DateTime addDays(DateTime date, int days) =>
+    DateTime(date.year, date.month, date.day + days);
+
+/// Whole calendar days from [from] to [to].
+int daysBetween(DateTime from, DateTime to) =>
+    DateTime.utc(to.year, to.month, to.day)
+        .difference(DateTime.utc(from.year, from.month, from.day))
+        .inDays;
+
 /// A range of calendar days: [start] inclusive, [end] exclusive.
 class DateRange {
   DateRange(DateTime start, DateTime end)
