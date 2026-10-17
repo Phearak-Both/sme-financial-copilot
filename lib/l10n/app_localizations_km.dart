@@ -25,7 +25,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get moneyOut => 'ប្រាក់ចេញ';
 
   @override
-  String get profitCash => 'ប្រាក់ចំណេញ (សាច់ប្រាក់)';
+  String get profitCash => 'ប្រាក់ចំណេញ';
 
   @override
   String get netCashFlow => 'លំហូរសាច់ប្រាក់សុទ្ធ';

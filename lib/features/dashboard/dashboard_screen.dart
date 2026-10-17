@@ -159,8 +159,6 @@ class _DashboardBody extends ConsumerWidget {
         ),
         ),
         const SizedBox(height: 24),
-        Text(l10n.trendTitle, style: textTheme.titleMedium),
-        const SizedBox(height: 12),
         TrendChart(buckets: data.trend, currency: data.currency),
         const SizedBox(height: 24),
         Text(l10n.expenseBreakdown, style: textTheme.titleMedium),

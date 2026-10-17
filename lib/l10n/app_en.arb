@@ -5,7 +5,7 @@
   "navSettings": "Settings",
   "moneyIn": "Money in",
   "moneyOut": "Money out",
-  "profitCash": "Profit (cash)",
+  "profitCash": "Profit",
   "netCashFlow": "Net cash flow",
   "summaryFootnote": "Totals are shown per currency. KHR and USD are never added together.",
   "typeIncome": "Income",
