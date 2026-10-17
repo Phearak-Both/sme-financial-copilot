@@ -25,7 +25,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get moneyOut => 'Money out';
 
   @override
-  String get profitCash => 'Profit (cash)';
+  String get profitCash => 'Profit';
 
   @override
   String get netCashFlow => 'Net cash flow';

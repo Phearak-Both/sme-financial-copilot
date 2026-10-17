@@ -131,7 +131,7 @@ abstract class AppLocalizations {
   /// No description provided for @profitCash.
   ///
   /// In en, this message translates to:
-  /// **'Profit (cash)'**
+  /// **'Profit'**
   String get profitCash;
 
   /// No description provided for @netCashFlow.
