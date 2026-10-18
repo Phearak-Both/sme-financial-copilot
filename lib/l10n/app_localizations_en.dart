@@ -413,16 +413,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'AI is not set up. Run the app with --dart-define-from-file=env/dev.json.';
 
   @override
-  String get aiConsentTitle => 'Before using the assistant';
-
-  @override
-  String get aiConsentBody =>
-      'To understand you, the text, voice recording or photo you send is processed by Google Gemini. Only the totals needed to answer a question are sent, never your whole ledger. On the free tier Google may use this data to improve its products, so use test data for now.';
-
-  @override
-  String get aiConsentAgree => 'I understand';
-
-  @override
   String get proposalReviewHint =>
       'Filled in by the assistant. Check every field, then save.';
 

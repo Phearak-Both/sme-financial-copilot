@@ -800,24 +800,6 @@ abstract class AppLocalizations {
   /// **'AI is not set up. Run the app with --dart-define-from-file=env/dev.json.'**
   String get askNotConfigured;
 
-  /// No description provided for @aiConsentTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Before using the assistant'**
-  String get aiConsentTitle;
-
-  /// No description provided for @aiConsentBody.
-  ///
-  /// In en, this message translates to:
-  /// **'To understand you, the text, voice recording or photo you send is processed by Google Gemini. Only the totals needed to answer a question are sent, never your whole ledger. On the free tier Google may use this data to improve its products, so use test data for now.'**
-  String get aiConsentBody;
-
-  /// No description provided for @aiConsentAgree.
-  ///
-  /// In en, this message translates to:
-  /// **'I understand'**
-  String get aiConsentAgree;
-
   /// No description provided for @proposalReviewHint.
   ///
   /// In en, this message translates to:

@@ -50,9 +50,6 @@ final chatsProvider = StreamProvider<List<ChatRow>>(
   (ref) => ref.watch(chatRepositoryProvider).watchChats(),
 );
 
-/// Set once the user agrees that AI input is sent to Gemini.
-const aiConsentSettingKey = 'ai_consent';
-
 sealed class ChatMessage {
   const ChatMessage();
 }
