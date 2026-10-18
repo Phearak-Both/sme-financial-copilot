@@ -87,39 +87,7 @@ class _AskScreenState extends ConsumerState<AskScreen> {
 
   String get _languageCode => Localizations.localeOf(context).languageCode;
 
-  /// Shows the AI notice once. Returns false if the user declines.
-  Future<bool> _ensureConsent() async {
-    final settings = ref.read(settingsStoreProvider);
-    if (await settings.get(aiConsentSettingKey) == 'yes') {
-      return true;
-    }
-    if (!mounted) return false;
-    final l10n = context.l10n;
-    final agreed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        icon: const Icon(Icons.privacy_tip_outlined),
-        title: Text(l10n.aiConsentTitle),
-        content: Text(l10n.aiConsentBody),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(l10n.cancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(l10n.aiConsentAgree),
-          ),
-        ],
-      ),
-    );
-    if (agreed != true) return false;
-    await settings.set(aiConsentSettingKey, 'yes');
-    return true;
-  }
-
   Future<void> _send(CopilotInput input, UserMessage shown) async {
-    if (!await _ensureConsent() || !mounted) return;
     final languageCode = _languageCode;
     final future = ref
         .read(askControllerProvider.notifier)
@@ -147,8 +115,7 @@ class _AskScreenState extends ConsumerState<AskScreen> {
       messenger.showSnackBar(SnackBar(content: Text(l10n.askMicDenied)));
       return;
     }
-    // Audio starts leaving the device while the user is still talking.
-    if (!await _ensureConsent() || !mounted) return;
+    if (!mounted) return;
     // 16 kHz mono 16-bit PCM, streamed so previews can start right away.
     final stream = await _recorder.startStream(
       const RecordConfig(
@@ -233,7 +200,6 @@ class _AskScreenState extends ConsumerState<AskScreen> {
   /// Puts the transcript in the text box so the user can check or fix it
   /// before sending.
   Future<void> _transcribeIntoTextBox(Uint8List audio, String mimeType) async {
-    if (!await _ensureConsent() || !mounted) return;
     final messenger = ScaffoldMessenger.of(context);
     final l10n = context.l10n;
     final languageCode = _languageCode;

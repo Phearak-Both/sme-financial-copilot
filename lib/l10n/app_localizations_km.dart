@@ -411,16 +411,6 @@ class AppLocalizationsKm extends AppLocalizations {
       'AI មិនទាន់បានរៀបចំទេ។ សូមដំណើរការកម្មវិធីជាមួយ --dart-define-from-file=env/dev.json។';
 
   @override
-  String get aiConsentTitle => 'មុនពេលប្រើជំនួយការ';
-
-  @override
-  String get aiConsentBody =>
-      'ដើម្បីយល់ពីអ្នក អត្ថបទ ការថតសំឡេង ឬរូបថតដែលអ្នកផ្ញើ នឹងត្រូវដំណើរការដោយ Google Gemini។ មានតែចំនួនសរុបដែលត្រូវការសម្រាប់ឆ្លើយសំណួរប៉ុណ្ណោះដែលត្រូវបានផ្ញើ មិនមែនបញ្ជីទាំងមូលទេ។ ក្នុងកម្រិតឥតគិតថ្លៃ Google អាចប្រើទិន្នន័យនេះដើម្បីកែលម្អផលិតផលរបស់ខ្លួន ដូច្នេះសូមប្រើទិន្នន័យសាកល្បងសិន។';
-
-  @override
-  String get aiConsentAgree => 'ខ្ញុំយល់ហើយ';
-
-  @override
   String get proposalReviewHint =>
       'បំពេញដោយជំនួយការ។ សូមពិនិត្យគ្រប់ចន្លោះ រួចរក្សាទុក។';
 
