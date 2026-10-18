@@ -342,5 +342,8 @@
   "authWrongCredentialsPhone": "Wrong phone number or password.",
   "authUserExistsPhone": "This phone number already has an account. Log in instead.",
   "askHelloName": "Hello, {name}!",
-  "@askHelloName": {"placeholders": {"name": {"type": "String"}}}
+  "@askHelloName": {"placeholders": {"name": {"type": "String"}}},
+  "saveFailed": "Couldn't save. Check your internet connection and try again.",
+  "loadFailed": "Couldn't load your records. Check your internet connection.",
+  "tryAgain": "Try again"
 }

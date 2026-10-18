@@ -45,8 +45,8 @@ class SettingsScreen extends ConsumerWidget {
             ],
             selected: {current.languageCode},
             onSelectionChanged: (selection) => ref
-                .read(ledgerRepositoryProvider)
-                .setSetting(localeSettingKey, selection.first),
+                .read(settingsStoreProvider)
+                .set(localeSettingKey, selection.first),
           ),
           _SectionHeader(l10n.openingCash),
           Card(
@@ -176,16 +176,28 @@ class _OpeningCashDialogState extends ConsumerState<_OpeningCashDialog> {
       setState(() => _error = l10n.amountError(parsed.error!, widget.currency.code));
       return;
     }
-    await ref.read(ledgerRepositoryProvider).setOpeningBalance(
-          widget.currency,
-          isZero ? 0 : parsed.minor!,
-          _asOf,
-        );
+    try {
+      await ref.read(ledgerRepositoryProvider).setOpeningBalance(
+            widget.currency,
+            isZero ? 0 : parsed.minor!,
+            _asOf,
+          );
+    } catch (_) {
+      if (mounted) setState(() => _error = l10n.saveFailed);
+      return;
+    }
     if (mounted) Navigator.pop(context);
   }
 
   Future<void> _clear() async {
-    await ref.read(ledgerRepositoryProvider).clearOpeningBalance(widget.currency);
+    try {
+      await ref
+          .read(ledgerRepositoryProvider)
+          .clearOpeningBalance(widget.currency);
+    } catch (_) {
+      if (mounted) setState(() => _error = context.l10n.saveFailed);
+      return;
+    }
     if (mounted) Navigator.pop(context);
   }
 

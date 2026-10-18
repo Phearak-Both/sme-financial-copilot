@@ -1,16 +1,15 @@
 import 'dart:typed_data';
 import 'dart:convert';
 
-import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
+import 'package:sme_financial_copilot/data/cloud_store.dart';
 import 'package:sme_financial_copilot/ai/copilot_service.dart';
 import 'package:sme_financial_copilot/ai/gemini_client.dart';
 import 'package:sme_financial_copilot/ai/ocr_client.dart';
 import 'package:sme_financial_copilot/ai/whisper_client.dart';
 import 'package:sme_financial_copilot/core/money/currency.dart';
-import 'package:sme_financial_copilot/data/database.dart';
 import 'package:sme_financial_copilot/data/ledger_repository.dart';
 import 'package:sme_financial_copilot/domain/entry_draft.dart';
 import 'package:sme_financial_copilot/domain/enums.dart';
@@ -34,16 +33,15 @@ http.Response geminiReply(Map<String, dynamic> json) => http.Response.bytes(
 );
 
 void main() {
-  late AppDatabase db;
+  late MemoryCloudStore db;
   late LedgerRepository repo;
   final now = DateTime(2026, 10, 16, 9);
 
   setUp(() {
-    db = AppDatabase(NativeDatabase.memory());
+    db = MemoryCloudStore();
     repo = LedgerRepository(db, clock: () => now);
   });
 
-  tearDown(() => db.close());
 
   CopilotService service(List<Map<String, dynamic>> replies) {
     final queue = [...replies];

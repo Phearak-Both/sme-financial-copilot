@@ -1,162 +1,152 @@
-import 'package:drift/drift.dart';
-import 'package:drift_flutter/drift_flutter.dart';
+/// Row types for the cloud ledger (Supabase tables, see
+/// `supabase/migrations/0001_cloud_ledger.sql`). JSON keys are the table's
+/// snake_case column names.
+library;
+
+import 'dart:convert';
 
 import '../domain/enums.dart';
-import 'default_categories.dart';
 
-part 'database.g.dart';
+DateTime _time(Object? value) => DateTime.parse(value! as String).toLocal();
 
-@DataClassName('CategoryRow')
-class Categories extends Table {
-  TextColumn get id => text()();
-  TextColumn get kind => textEnum<CategoryKind>()();
-  TextColumn get nameEn => text()();
-  TextColumn get nameKm => text()();
-  BoolColumn get isSystem => boolean().withDefault(const Constant(false))();
-  BoolColumn get isArchived => boolean().withDefault(const Constant(false))();
-  IntColumn get sortOrder => integer().withDefault(const Constant(0))();
+/// Enum names are stored as-is, e.g. `ownerWithdrawal`.
+T _enum<T extends Enum>(List<T> values, Object? name) =>
+    values.byName(name! as String);
 
-  @override
-  Set<Column> get primaryKey => {id};
+T? _enumOrNull<T extends Enum>(List<T> values, Object? name) =>
+    name == null ? null : values.byName(name as String);
+
+class CategoryRow {
+  const CategoryRow({
+    required this.id,
+    required this.kind,
+    required this.nameEn,
+    required this.nameKm,
+    this.isSystem = true,
+    this.isArchived = false,
+    this.sortOrder = 0,
+  });
+
+  final String id;
+  final CategoryKind kind;
+  final String nameEn;
+  final String nameKm;
+  final bool isSystem;
+  final bool isArchived;
+  final int sortOrder;
 }
 
-@DataClassName('EntryRow')
-class LedgerEntries extends Table {
-  /// Client-generated UUID, so entries created offline sync idempotently.
-  TextColumn get id => text()();
-  TextColumn get type => textEnum<EntryType>()();
+class EntryRow {
+  const EntryRow({
+    required this.id,
+    required this.type,
+    required this.amountMinor,
+    required this.currency,
+    required this.occurredOn,
+    this.categoryId,
+    this.description = '',
+    this.note,
+    this.paymentMethod,
+    this.source = EntrySource.manual,
+    this.status = EntryStatus.active,
+    this.voidReason,
+    this.version = 1,
+    required this.createdAt,
+    required this.updatedAt,
+  });
 
-  /// Integer minor units: USD cents or whole KHR riel. Always positive;
-  /// the direction comes from [type].
-  // Referencing the column inside its own check is drift's documented idiom.
-  IntColumn get amountMinor =>
-      // ignore: recursive_getters
-      integer().check(amountMinor.isBiggerThanValue(0))();
+  factory EntryRow.fromJson(Map<String, dynamic> json) => EntryRow(
+        id: json['id'] as String,
+        type: _enum(EntryType.values, json['type']),
+        amountMinor: (json['amount_minor'] as num).toInt(),
+        currency: json['currency'] as String,
+        occurredOn: json['occurred_on'] as String,
+        categoryId: json['category_id'] as String?,
+        description: json['description'] as String? ?? '',
+        note: json['note'] as String?,
+        paymentMethod: _enumOrNull(PaymentMethod.values, json['payment_method']),
+        source: _enum(EntrySource.values, json['source'] ?? 'manual'),
+        status: _enum(EntryStatus.values, json['status'] ?? 'active'),
+        voidReason: json['void_reason'] as String?,
+        version: (json['version'] as num?)?.toInt() ?? 1,
+        createdAt: _time(json['created_at']),
+        updatedAt: _time(json['updated_at']),
+      );
 
-  /// ISO currency code, `USD` or `KHR`.
-  TextColumn get currency => text().withLength(min: 3, max: 3)();
+  final String id;
+  final EntryType type;
 
-  /// Calendar date `yyyy-MM-dd`.
-  TextColumn get occurredOn => text().withLength(min: 10, max: 10)();
-  TextColumn get categoryId =>
-      text().nullable().references(Categories, #id)();
-  TextColumn get description => text().withDefault(const Constant(''))();
-  TextColumn get note => text().nullable()();
-  TextColumn get paymentMethod => textEnum<PaymentMethod>().nullable()();
-  TextColumn get source =>
-      textEnum<EntrySource>().withDefault(Constant(EntrySource.manual.name))();
-  TextColumn get status =>
-      textEnum<EntryStatus>().withDefault(Constant(EntryStatus.active.name))();
-  TextColumn get voidReason => text().nullable()();
-  IntColumn get version => integer().withDefault(const Constant(1))();
-  DateTimeColumn get createdAt => dateTime()();
-  DateTimeColumn get updatedAt => dateTime()();
+  /// Integer minor units: USD cents or whole riel. Always positive.
+  final int amountMinor;
 
-  @override
-  Set<Column> get primaryKey => {id};
-}
-
-/// Append-only history: one snapshot per create, edit or void.
-@DataClassName('RevisionRow')
-class EntryRevisions extends Table {
-  IntColumn get id => integer().autoIncrement()();
-  TextColumn get entryId => text().references(LedgerEntries, #id)();
-  IntColumn get version => integer()();
-  TextColumn get kind => textEnum<RevisionKind>()();
-
-  /// JSON snapshot of the entry after this change.
-  TextColumn get snapshot => text()();
-  DateTimeColumn get changedAt => dateTime()();
-}
-
-/// Cash the business held at the start of [asOf], one row per currency.
-/// The cash balance is only shown for currencies that have one.
-@DataClassName('OpeningBalanceRow')
-class OpeningBalances extends Table {
-  TextColumn get currency => text().withLength(min: 3, max: 3)();
-  IntColumn get amountMinor => integer()();
+  /// `USD` or `KHR`.
+  final String currency;
 
   /// `yyyy-MM-dd`.
-  TextColumn get asOf => text().withLength(min: 10, max: 10)();
-  DateTimeColumn get updatedAt => dateTime()();
-
-  @override
-  Set<Column> get primaryKey => {currency};
+  final String occurredOn;
+  final String? categoryId;
+  final String description;
+  final String? note;
+  final PaymentMethod? paymentMethod;
+  final EntrySource source;
+  final EntryStatus status;
+  final String? voidReason;
+  final int version;
+  final DateTime createdAt;
+  final DateTime updatedAt;
 }
 
-/// Simple key–value app settings (e.g. language).
-@DataClassName('SettingRow')
-class AppSettings extends Table {
-  TextColumn get key => text()();
-  TextColumn get value => text()();
+class RevisionRow {
+  const RevisionRow({
+    required this.id,
+    required this.entryId,
+    required this.version,
+    required this.kind,
+    required this.snapshot,
+    required this.changedAt,
+  });
 
-  @override
-  Set<Column> get primaryKey => {key};
+  factory RevisionRow.fromJson(Map<String, dynamic> json) => RevisionRow(
+        id: (json['id'] as num).toInt(),
+        entryId: json['entry_id'] as String,
+        version: (json['version'] as num).toInt(),
+        kind: _enum(RevisionKind.values, json['kind']),
+        snapshot: json['snapshot'] is String
+            ? json['snapshot'] as String
+            : jsonEncode(json['snapshot']),
+        changedAt: _time(json['changed_at']),
+      );
+
+  final int id;
+  final String entryId;
+  final int version;
+  final RevisionKind kind;
+
+  /// JSON of the entry row after this change (snake_case keys).
+  final String snapshot;
+  final DateTime changedAt;
 }
 
 /// An assistant conversation, kept so it can be reopened from history.
-@DataClassName('ChatRow')
-class Chats extends Table {
-  TextColumn get id => text()();
+class ChatRow {
+  const ChatRow({
+    required this.id,
+    required this.title,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory ChatRow.fromJson(Map<String, dynamic> json) => ChatRow(
+        id: json['id'] as String,
+        title: json['title'] as String? ?? '',
+        createdAt: _time(json['created_at']),
+        updatedAt: _time(json['updated_at']),
+      );
+
+  final String id;
 
   /// From the first thing the user sent; empty for a photo without text.
-  TextColumn get title => text()();
-  DateTimeColumn get createdAt => dateTime()();
-  DateTimeColumn get updatedAt => dateTime()();
-
-  @override
-  Set<Column> get primaryKey => {id};
-}
-
-@DataClassName('ChatMessageRow')
-class ChatMessages extends Table {
-  IntColumn get id => integer().autoIncrement()();
-  TextColumn get chatId =>
-      text().references(Chats, #id, onDelete: KeyAction.cascade)();
-  IntColumn get position => integer()();
-
-  /// JSON from `chat_codec.dart`.
-  TextColumn get data => text()();
-}
-
-@DriftDatabase(
-  tables: [
-    Categories,
-    LedgerEntries,
-    EntryRevisions,
-    OpeningBalances,
-    AppSettings,
-    Chats,
-    ChatMessages,
-  ],
-)
-class AppDatabase extends _$AppDatabase {
-  AppDatabase([QueryExecutor? executor])
-      : super(executor ?? driftDatabase(name: 'sme_copilot'));
-
-  @override
-  int get schemaVersion => 3;
-
-  @override
-  MigrationStrategy get migration => MigrationStrategy(
-        onCreate: (m) async {
-          await m.createAll();
-          await m.createIndex(Index(
-            'ledger_entries_occurred_on',
-            'CREATE INDEX ledger_entries_occurred_on '
-                'ON ledger_entries (occurred_on DESC, created_at DESC)',
-          ));
-          await batch((b) => b.insertAll(categories, defaultCategories()));
-        },
-        onUpgrade: (m, from, to) async {
-          if (from < 2) await m.createTable(openingBalances);
-          if (from < 3) {
-            await m.createTable(chats);
-            await m.createTable(chatMessages);
-          }
-        },
-        beforeOpen: (details) async {
-          await customStatement('PRAGMA foreign_keys = ON');
-        },
-      );
+  final String title;
+  final DateTime createdAt;
+  final DateTime updatedAt;
 }

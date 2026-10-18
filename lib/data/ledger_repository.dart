@@ -1,6 +1,5 @@
-import 'dart:convert';
+import 'dart:async';
 
-import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
 
 import '../core/date_only.dart';
@@ -9,7 +8,9 @@ import '../domain/entry_draft.dart';
 import '../domain/enums.dart';
 import '../finance_core/ledger_math.dart';
 import '../finance_core/period_math.dart';
+import 'cloud_store.dart';
 import 'database.dart';
+import 'default_categories.dart';
 
 /// Filters for the ledger list. All fields are optional and combine with AND.
 class LedgerFilter {
@@ -77,68 +78,95 @@ class InvalidDraftException implements Exception {
   String toString() => 'InvalidDraftException($errors)';
 }
 
-/// The only code path that writes ledger entries. Every write validates the
-/// draft and appends a revision snapshot in the same database transaction.
+/// The only code path that writes ledger entries. Entries live in the cloud
+/// (one account's rows only, enforced by Row-Level Security); this class
+/// keeps them in memory while the app runs, so screens update instantly.
+///
+/// Every write validates the draft first. The database itself bumps the
+/// version, freezes voided entries and records the revision history.
 class LedgerRepository {
-  LedgerRepository(this._db, {DateTime Function()? clock, Uuid? uuid})
+  LedgerRepository(this._store, {DateTime Function()? clock, Uuid? uuid})
       : _clock = clock ?? DateTime.now,
         _uuid = uuid ?? const Uuid();
 
-  final AppDatabase _db;
+  final CloudStore _store;
   final DateTime Function() _clock;
   final Uuid _uuid;
 
-  // ---------------------------------------------------------------- reads
+  late final _entries = _Live<List<EntryRow>>(
+    () async => [
+      for (final row in await _store.select('ledger_entries'))
+        EntryRow.fromJson(row),
+    ],
+  );
 
-  Stream<List<CategoryRow>> watchCategories() {
-    final query = _db.select(_db.categories)
-      ..where((c) => c.isArchived.equals(false))
-      ..orderBy([
-        (c) => OrderingTerm(expression: c.kind),
-        (c) => OrderingTerm(expression: c.sortOrder),
-      ]);
-    return query.watch();
+  late final _openings = _Live<List<OpeningBalance>>(_loadOpenings);
+
+  /// Ids of entries whose history just changed.
+  final _revised = StreamController<String>.broadcast();
+
+  /// Reloads everything from the cloud, e.g. to pick up changes made on
+  /// another device.
+  Future<void> refresh() async {
+    await _entries.reload();
+    await _openings.reload();
   }
 
-  Stream<List<EntryRow>> watchEntries(LedgerFilter filter, {int? limit}) {
-    final query = _db.select(_db.ledgerEntries)
-      ..where((e) {
-        final conditions = <Expression<bool>>[];
-        // Voided entries are listed with the rest; [voidedOnly] shows them
-        // alone. (Totals never count them; that's done in ledger_math.)
-        if (filter.voidedOnly) {
-          conditions.add(e.status.equalsValue(EntryStatus.voided));
-        }
-        if (filter.type != null) conditions.add(e.type.equalsValue(filter.type));
-        if (filter.currency != null) {
-          conditions.add(e.currency.equals(filter.currency!.code));
-        }
-        if (filter.categoryId != null) {
-          conditions.add(e.categoryId.equals(filter.categoryId!));
-        }
-        if (filter.range != null) {
-          conditions
-            ..add(e.occurredOn.isBiggerOrEqualValue(filter.range!.startKey))
-            ..add(e.occurredOn.isSmallerThanValue(filter.range!.endKey));
-        }
-        final text = filter.query.trim();
-        if (text.isNotEmpty) {
-          final pattern = '%${_escapeLike(text)}%';
-          conditions.add(
-            e.description.like(pattern, escapeChar: r'\') |
-                e.note.like(pattern, escapeChar: r'\'),
-          );
-        }
-        return conditions.isEmpty
-            ? const Constant(true)
-            : conditions.reduce((a, b) => a & b);
-      })
-      ..orderBy([
-        (e) => OrderingTerm.desc(e.occurredOn),
-        (e) => OrderingTerm.desc(e.createdAt),
-      ]);
-    if (limit != null) query.limit(limit);
-    return query.watch();
+  void dispose() {
+    _entries.close();
+    _openings.close();
+    _revised.close();
+  }
+
+  // ---------------------------------------------------------------- reads
+
+  /// Categories are built in, the same for every account.
+  Stream<List<CategoryRow>> watchCategories() => Stream.value(_categories);
+
+  static final _categories = defaultCategories()
+      .where((c) => !c.isArchived)
+      .toList()
+    ..sort((a, b) => a.kind != b.kind
+        ? a.kind.index.compareTo(b.kind.index)
+        : a.sortOrder.compareTo(b.sortOrder));
+
+  Stream<List<EntryRow>> watchEntries(LedgerFilter filter, {int? limit}) =>
+      _entries.watch().map((rows) => _filter(rows, filter, limit));
+
+  static List<EntryRow> _filter(
+    List<EntryRow> rows,
+    LedgerFilter filter,
+    int? limit,
+  ) {
+    final text = filter.query.trim().toLowerCase();
+    final matches = rows.where((e) {
+      // Voided entries are listed with the rest; [voidedOnly] shows them
+      // alone. (Totals never count them; that's done in ledger_math.)
+      if (filter.voidedOnly && e.status != EntryStatus.voided) return false;
+      if (filter.type != null && e.type != filter.type) return false;
+      if (filter.currency != null && e.currency != filter.currency!.code) {
+        return false;
+      }
+      if (filter.categoryId != null && e.categoryId != filter.categoryId) {
+        return false;
+      }
+      if (filter.range != null && !filter.range!.containsKey(e.occurredOn)) {
+        return false;
+      }
+      if (text.isNotEmpty &&
+          !e.description.toLowerCase().contains(text) &&
+          !(e.note?.toLowerCase().contains(text) ?? false)) {
+        return false;
+      }
+      return true;
+    }).toList()
+      ..sort((a, b) {
+        final byDate = b.occurredOn.compareTo(a.occurredOn);
+        return byDate != 0 ? byDate : b.createdAt.compareTo(a.createdAt);
+      });
+    return limit == null || matches.length <= limit
+        ? matches
+        : matches.sublist(0, limit);
   }
 
   /// Entries in [range], for calculations. Voided ones are included; the
@@ -147,155 +175,140 @@ class LedgerRepository {
       watchEntries(LedgerFilter(range: range))
           .map((rows) => rows.map(toLedgerEntry).toList());
 
-  Stream<EntryRow?> watchEntry(String id) =>
-      (_db.select(_db.ledgerEntries)..where((e) => e.id.equals(id)))
-          .watchSingleOrNull();
+  Stream<EntryRow?> watchEntry(String id) => _entries
+      .watch()
+      .map((rows) => rows.where((e) => e.id == id).firstOrNull);
 
-  Stream<List<RevisionRow>> watchRevisions(String entryId) =>
-      (_db.select(_db.entryRevisions)
-            ..where((r) => r.entryId.equals(entryId))
-            ..orderBy([(r) => OrderingTerm.desc(r.id)]))
-          .watch();
+  /// Newest first.
+  Stream<List<RevisionRow>> watchRevisions(String entryId) async* {
+    Future<List<RevisionRow>> load() async => [
+          for (final row in await _store.select(
+            'entry_revisions',
+            where: {'entry_id': entryId},
+          ))
+            RevisionRow.fromJson(row),
+        ]..sort((a, b) => b.id.compareTo(a.id));
+    yield await load();
+    await for (final _ in _revised.stream.where((id) => id == entryId)) {
+      yield await load();
+    }
+  }
 
   /// Active entries with the same type, amount, currency and date as [draft].
   /// Used to warn the user before saving a likely duplicate.
   Future<List<EntryRow>> findPossibleDuplicates(
     EntryDraft draft, {
     String? excludeId,
-  }) {
-    final query = _db.select(_db.ledgerEntries)
-      ..where((e) {
-        var condition = e.status.equalsValue(EntryStatus.active) &
-            e.type.equalsValue(draft.type) &
-            e.amountMinor.equals(draft.amountMinor) &
-            e.currency.equals(draft.currency.code) &
-            e.occurredOn.equals(draft.occurredOnKey);
-        if (excludeId != null) condition = condition & e.id.equals(excludeId).not();
-        return condition;
-      });
-    return query.get();
-  }
+  }) async => [
+        for (final e in await _entries.get())
+          if (e.status == EntryStatus.active &&
+              e.type == draft.type &&
+              e.amountMinor == draft.amountMinor &&
+              e.currency == draft.currency.code &&
+              e.occurredOn == draft.occurredOnKey &&
+              e.id != excludeId)
+            e,
+      ];
 
   // --------------------------------------------------------------- writes
 
-  Future<String> create(EntryDraft draft) {
+  Future<String> create(EntryDraft draft) async {
     _validate(draft);
     final id = _uuid.v4();
-    final now = _clock();
-    return _db.transaction(() async {
-      await _db.into(_db.ledgerEntries).insert(
-            LedgerEntriesCompanion.insert(
-              id: id,
-              type: draft.type,
-              amountMinor: draft.amountMinor,
-              currency: draft.currency.code,
-              occurredOn: draft.occurredOnKey,
-              categoryId: Value(_categoryFor(draft)),
-              description: Value(draft.description.trim()),
-              note: Value(_blankToNull(draft.note)),
-              paymentMethod: Value(draft.paymentMethod),
-              source: Value(draft.source),
-              createdAt: now,
-              updatedAt: now,
-            ),
-          );
-      await _recordRevision(id, RevisionKind.create, now);
-      return id;
+    final row = await _store.insert('ledger_entries', {
+      'id': id,
+      ..._fields(draft),
+      'source': draft.source.name,
     });
+    await _saved(EntryRow.fromJson(row));
+    return id;
   }
 
-  Future<void> update(String id, EntryDraft draft) {
+  Future<void> update(String id, EntryDraft draft) async {
     _validate(draft);
-    final now = _clock();
-    return _db.transaction(() async {
-      final existing = await _requireActive(id);
-      await (_db.update(_db.ledgerEntries)..where((e) => e.id.equals(id)))
-          .write(
-        LedgerEntriesCompanion(
-          type: Value(draft.type),
-          amountMinor: Value(draft.amountMinor),
-          currency: Value(draft.currency.code),
-          occurredOn: Value(draft.occurredOnKey),
-          categoryId: Value(_categoryFor(draft)),
-          description: Value(draft.description.trim()),
-          note: Value(_blankToNull(draft.note)),
-          paymentMethod: Value(draft.paymentMethod),
-          version: Value(existing.version + 1),
-          updatedAt: Value(now),
-        ),
-      );
-      await _recordRevision(id, RevisionKind.edit, now);
-    });
+    await _requireActive(id);
+    final row = await _store.update(
+      'ledger_entries',
+      {'id': id},
+      _fields(draft),
+    );
+    await _saved(EntryRow.fromJson(row));
   }
 
   /// Voids an entry. Voided entries stay in the database and history but are
   /// excluded from every total. Nothing is ever hard-deleted.
-  Future<void> voidEntry(String id, {String? reason}) {
-    final now = _clock();
-    return _db.transaction(() async {
-      final existing = await _requireActive(id);
-      await (_db.update(_db.ledgerEntries)..where((e) => e.id.equals(id)))
-          .write(
-        LedgerEntriesCompanion(
-          status: const Value(EntryStatus.voided),
-          voidReason: Value(_blankToNull(reason)),
-          version: Value(existing.version + 1),
-          updatedAt: Value(now),
-        ),
-      );
-      await _recordRevision(id, RevisionKind.voided, now);
+  Future<void> voidEntry(String id, {String? reason}) async {
+    await _requireActive(id);
+    final row = await _store.update('ledger_entries', {'id': id}, {
+      'status': EntryStatus.voided.name,
+      'void_reason': _blankToNull(reason),
     });
+    await _saved(EntryRow.fromJson(row));
+  }
+
+  Map<String, dynamic> _fields(EntryDraft draft) => {
+        'type': draft.type.name,
+        'amount_minor': draft.amountMinor,
+        'currency': draft.currency.code,
+        'occurred_on': draft.occurredOnKey,
+        'category_id': _categoryFor(draft),
+        'description': draft.description.trim(),
+        'note': _blankToNull(draft.note),
+        'payment_method': draft.paymentMethod?.name,
+      };
+
+  Future<void> _saved(EntryRow row) async {
+    final current = await _entries.get();
+    _entries.set([
+      for (final e in current)
+        if (e.id != row.id) e,
+      row,
+    ]);
+    _revised.add(row.id);
   }
 
   // ------------------------------------------------------- opening cash
 
-  Stream<List<OpeningBalance>> watchOpeningBalances() =>
-      _db.select(_db.openingBalances).watch().map((rows) => [
-            for (final row in rows)
-              OpeningBalance(
-                currency: Currency.fromCode(row.currency),
-                amountMinor: row.amountMinor,
-                asOf: row.asOf,
-              ),
-          ]);
+  Stream<List<OpeningBalance>> watchOpeningBalances() => _openings.watch();
+
+  Future<List<OpeningBalance>> _loadOpenings() async => [
+        for (final row in await _store.select('opening_balances'))
+          OpeningBalance(
+            currency: Currency.fromCode(row['currency'] as String),
+            amountMinor: (row['amount_minor'] as num).toInt(),
+            asOf: row['as_of'] as String,
+          ),
+      ];
 
   /// Sets the cash held at the start of [asOf]. Zero is a valid balance.
   Future<void> setOpeningBalance(
     Currency currency,
     int amountMinor,
     DateTime asOf,
-  ) {
+  ) async {
     if (amountMinor < 0) {
       throw ArgumentError.value(amountMinor, 'amountMinor', 'must be >= 0');
     }
     if (dateOnly(asOf).isAfter(dateOnly(_clock()))) {
       throw ArgumentError.value(asOf, 'asOf', 'cannot be in the future');
     }
-    return _db.into(_db.openingBalances).insertOnConflictUpdate(
-          OpeningBalancesCompanion.insert(
-            currency: currency.code,
-            amountMinor: amountMinor,
-            asOf: toDateKey(asOf),
-            updatedAt: _clock(),
-          ),
-        );
+    await _store.upsert(
+      'opening_balances',
+      {
+        'currency': currency.code,
+        'amount_minor': amountMinor,
+        'as_of': toDateKey(asOf),
+        'updated_at': _clock().toUtc().toIso8601String(),
+      },
+      onConflict: 'user_id,currency',
+    );
+    await _openings.reload();
   }
 
-  Future<void> clearOpeningBalance(Currency currency) =>
-      (_db.delete(_db.openingBalances)
-            ..where((b) => b.currency.equals(currency.code)))
-          .go();
-
-  // ------------------------------------------------------------- settings
-
-  Stream<String?> watchSetting(String key) =>
-      (_db.select(_db.appSettings)..where((s) => s.key.equals(key)))
-          .watchSingleOrNull()
-          .map((row) => row?.value);
-
-  Future<void> setSetting(String key, String value) => _db
-      .into(_db.appSettings)
-      .insertOnConflictUpdate(AppSettingsCompanion.insert(key: key, value: value));
+  Future<void> clearOpeningBalance(Currency currency) async {
+    await _store.delete('opening_balances', {'currency': currency.code});
+    await _openings.reload();
+  }
 
   // -------------------------------------------------------------- helpers
 
@@ -305,29 +318,12 @@ class LedgerRepository {
   }
 
   Future<EntryRow> _requireActive(String id) async {
-    final row = await (_db.select(_db.ledgerEntries)
-          ..where((e) => e.id.equals(id)))
-        .getSingleOrNull();
+    final row = (await _entries.get()).where((e) => e.id == id).firstOrNull;
     if (row == null) throw StateError('Entry $id not found');
     if (row.status == EntryStatus.voided) {
       throw StateError('Entry $id is voided and cannot be changed');
     }
     return row;
-  }
-
-  Future<void> _recordRevision(String id, RevisionKind kind, DateTime at) async {
-    final row = await (_db.select(_db.ledgerEntries)
-          ..where((e) => e.id.equals(id)))
-        .getSingle();
-    await _db.into(_db.entryRevisions).insert(
-          EntryRevisionsCompanion.insert(
-            entryId: id,
-            version: row.version,
-            kind: kind,
-            snapshot: jsonEncode(row.toJson()),
-            changedAt: at,
-          ),
-        );
   }
 
   static String? _categoryFor(EntryDraft draft) =>
@@ -337,11 +333,69 @@ class LedgerRepository {
     final trimmed = value?.trim();
     return (trimmed == null || trimmed.isEmpty) ? null : trimmed;
   }
+}
 
-  static String _escapeLike(String text) => text
-      .replaceAll(r'\', r'\\')
-      .replaceAll('%', r'\%')
-      .replaceAll('_', r'\_');
+/// A value loaded from the cloud once, then kept current by this app's own
+/// writes. Each listener gets the latest value first, then every change.
+class _Live<T> {
+  _Live(this._load);
+
+  final Future<T> Function() _load;
+  final _changes = StreamController<T>.broadcast();
+  T? _value;
+  Future<T>? _loading;
+
+  Future<T> get() {
+    final value = _value;
+    if (value != null) return Future.value(value);
+    return _loading ??= _load().then(
+      (v) {
+        _value = v;
+        return v;
+      },
+      onError: (Object e) {
+        // Let the next listener try again, e.g. after reconnecting.
+        _loading = null;
+        throw e;
+      },
+    );
+  }
+
+  Future<void> reload() async {
+    _loading = null;
+    set(await _load());
+  }
+
+  void set(T value) {
+    _value = value;
+    _loading = Future.value(value);
+    _changes.add(value);
+  }
+
+  Stream<T> watch() {
+    late final StreamController<T> out;
+    StreamSubscription<T>? sub;
+    out = StreamController<T>(
+      onListen: () {
+        sub = _changes.stream.listen(out.add);
+        get().then(
+          (_) {
+            if (!out.isClosed) out.add(_value as T);
+          },
+          onError: (Object e, StackTrace s) {
+            if (!out.isClosed) out.addError(e, s);
+          },
+        );
+      },
+      onCancel: () async {
+        await sub?.cancel();
+        await out.close();
+      },
+    );
+    return out.stream;
+  }
+
+  void close() => _changes.close();
 }
 
 LedgerEntry toLedgerEntry(EntryRow row) => LedgerEntry(

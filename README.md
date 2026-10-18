@@ -5,8 +5,8 @@ Owners record income and expenses by typing, speaking or photographing a
 receipt, and see where their money goes. KHR and USD are tracked side by side
 and are never mixed.
 
-Built with Flutter. The ledger works fully offline; the AI assistant is
-optional.
+Built with Flutter and Supabase. Each account's records are stored in the
+cloud, private to that account; the AI assistant is optional.
 
 ## Features
 
@@ -50,8 +50,11 @@ Flutter app ──────────────► Gemini API          un
                               POST /ocr         Tesseract 5, khm + eng
 ```
 
-All records live on the device in SQLite (drift). Only the text, audio or
-photo you send to the assistant leaves the device.
+Records (entries, edit history, opening cash and assistant chats) live in
+Supabase Postgres. Row-Level Security limits every table to the signed-in
+user's own rows, and the edit history is written by a database trigger so it
+can't be altered. Device preferences such as the language stay on the device.
+The schema is in [`supabase/migrations`](supabase/migrations).
 
 ## Getting started
 
@@ -66,7 +69,6 @@ photo you send to the assistant leaves the device.
 
 ```bash
 flutter pub get
-dart run build_runner build      # generates lib/data/database.g.dart
 cp env/dev.example.json env/dev.json
 flutter run --dart-define-from-file=env/dev.json
 ```
@@ -83,6 +85,13 @@ flutter run --dart-define-from-file=env/dev.json
 
 Without these, the ledger, dashboard and export still work; the assistant
 shows a setup notice, and sign-in is skipped when Supabase isn't set.
+
+### Set up Supabase
+
+Create a project, then run
+[`supabase/migrations/0001_cloud_ledger.sql`](supabase/migrations/0001_cloud_ledger.sql)
+once in **SQL Editor**. For phone sign-up without SMS, turn off
+**Authentication → Sign In / Providers → Email → Confirm email**.
 
 ### Run the speech/OCR service
 
@@ -119,9 +128,11 @@ lib/
   core/          money (integer minor units, parsing, formatting), dates
   domain/        entry types, drafts, validation, AI proposals
   finance_core/  deterministic calculations, the single source of totals
-  data/          drift database, default categories, ledger repository
+  data/          cloud store, row models, ledger and chat repositories
   features/      ask, ledger, dashboard, entry form, settings
   l10n/          app_km.arb and app_en.arb
+supabase/
+  migrations/    database schema and access rules
 services/
   whisper/       speech-to-text and OCR service (FastAPI, Docker)
 test/            unit tests

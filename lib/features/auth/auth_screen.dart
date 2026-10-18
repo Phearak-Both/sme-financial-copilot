@@ -383,8 +383,8 @@ class _LanguageButton extends ConsumerWidget {
     final other = context.isKhmer ? 'en' : 'km';
     return TextButton.icon(
       onPressed: () => ref
-          .read(ledgerRepositoryProvider)
-          .setSetting(localeSettingKey, other),
+          .read(settingsStoreProvider)
+          .set(localeSettingKey, other),
       // Flag of the language you switch to.
       icon: Text(
         other == 'en' ? '🇬🇧' : '🇰🇭',

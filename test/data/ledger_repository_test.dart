@@ -1,26 +1,24 @@
 import 'dart:convert';
 
-import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sme_financial_copilot/data/cloud_store.dart';
 import 'package:sme_financial_copilot/core/date_only.dart';
 import 'package:sme_financial_copilot/core/money/currency.dart';
-import 'package:sme_financial_copilot/data/database.dart';
 import 'package:sme_financial_copilot/data/ledger_repository.dart';
 import 'package:sme_financial_copilot/domain/entry_draft.dart';
 import 'package:sme_financial_copilot/domain/enums.dart';
 import 'package:sme_financial_copilot/finance_core/ledger_math.dart';
 
 void main() {
-  late AppDatabase db;
+  late MemoryCloudStore db;
   late LedgerRepository repo;
   final now = DateTime(2026, 10, 16, 9);
 
   setUp(() {
-    db = AppDatabase(NativeDatabase.memory());
+    db = MemoryCloudStore();
     repo = LedgerRepository(db, clock: () => now);
   });
 
-  tearDown(() => db.close());
 
   EntryDraft expense(int cents, {String description = 'Fertilizer'}) =>
       EntryDraft(
@@ -66,7 +64,7 @@ void main() {
     final revisions = await repo.watchRevisions(id).first;
     expect(revisions.map((r) => r.kind), [RevisionKind.edit, RevisionKind.create]);
     final original = jsonDecode(revisions.last.snapshot) as Map<String, dynamic>;
-    expect(original['amountMinor'], 5000);
+    expect(original['amount_minor'], 5000);
   });
 
   test('voided entries leave totals but stay in history', () async {
@@ -158,5 +156,15 @@ void main() {
         throwsArgumentError);
     expect(() => repo.setOpeningBalance(Currency.usd, 1, DateTime(2026, 10, 17)),
         throwsArgumentError);
+  });
+
+  test('a failed save while offline changes nothing', () async {
+    final id = await repo.create(expense(5000));
+    db.failWith = Exception('offline');
+    await expectLater(repo.create(expense(100)), throwsException);
+    await expectLater(repo.voidEntry(id), throwsException);
+    db.failWith = null;
+    final rows = await repo.watchEntries(const LedgerFilter()).first;
+    expect(rows.map((e) => (e.id, e.status)), [(id, EntryStatus.active)]);
   });
 }

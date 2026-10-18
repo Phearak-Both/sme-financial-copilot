@@ -90,9 +90,8 @@ class _EntryFormScreenState extends ConsumerState<EntryFormScreen> {
 
   Future<void> _loadLastCurrency() async {
     final code = await ref
-        .read(ledgerRepositoryProvider)
-        .watchSetting(lastCurrencySettingKey)
-        .first;
+        .read(settingsStoreProvider)
+        .get(lastCurrencySettingKey);
     if (!mounted || code == null) return;
     setState(() => _currency = Currency.fromCode(code));
   }
@@ -177,7 +176,9 @@ class _EntryFormScreenState extends ConsumerState<EntryFormScreen> {
       } else {
         await repo.create(draft);
       }
-      await repo.setSetting(lastCurrencySettingKey, _currency.code);
+      await ref
+          .read(settingsStoreProvider)
+          .set(lastCurrencySettingKey, _currency.code);
 
       if (!mounted) return;
       final messenger = ScaffoldMessenger.of(context);
@@ -190,7 +191,7 @@ class _EntryFormScreenState extends ConsumerState<EntryFormScreen> {
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(l10n.somethingWrong)));
+            .showSnackBar(SnackBar(content: Text(l10n.saveFailed)));
       }
     } finally {
       if (mounted) setState(() => _saving = false);

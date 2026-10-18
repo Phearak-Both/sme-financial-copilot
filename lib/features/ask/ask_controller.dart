@@ -37,9 +37,13 @@ final copilotServiceProvider = Provider<CopilotService>(
   ),
 );
 
-final chatRepositoryProvider = Provider<ChatRepository>(
-  (ref) => ChatRepository(ref.watch(databaseProvider)),
-);
+/// Rebuilt for each signed-in user, like the ledger.
+final chatRepositoryProvider = Provider<ChatRepository>((ref) {
+  ref.watch(currentUserIdProvider);
+  final repo = ChatRepository(ref.watch(cloudStoreProvider));
+  ref.onDispose(repo.dispose);
+  return repo;
+});
 
 /// Saved conversations, most recently active first.
 final chatsProvider = StreamProvider<List<ChatRow>>(
@@ -85,7 +89,12 @@ class FailureMessage extends ChatMessage {
 /// reopened from the history.
 class AskController extends Notifier<List<ChatMessage>> {
   @override
-  List<ChatMessage> build() => const [];
+  List<ChatMessage> build() {
+    // A new account starts with an empty chat.
+    ref.watch(currentUserIdProvider);
+    _chatId = null;
+    return const [];
+  }
 
   /// The saved chat being shown; null until the first reply is saved.
   String? get chatId => _chatId;

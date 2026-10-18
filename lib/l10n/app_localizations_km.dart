@@ -806,4 +806,14 @@ class AppLocalizationsKm extends AppLocalizations {
   String askHelloName(String name) {
     return 'សួស្តី $name!';
   }
+
+  @override
+  String get saveFailed =>
+      'មិនអាចរក្សាទុកបានទេ។ សូមពិនិត្យអ៊ីនធឺណិត ហើយព្យាយាមម្តងទៀត។';
+
+  @override
+  String get loadFailed => 'មិនអាចផ្ទុកកំណត់ត្រាបានទេ។ សូមពិនិត្យអ៊ីនធឺណិត។';
+
+  @override
+  String get tryAgain => 'ព្យាយាមម្តងទៀត';
 }

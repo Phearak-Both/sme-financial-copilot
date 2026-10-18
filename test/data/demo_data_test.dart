@@ -1,8 +1,7 @@
-import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sme_financial_copilot/data/cloud_store.dart';
 import 'package:sme_financial_copilot/core/date_only.dart';
 import 'package:sme_financial_copilot/core/money/currency.dart';
-import 'package:sme_financial_copilot/data/database.dart';
 import 'package:sme_financial_copilot/data/demo_data.dart';
 import 'package:sme_financial_copilot/data/ledger_repository.dart';
 import 'package:sme_financial_copilot/finance_core/ledger_math.dart';
@@ -10,7 +9,7 @@ import 'package:sme_financial_copilot/finance_core/period_math.dart';
 
 void main() {
   test('sample data loads through validation and gives sane totals', () async {
-    final db = AppDatabase(NativeDatabase.memory());
+    final db = MemoryCloudStore();
     final today = DateTime(2026, 10, 16);
     final repo = LedgerRepository(db, clock: () => today);
 
@@ -28,6 +27,5 @@ void main() {
     final balances = cashBalances(await repo.watchOpeningBalances().first, entries);
     expect(balances[Currency.usd]!.isNegative, isFalse);
     expect(balances[Currency.khr]!.isNegative, isFalse);
-    await db.close();
   });
 }

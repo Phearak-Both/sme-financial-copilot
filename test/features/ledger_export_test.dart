@@ -1,9 +1,8 @@
-import 'package:drift/native.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sme_financial_copilot/data/cloud_store.dart';
 import 'package:sme_financial_copilot/core/date_only.dart';
 import 'package:sme_financial_copilot/core/money/currency.dart';
-import 'package:sme_financial_copilot/data/database.dart';
 import 'package:sme_financial_copilot/data/ledger_repository.dart';
 import 'package:sme_financial_copilot/domain/entry_draft.dart';
 import 'package:sme_financial_copilot/domain/enums.dart';
@@ -12,15 +11,14 @@ import 'package:sme_financial_copilot/finance_core/period_math.dart';
 import 'package:sme_financial_copilot/l10n/app_localizations.dart';
 
 void main() {
-  late AppDatabase db;
+  late MemoryCloudStore db;
   late LedgerRepository repo;
   final today = DateTime(2026, 10, 17);
 
   setUp(() {
-    db = AppDatabase(NativeDatabase.memory());
+    db = MemoryCloudStore();
     repo = LedgerRepository(db, clock: () => today);
   });
-  tearDown(() => db.close());
 
   Future<String> add(
     EntryType type,
