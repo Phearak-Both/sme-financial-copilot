@@ -13,6 +13,7 @@ import '../../ai/gemini_client.dart';
 import '../../ai/wav.dart';
 import '../../app/labels.dart';
 import '../../app/providers.dart';
+import '../../cloud/auth.dart';
 import '../../core/date_only.dart';
 import '../../core/money/money.dart';
 import '../../core/money/money_format.dart';
@@ -423,14 +424,18 @@ String _imageMime(String name) {
   };
 }
 
-class _Welcome extends StatelessWidget {
+class _Welcome extends ConsumerWidget {
   const _Welcome();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final lines = context.l10n.askWelcomeTitle.split('\n');
+    // Greet the signed-in user by the name they signed up with.
+    final user = ref.watch(currentUserProvider).value;
+    final name = (user?.userMetadata?['full_name'] as String?)?.trim() ?? '';
+    if (name.isNotEmpty) lines[0] = context.l10n.askHelloName(name);
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),

@@ -340,5 +340,7 @@
   "phoneNumber": "Phone number",
   "phoneInvalid": "Enter a valid phone number",
   "authWrongCredentialsPhone": "Wrong phone number or password.",
-  "authUserExistsPhone": "This phone number already has an account. Log in instead."
+  "authUserExistsPhone": "This phone number already has an account. Log in instead.",
+  "askHelloName": "Hello, {name}!",
+  "@askHelloName": {"placeholders": {"name": {"type": "String"}}}
 }
