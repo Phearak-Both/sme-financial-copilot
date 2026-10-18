@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../app/labels.dart';
+import '../../app/load_error.dart';
 import '../../app/providers.dart';
 import '../../core/money/currency.dart';
 import '../../core/money/money_format.dart';
@@ -79,7 +80,9 @@ class _LedgerScreenState extends ConsumerState<LedgerScreen> {
           _ActiveFilters(filter: filter, onChanged: _update),
           const Divider(height: 1),
           Expanded(
-            child: entries.when(
+            child: entries.hasError && !entries.hasValue
+                ? const LoadError()
+                : entries.when(
               data: (rows) => rows.isEmpty
                   ? _EmptyLedger(
                       filtered: !filter.isDefault,
@@ -92,7 +95,7 @@ class _LedgerScreenState extends ConsumerState<LedgerScreen> {
                     )
                   : _GroupedList(rows),
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (_, _) => Center(child: Text(l10n.somethingWrong)),
+              error: (_, _) => const LoadError(),
             ),
           ),
         ],

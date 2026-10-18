@@ -87,9 +87,17 @@ class EntryDetailScreen extends ConsumerWidget {
     reason.dispose();
     if (confirmed != true) return;
 
-    await ref
-        .read(ledgerRepositoryProvider)
-        .voidEntry(entryId, reason: reasonText);
+    try {
+      await ref
+          .read(ledgerRepositoryProvider)
+          .voidEntry(entryId, reason: reasonText);
+    } catch (_) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(l10n.saveFailed)));
+      }
+      return;
+    }
     if (context.mounted) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(l10n.voidedMessage)));
@@ -207,7 +215,8 @@ class _RevisionTile extends StatelessWidget {
     final l10n = context.l10n;
     final snapshot = jsonDecode(revision.snapshot) as Map<String, dynamic>;
     final amount = Money(
-      snapshot['amountMinor'] as int,
+      // Cloud snapshots use the column name amount_minor.
+      ((snapshot['amount_minor'] ?? snapshot['amountMinor']) as num).toInt(),
       Currency.fromCode(snapshot['currency'] as String),
     );
     return ListTile(

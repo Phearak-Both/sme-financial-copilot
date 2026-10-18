@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../app/labels.dart';
+import '../../app/load_error.dart';
 import '../../app/providers.dart';
 import '../../core/money/currency.dart';
 import '../../core/money/money.dart';
@@ -60,13 +61,16 @@ class DashboardScreen extends ConsumerWidget {
           const SizedBox(height: 16),
           CashBalanceCard(currency: currency),
           const SizedBox(height: 16),
+          if (data.hasError && !data.hasValue)
+            const LoadError()
+          else
           data.when(
             data: (d) => d.isEmpty ? _EmptyPeriod(d) : _DashboardBody(d),
             loading: () => const Padding(
               padding: EdgeInsets.all(32),
               child: Center(child: CircularProgressIndicator()),
             ),
-            error: (_, _) => Text(l10n.somethingWrong),
+            error: (_, _) => const LoadError(),
           ),
         ],
       ),

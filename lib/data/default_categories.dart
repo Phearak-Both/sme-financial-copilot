@@ -1,11 +1,9 @@
-import 'package:drift/drift.dart';
-
 import '../domain/enums.dart';
 import 'database.dart';
 
 /// Starter categories covering shops, services and farms.
 /// Khmer names need review by native-speaking users.
-List<CategoriesCompanion> defaultCategories() {
+List<CategoryRow> defaultCategories() {
   const income = [
     ('sales', 'Sales', 'ការលក់'),
     ('services', 'Services', 'សេវាកម្ម'),
@@ -25,18 +23,17 @@ List<CategoriesCompanion> defaultCategories() {
     ('other_expense', 'Other expenses', 'ចំណាយផ្សេងៗ'),
   ];
 
-  CategoriesCompanion row(
+  CategoryRow row(
     (String, String, String) category,
     CategoryKind kind,
     int order,
   ) =>
-      CategoriesCompanion.insert(
+      CategoryRow(
         id: category.$1,
         kind: kind,
         nameEn: category.$2,
         nameKm: category.$3,
-        isSystem: const Value(true),
-        sortOrder: Value(order),
+        sortOrder: order,
       );
 
   return [

@@ -89,8 +89,8 @@ class _AskScreenState extends ConsumerState<AskScreen> {
 
   /// Shows the AI notice once. Returns false if the user declines.
   Future<bool> _ensureConsent() async {
-    final repo = ref.read(ledgerRepositoryProvider);
-    if (await repo.watchSetting(aiConsentSettingKey).first == 'yes') {
+    final settings = ref.read(settingsStoreProvider);
+    if (await settings.get(aiConsentSettingKey) == 'yes') {
       return true;
     }
     if (!mounted) return false;
@@ -114,7 +114,7 @@ class _AskScreenState extends ConsumerState<AskScreen> {
       ),
     );
     if (agreed != true) return false;
-    await repo.setSetting(aiConsentSettingKey, 'yes');
+    await settings.set(aiConsentSettingKey, 'yes');
     return true;
   }
 
@@ -873,11 +873,13 @@ class _ProposalViewState extends ConsumerState<_ProposalView> {
         if (proceed != true) return;
       }
       await repo.create(draft);
-      await repo.setSetting(lastCurrencySettingKey, currency.code);
+      await ref
+          .read(settingsStoreProvider)
+          .set(lastCurrencySettingKey, currency.code);
       ref.read(askControllerProvider.notifier).markSaved(message);
       messenger.showSnackBar(SnackBar(content: Text(l10n.savedMessage)));
     } catch (_) {
-      messenger.showSnackBar(SnackBar(content: Text(l10n.somethingWrong)));
+      messenger.showSnackBar(SnackBar(content: Text(l10n.saveFailed)));
     } finally {
       if (mounted) setState(() => _saving = false);
     }

@@ -1,13 +1,12 @@
 import 'dart:typed_data';
 
-import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sme_financial_copilot/data/cloud_store.dart';
 import 'package:sme_financial_copilot/ai/copilot_service.dart';
 import 'package:sme_financial_copilot/core/date_only.dart';
 import 'package:sme_financial_copilot/core/money/currency.dart';
 import 'package:sme_financial_copilot/core/money/money.dart';
 import 'package:sme_financial_copilot/data/chat_repository.dart';
-import 'package:sme_financial_copilot/data/database.dart';
 import 'package:sme_financial_copilot/domain/entry_proposal.dart';
 import 'package:sme_financial_copilot/domain/enums.dart';
 import 'package:sme_financial_copilot/features/ask/ask_controller.dart';
@@ -108,16 +107,15 @@ void main() {
   });
 
   group('repository', () {
-    late AppDatabase db;
+    late MemoryCloudStore db;
     late ChatRepository repo;
     var now = DateTime(2026, 10, 18, 9);
 
     setUp(() {
-      db = AppDatabase(NativeDatabase.memory());
+      db = MemoryCloudStore();
       repo = ChatRepository(db, clock: () => now);
     });
 
-    tearDown(() => db.close());
 
     test('create, update, list newest first and delete', () async {
       final a = await repo.create('first', ['a1', 'a2']);

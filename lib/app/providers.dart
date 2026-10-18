@@ -1,24 +1,48 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../core/date_only.dart';
 import '../core/money/currency.dart';
 import '../core/money/money.dart';
+import '../cloud/auth.dart';
+import '../cloud/supabase_config.dart';
+import '../data/cloud_store.dart';
 import '../data/database.dart';
 import '../data/ledger_repository.dart';
+import '../data/settings_store.dart';
 import '../finance_core/insights.dart';
 import '../finance_core/ledger_math.dart';
 import '../finance_core/period_math.dart';
 
-final databaseProvider = Provider<AppDatabase>((ref) {
-  final db = AppDatabase();
-  ref.onDispose(db.close);
-  return db;
+/// Where records live: the signed-in user's rows in Supabase, or memory when
+/// Supabase isn't set up (nothing is kept after the app closes).
+final cloudStoreProvider = Provider<CloudStore>(
+  (ref) => supabaseReady
+      ? SupabaseCloudStore(Supabase.instance.client)
+      : MemoryCloudStore(),
+);
+
+/// The signed-in user's id; null when signed out or without Supabase.
+final currentUserIdProvider = Provider<String?>(
+  (ref) => ref.watch(currentUserProvider).value?.id,
+);
+
+/// Rebuilt for each signed-in user, so one account's records never show
+/// for another.
+final ledgerRepositoryProvider = Provider<LedgerRepository>((ref) {
+  ref.watch(currentUserIdProvider);
+  final repo = LedgerRepository(ref.watch(cloudStoreProvider));
+  ref.onDispose(repo.dispose);
+  return repo;
 });
 
-final ledgerRepositoryProvider = Provider<LedgerRepository>(
-  (ref) => LedgerRepository(ref.watch(databaseProvider)),
-);
+/// Device preferences such as the language.
+final settingsStoreProvider = Provider<SettingsStore>((ref) {
+  final store = SettingsStore();
+  ref.onDispose(store.dispose);
+  return store;
+});
 
 final categoriesProvider = StreamProvider<List<CategoryRow>>(
   (ref) => ref.watch(ledgerRepositoryProvider).watchCategories(),
@@ -40,8 +64,8 @@ const supportedAppLocales = [Locale('km'), Locale('en')];
 /// The user's chosen language, falling back to [defaultLocale].
 final localeProvider = StreamProvider<Locale>(
   (ref) => ref
-      .watch(ledgerRepositoryProvider)
-      .watchSetting(localeSettingKey)
+      .watch(settingsStoreProvider)
+      .watch(localeSettingKey)
       .map(
         (code) => supportedAppLocales.firstWhere(
           (locale) => locale.languageCode == code,

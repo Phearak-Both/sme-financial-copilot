@@ -809,4 +809,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String askHelloName(String name) {
     return 'Hello, $name!';
   }
+
+  @override
+  String get saveFailed =>
+      'Couldn\'t save. Check your internet connection and try again.';
+
+  @override
+  String get loadFailed =>
+      'Couldn\'t load your records. Check your internet connection.';
+
+  @override
+  String get tryAgain => 'Try again';
 }
