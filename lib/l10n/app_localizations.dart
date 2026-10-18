@@ -1477,6 +1477,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This phone number already has an account. Log in instead.'**
   String get authUserExistsPhone;
+
+  /// No description provided for @askHelloName.
+  ///
+  /// In en, this message translates to:
+  /// **'Hello, {name}!'**
+  String askHelloName(String name);
 }
 
 class _AppLocalizationsDelegate

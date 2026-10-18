@@ -804,4 +804,9 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get authUserExistsPhone =>
       'This phone number already has an account. Log in instead.';
+
+  @override
+  String askHelloName(String name) {
+    return 'Hello, $name!';
+  }
 }

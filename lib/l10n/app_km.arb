@@ -229,5 +229,6 @@
   "phoneNumber": "លេខទូរស័ព្ទ",
   "phoneInvalid": "សូមបញ្ចូលលេខទូរស័ព្ទឱ្យបានត្រឹមត្រូវ",
   "authWrongCredentialsPhone": "លេខទូរស័ព្ទ ឬពាក្យសម្ងាត់មិនត្រឹមត្រូវ។",
-  "authUserExistsPhone": "លេខទូរស័ព្ទនេះមានគណនីរួចហើយ។ សូមចូលគណនីវិញ។"
+  "authUserExistsPhone": "លេខទូរស័ព្ទនេះមានគណនីរួចហើយ។ សូមចូលគណនីវិញ។",
+  "askHelloName": "សួស្តី {name}!"
 }

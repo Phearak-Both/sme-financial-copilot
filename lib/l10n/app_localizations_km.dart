@@ -801,4 +801,9 @@ class AppLocalizationsKm extends AppLocalizations {
   @override
   String get authUserExistsPhone =>
       'លេខទូរស័ព្ទនេះមានគណនីរួចហើយ។ សូមចូលគណនីវិញ។';
+
+  @override
+  String askHelloName(String name) {
+    return 'សួស្តី $name!';
+  }
 }
