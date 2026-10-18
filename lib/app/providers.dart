@@ -6,6 +6,7 @@ import '../core/money/currency.dart';
 import '../core/money/money.dart';
 import '../data/database.dart';
 import '../data/ledger_repository.dart';
+import '../finance_core/insights.dart';
 import '../finance_core/ledger_math.dart';
 import '../finance_core/period_math.dart';
 
@@ -140,6 +141,7 @@ class DashboardData {
     required this.trend,
     required this.expenseCategories,
     required this.currenciesWithData,
+    required this.insights,
   });
 
   final ReportPeriod period;
@@ -154,6 +156,8 @@ class DashboardData {
   /// Currencies that have entries in [range], to hint at the other currency.
   final Set<Currency> currenciesWithData;
 
+  final List<Insight> insights;
+
   bool get isEmpty => current.entryCount == 0;
 }
 
@@ -164,8 +168,18 @@ final dashboardProvider = StreamProvider<DashboardData>((ref) {
 
   final range = rangeFor(period, today);
   final comparison = comparisonRangeFor(period, today);
-  final starts = [range.start, comparison.start]..sort();
-  final window = DateRange(starts.first, range.end);
+  final cash = ref.watch(cashBalancesProvider).value?[currency];
+  // Also covers the recent days the cash runway is measured over.
+  final tomorrow = addDays(dateOnly(today), 1);
+  final starts = [
+    range.start,
+    comparison.start,
+    addDays(tomorrow, -runwayRateDays),
+  ]..sort();
+  final window = DateRange(
+    starts.first,
+    range.end.isAfter(tomorrow) ? range.end : tomorrow,
+  );
 
   return ref.watch(ledgerRepositoryProvider).watchLedgerEntries(window).map((
     entries,
@@ -184,6 +198,14 @@ final dashboardProvider = StreamProvider<DashboardData>((ref) {
       expenseCategories:
           expensesByCategory(entries, range)[currency] ?? const [],
       currenciesWithData: current.byCurrency.keys.toSet(),
+      insights: buildInsights(
+        entries: entries,
+        currency: currency,
+        range: range,
+        comparison: comparison,
+        today: today,
+        cash: cash,
+      ),
     );
   });
 });

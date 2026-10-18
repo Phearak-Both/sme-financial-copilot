@@ -521,4 +521,136 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get exportSaved => 'បានរក្សាទុក PDF';
+
+  @override
+  String get insightsTitle => 'ការវិភាគ';
+
+  @override
+  String insightMarginTitle(String percent) {
+    return 'អត្រាប្រាក់ចំណេញ $percent%';
+  }
+
+  @override
+  String insightMarginBody(String percent) {
+    return 'ក្នុងប្រាក់ចូលរាល់ 100 អ្នករក្សាទុកបាន $percent ជាប្រាក់ចំណេញ។';
+  }
+
+  @override
+  String get insightLossTitle => 'ចំណាយលើសប្រាក់ចូល';
+
+  @override
+  String insightLossBody(String amount) {
+    return 'ក្នុងរយៈពេលនេះ ប្រាក់ចេញច្រើនជាងប្រាក់ចូល $amount។';
+  }
+
+  @override
+  String get insightWithdrawTitle => 'ដកប្រាក់លើសប្រាក់ចំណេញ';
+
+  @override
+  String insightWithdrawBody(String withdrawn, String profit) {
+    return 'អ្នកបានដកប្រាក់ $withdrawn ខណៈប្រាក់ចំណេញមាន $profit ដែលធ្វើឱ្យសាច់ប្រាក់អាជីវកម្មថយចុះ។';
+  }
+
+  @override
+  String insightRunwayTitle(String days) {
+    return 'សាច់ប្រាក់គ្រប់គ្រាន់ប្រហែល $days ថ្ងៃ';
+  }
+
+  @override
+  String get insightRunwayBody => 'តាមការចំណាយជាមធ្យមក្នុង 30 ថ្ងៃចុងក្រោយ។';
+
+  @override
+  String get insightRunwayLowBody =>
+      'តាមការចំណាយជាមធ្យមក្នុង 30 ថ្ងៃចុងក្រោយ។ គួររក្សាសាច់ប្រាក់បម្រុងឱ្យបានច្រើនជាងនេះ។';
+
+  @override
+  String insightForecastTitle(String amount) {
+    return 'ប្រាក់ចំណេញប៉ាន់ស្មាន៖ $amount';
+  }
+
+  @override
+  String get insightForecastBody =>
+      'ប្រសិនបើល្បឿនបច្ចុប្បន្នបន្តរហូតដល់ចុងរយៈពេល។';
+
+  @override
+  String insightCategoryTitle(String category, String percent) {
+    return 'ចំណាយលើ$category កើនឡើង $percent%';
+  }
+
+  @override
+  String insightCategoryBody(String amount) {
+    return 'ច្រើនជាងរយៈពេលមុន $amount។';
+  }
+
+  @override
+  String insightTopIncomeTitle(String category, String percent) {
+    return '$category៖ $percent% នៃប្រាក់ចូល';
+  }
+
+  @override
+  String get insightTopIncomeBody => 'ជាប្រភពប្រាក់ចូលធំបំផុតក្នុងរយៈពេលនេះ។';
+
+  @override
+  String get insightTopIncomeRiskBody =>
+      'ប្រាក់ចូលភាគច្រើនពឹងលើប្រភពតែមួយ។ ការបន្ថែមប្រភពផ្សេងទៀតជួយកាត់បន្ថយហានិភ័យ។';
+
+  @override
+  String get insightNoIncomeTitle => 'មិនទាន់មានប្រាក់ចូល';
+
+  @override
+  String get insightNoIncomeMarginBody =>
+      'អត្រាប្រាក់ចំណេញនឹងបង្ហាញ នៅពេលអ្នកកត់ត្រាប្រាក់ចូល។';
+
+  @override
+  String get insightNoIncomeSourceBody =>
+      'ប្រភពប្រាក់ចូលសំខាន់នឹងបង្ហាញ នៅពេលអ្នកកត់ត្រាប្រាក់ចូល។';
+
+  @override
+  String get insightWithdrawOkTitle => 'ការដកប្រាក់មិនលើសប្រាក់ចំណេញ';
+
+  @override
+  String insightWithdrawOkBody(String withdrawn, String profit) {
+    return 'អ្នកបានដកប្រាក់ $withdrawn ក្នុងប្រាក់ចំណេញ $profit។';
+  }
+
+  @override
+  String get insightNoWithdrawTitle => 'មិនមានការដកប្រាក់ដោយម្ចាស់';
+
+  @override
+  String get insightNoWithdrawBody =>
+      'មិនមានប្រាក់ត្រូវបានដកចេញពីអាជីវកម្មក្នុងរយៈពេលនេះទេ។';
+
+  @override
+  String get insightRunwaySetupTitle => 'សាច់ប្រាក់អាចប្រើបានរយៈពេលប៉ុន្មាន?';
+
+  @override
+  String get insightRunwaySetupBody =>
+      'កំណត់សាច់ប្រាក់ដើមគ្រា ក្នុងការកំណត់ ដើម្បីមើល។';
+
+  @override
+  String get insightRunwayNoSpendTitle => 'គ្មានការចំណាយក្នុង 30 ថ្ងៃចុងក្រោយ';
+
+  @override
+  String get insightRunwayNoSpendBody =>
+      'រយៈពេលសាច់ប្រាក់ត្រូវបានប៉ាន់ស្មានពីការចំណាយថ្មីៗ។';
+
+  @override
+  String get insightRunwayLongTitle => 'សាច់ប្រាក់គ្រប់គ្រាន់លើសពីមួយឆ្នាំ';
+
+  @override
+  String get insightForecastWaitTitle => 'ប្រាក់ចំណេញប៉ាន់ស្មាន';
+
+  @override
+  String get insightForecastEarlyBody => 'អាចមើលបានក្រោយ 7 ថ្ងៃដំបូងនៃរយៈពេល។';
+
+  @override
+  String get insightForecastDoneBody =>
+      'រយៈពេលនេះបានបញ្ចប់ហើយ។ ប្រាក់ចំណេញចុងក្រោយបង្ហាញនៅខាងលើ។';
+
+  @override
+  String get insightNoIncreaseTitle => 'គ្មានការចំណាយកើនឡើងខ្លាំង';
+
+  @override
+  String get insightNoIncreaseBody =>
+      'គ្មានប្រភេទចំណាយណាកើនឡើង 20% ឬច្រើនជាងនេះ បើធៀបនឹងរយៈពេលមុន។';
 }
