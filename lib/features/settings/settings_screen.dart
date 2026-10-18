@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../app/labels.dart';
 import '../../app/providers.dart';
+import '../../cloud/auth.dart';
 import '../../core/date_only.dart';
 import '../../core/money/currency.dart';
 import '../../core/money/money.dart';
@@ -31,6 +32,7 @@ class SettingsScreen extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
         children: [
+          const _AccountSection(),
           _SectionHeader(l10n.language),
           SegmentedButton<String>(
             showSelectedIcon: false,
@@ -227,5 +229,77 @@ class _OpeningCashDialogState extends ConsumerState<_OpeningCashDialog> {
         FilledButton(onPressed: _save, child: Text(l10n.save)),
       ],
     );
+  }
+}
+
+/// Who is signed in, with a way to log out. Hidden without Supabase.
+class _AccountSection extends ConsumerWidget {
+  const _AccountSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(currentUserProvider).value;
+    if (user == null) return const SizedBox.shrink();
+    final l10n = context.l10n;
+    final scheme = Theme.of(context).colorScheme;
+    final name = (user.userMetadata?['full_name'] as String?)?.trim() ?? '';
+    // Phone accounts sign in with a hidden address; show the number instead.
+    final phone = user.userMetadata?['phone'] as String?;
+    final contact = phone != null ? formatPhone(phone) : (user.email ?? '');
+    final initial =
+        (name.isNotEmpty ? name : contact).characters.firstOrNull ?? '?';
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _SectionHeader(l10n.account),
+        Card(
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            children: [
+              ListTile(
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                leading: CircleAvatar(
+                  backgroundColor: scheme.primary,
+                  foregroundColor: scheme.onPrimary,
+                  child: Text(initial.toUpperCase()),
+                ),
+                title: Text(name.isNotEmpty ? name : contact),
+                subtitle: name.isNotEmpty ? Text(contact) : null,
+              ),
+              const Divider(height: 1, indent: 16, endIndent: 16),
+              ListTile(
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                leading: Icon(Icons.logout, color: scheme.error),
+                title: Text(l10n.logOut, style: TextStyle(color: scheme.error)),
+                onTap: () => _confirmLogOut(context),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _confirmLogOut(BuildContext context) async {
+    final l10n = context.l10n;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.logOutTitle),
+        content: Text(l10n.logOutBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(l10n.logOut),
+          ),
+        ],
+      ),
+    );
+    if (ok == true) await signOut();
   }
 }

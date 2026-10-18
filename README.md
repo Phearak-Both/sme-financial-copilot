@@ -78,9 +78,11 @@ flutter run --dart-define-from-file=env/dev.json
 | `GEMINI_API_KEY` | Enables the AI assistant |
 | `WHISPER_URL` | Speech/OCR service, e.g. `http://127.0.0.1:7860` |
 | `WHISPER_TOKEN` | Shared secret, if the service sets one |
+| `SUPABASE_URL` | Supabase project URL, for accounts |
+| `SUPABASE_PUBLISHABLE_KEY` | Supabase publishable key |
 
 Without these, the ledger, dashboard and export still work; the assistant
-shows a setup notice.
+shows a setup notice, and sign-in is skipped when Supabase isn't set.
 
 ### Run the speech/OCR service
 

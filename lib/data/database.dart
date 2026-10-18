@@ -94,15 +94,48 @@ class AppSettings extends Table {
   Set<Column> get primaryKey => {key};
 }
 
+/// An assistant conversation, kept so it can be reopened from history.
+@DataClassName('ChatRow')
+class Chats extends Table {
+  TextColumn get id => text()();
+
+  /// From the first thing the user sent; empty for a photo without text.
+  TextColumn get title => text()();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+@DataClassName('ChatMessageRow')
+class ChatMessages extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get chatId =>
+      text().references(Chats, #id, onDelete: KeyAction.cascade)();
+  IntColumn get position => integer()();
+
+  /// JSON from `chat_codec.dart`.
+  TextColumn get data => text()();
+}
+
 @DriftDatabase(
-  tables: [Categories, LedgerEntries, EntryRevisions, OpeningBalances, AppSettings],
+  tables: [
+    Categories,
+    LedgerEntries,
+    EntryRevisions,
+    OpeningBalances,
+    AppSettings,
+    Chats,
+    ChatMessages,
+  ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor])
       : super(executor ?? driftDatabase(name: 'sme_copilot'));
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -117,6 +150,10 @@ class AppDatabase extends _$AppDatabase {
         },
         onUpgrade: (m, from, to) async {
           if (from < 2) await m.createTable(openingBalances);
+          if (from < 3) {
+            await m.createTable(chats);
+            await m.createTable(chatMessages);
+          }
         },
         beforeOpen: (details) async {
           await customStatement('PRAGMA foreign_keys = ON');

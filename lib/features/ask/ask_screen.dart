@@ -22,6 +22,7 @@ import '../../domain/entry_proposal.dart';
 import '../../domain/enums.dart';
 import '../entry_form/entry_form_screen.dart';
 import 'ask_controller.dart';
+import 'chat_history_drawer.dart';
 
 /// The landing screen: say, type or photograph what happened, or ask a
 /// question about the ledger.
@@ -337,8 +338,16 @@ class _AskScreenState extends ConsumerState<AskScreen> {
     final configured = ref.watch(copilotServiceProvider).isConfigured;
 
     return Scaffold(
+      drawer: const ChatHistoryDrawer(),
       appBar: AppBar(
         title: Text(l10n.askTitle),
+        leading: Builder(
+          builder: (context) => IconButton(
+            tooltip: l10n.chatHistory,
+            icon: const Icon(Icons.history),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
+        ),
         actions: [
           if (messages.isNotEmpty)
             IconButton(

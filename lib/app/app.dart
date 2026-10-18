@@ -3,10 +3,12 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../cloud/auth.dart';
 import '../data/database.dart';
 import '../domain/entry_proposal.dart';
 import '../domain/enums.dart';
 import '../features/ask/ask_screen.dart';
+import '../features/auth/auth_screen.dart';
 import '../features/dashboard/dashboard_screen.dart';
 import '../features/entry_form/entry_form_screen.dart';
 import '../features/ledger/entry_detail_screen.dart';
@@ -17,8 +19,16 @@ import 'labels.dart';
 import 'providers.dart';
 import 'theme.dart';
 
-GoRouter _buildRouter() => GoRouter(
+GoRouter _buildRouter(Listenable authRefresh) => GoRouter(
+  refreshListenable: authRefresh,
+  // Signed-out users see the sign-in screen first, when Supabase is set up.
+  redirect: (_, state) {
+    final onAuth = state.matchedLocation == '/auth';
+    if (signInRequired) return onAuth ? null : '/auth';
+    return onAuth ? '/' : null;
+  },
   routes: [
+    GoRoute(path: '/auth', builder: (_, _) => const AuthScreen()),
     StatefulShellRoute.indexedStack(
       builder: (context, state, shell) => _Shell(shell: shell),
       branches: [
@@ -80,11 +90,13 @@ class SmeCopilotApp extends ConsumerStatefulWidget {
 
 class _SmeCopilotAppState extends ConsumerState<SmeCopilotApp> {
   // Owned by the app instance so navigation state never outlives it.
-  late final GoRouter _router = _buildRouter();
+  final _authRefresh = AuthRefresh();
+  late final GoRouter _router = _buildRouter(_authRefresh);
 
   @override
   void dispose() {
     _router.dispose();
+    _authRefresh.dispose();
     super.dispose();
   }
 
