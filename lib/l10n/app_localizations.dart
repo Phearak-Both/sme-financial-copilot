@@ -997,6 +997,210 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'PDF saved'**
   String get exportSaved;
+
+  /// No description provided for @insightsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Insights'**
+  String get insightsTitle;
+
+  /// No description provided for @insightMarginTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Profit margin {percent}%'**
+  String insightMarginTitle(String percent);
+
+  /// No description provided for @insightMarginBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Out of every 100 you earn, you keep {percent} as profit.'**
+  String insightMarginBody(String percent);
+
+  /// No description provided for @insightLossTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Spending more than you earn'**
+  String get insightLossTitle;
+
+  /// No description provided for @insightLossBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Money out is {amount} more than money in for this period.'**
+  String insightLossBody(String amount);
+
+  /// No description provided for @insightWithdrawTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawals exceed profit'**
+  String get insightWithdrawTitle;
+
+  /// No description provided for @insightWithdrawBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You took out {withdrawn} while profit was {profit}, which lowers the business\'s cash.'**
+  String insightWithdrawBody(String withdrawn, String profit);
+
+  /// No description provided for @insightRunwayTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash lasts about {days} days'**
+  String insightRunwayTitle(String days);
+
+  /// No description provided for @insightRunwayBody.
+  ///
+  /// In en, this message translates to:
+  /// **'At your average spending over the last 30 days.'**
+  String get insightRunwayBody;
+
+  /// No description provided for @insightRunwayLowBody.
+  ///
+  /// In en, this message translates to:
+  /// **'At your average spending over the last 30 days. Consider keeping a bigger cash buffer.'**
+  String get insightRunwayLowBody;
+
+  /// No description provided for @insightForecastTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Projected profit: {amount}'**
+  String insightForecastTitle(String amount);
+
+  /// No description provided for @insightForecastBody.
+  ///
+  /// In en, this message translates to:
+  /// **'If the pace so far continues to the end of the period.'**
+  String get insightForecastBody;
+
+  /// No description provided for @insightCategoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{category} spending up {percent}%'**
+  String insightCategoryTitle(String category, String percent);
+
+  /// No description provided for @insightCategoryBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} more than the previous period.'**
+  String insightCategoryBody(String amount);
+
+  /// No description provided for @insightTopIncomeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{category}: {percent}% of income'**
+  String insightTopIncomeTitle(String category, String percent);
+
+  /// No description provided for @insightTopIncomeBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your biggest source of income in this period.'**
+  String get insightTopIncomeBody;
+
+  /// No description provided for @insightTopIncomeRiskBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Most of your income depends on one source. Adding others lowers the risk.'**
+  String get insightTopIncomeRiskBody;
+
+  /// No description provided for @insightNoIncomeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No income yet'**
+  String get insightNoIncomeTitle;
+
+  /// No description provided for @insightNoIncomeMarginBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Profit margin appears once you record income.'**
+  String get insightNoIncomeMarginBody;
+
+  /// No description provided for @insightNoIncomeSourceBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your main income source appears once you record income.'**
+  String get insightNoIncomeSourceBody;
+
+  /// No description provided for @insightWithdrawOkTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawals within profit'**
+  String get insightWithdrawOkTitle;
+
+  /// No description provided for @insightWithdrawOkBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You took out {withdrawn} of {profit} profit.'**
+  String insightWithdrawOkBody(String withdrawn, String profit);
+
+  /// No description provided for @insightNoWithdrawTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No owner withdrawals'**
+  String get insightNoWithdrawTitle;
+
+  /// No description provided for @insightNoWithdrawBody.
+  ///
+  /// In en, this message translates to:
+  /// **'No money was taken out of the business in this period.'**
+  String get insightNoWithdrawBody;
+
+  /// No description provided for @insightRunwaySetupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How long will your cash last?'**
+  String get insightRunwaySetupTitle;
+
+  /// No description provided for @insightRunwaySetupBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Set opening cash in Settings to see.'**
+  String get insightRunwaySetupBody;
+
+  /// No description provided for @insightRunwayNoSpendTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No spending in the last 30 days'**
+  String get insightRunwayNoSpendTitle;
+
+  /// No description provided for @insightRunwayNoSpendBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash runway is estimated from recent spending.'**
+  String get insightRunwayNoSpendBody;
+
+  /// No description provided for @insightRunwayLongTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash lasts over a year'**
+  String get insightRunwayLongTitle;
+
+  /// No description provided for @insightForecastWaitTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Projected profit'**
+  String get insightForecastWaitTitle;
+
+  /// No description provided for @insightForecastEarlyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Available after the first 7 days of the period.'**
+  String get insightForecastEarlyBody;
+
+  /// No description provided for @insightForecastDoneBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This period has ended. The final profit is shown above.'**
+  String get insightForecastDoneBody;
+
+  /// No description provided for @insightNoIncreaseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No sharp rise in spending'**
+  String get insightNoIncreaseTitle;
+
+  /// No description provided for @insightNoIncreaseBody.
+  ///
+  /// In en, this message translates to:
+  /// **'No expense category grew by 20% or more compared with the previous period.'**
+  String get insightNoIncreaseBody;
 }
 
 class _AppLocalizationsDelegate

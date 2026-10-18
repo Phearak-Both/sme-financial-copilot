@@ -11,6 +11,7 @@ import '../../data/ledger_repository.dart';
 import '../../domain/enums.dart';
 import '../../finance_core/period_math.dart';
 import 'cash_balance_card.dart';
+import 'insights_card.dart';
 import 'trend_chart.dart';
 
 class DashboardScreen extends ConsumerWidget {
@@ -158,7 +159,9 @@ class _DashboardBody extends ConsumerWidget {
           ],
         ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 16),
+        InsightsCard(data),
+        const SizedBox(height: 16),
         TrendChart(buckets: data.trend, currency: data.currency),
         const SizedBox(height: 24),
         Text(l10n.expenseBreakdown, style: textTheme.titleMedium),

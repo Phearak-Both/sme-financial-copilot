@@ -523,4 +523,138 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get exportSaved => 'PDF saved';
+
+  @override
+  String get insightsTitle => 'Insights';
+
+  @override
+  String insightMarginTitle(String percent) {
+    return 'Profit margin $percent%';
+  }
+
+  @override
+  String insightMarginBody(String percent) {
+    return 'Out of every 100 you earn, you keep $percent as profit.';
+  }
+
+  @override
+  String get insightLossTitle => 'Spending more than you earn';
+
+  @override
+  String insightLossBody(String amount) {
+    return 'Money out is $amount more than money in for this period.';
+  }
+
+  @override
+  String get insightWithdrawTitle => 'Withdrawals exceed profit';
+
+  @override
+  String insightWithdrawBody(String withdrawn, String profit) {
+    return 'You took out $withdrawn while profit was $profit, which lowers the business\'s cash.';
+  }
+
+  @override
+  String insightRunwayTitle(String days) {
+    return 'Cash lasts about $days days';
+  }
+
+  @override
+  String get insightRunwayBody =>
+      'At your average spending over the last 30 days.';
+
+  @override
+  String get insightRunwayLowBody =>
+      'At your average spending over the last 30 days. Consider keeping a bigger cash buffer.';
+
+  @override
+  String insightForecastTitle(String amount) {
+    return 'Projected profit: $amount';
+  }
+
+  @override
+  String get insightForecastBody =>
+      'If the pace so far continues to the end of the period.';
+
+  @override
+  String insightCategoryTitle(String category, String percent) {
+    return '$category spending up $percent%';
+  }
+
+  @override
+  String insightCategoryBody(String amount) {
+    return '$amount more than the previous period.';
+  }
+
+  @override
+  String insightTopIncomeTitle(String category, String percent) {
+    return '$category: $percent% of income';
+  }
+
+  @override
+  String get insightTopIncomeBody =>
+      'Your biggest source of income in this period.';
+
+  @override
+  String get insightTopIncomeRiskBody =>
+      'Most of your income depends on one source. Adding others lowers the risk.';
+
+  @override
+  String get insightNoIncomeTitle => 'No income yet';
+
+  @override
+  String get insightNoIncomeMarginBody =>
+      'Profit margin appears once you record income.';
+
+  @override
+  String get insightNoIncomeSourceBody =>
+      'Your main income source appears once you record income.';
+
+  @override
+  String get insightWithdrawOkTitle => 'Withdrawals within profit';
+
+  @override
+  String insightWithdrawOkBody(String withdrawn, String profit) {
+    return 'You took out $withdrawn of $profit profit.';
+  }
+
+  @override
+  String get insightNoWithdrawTitle => 'No owner withdrawals';
+
+  @override
+  String get insightNoWithdrawBody =>
+      'No money was taken out of the business in this period.';
+
+  @override
+  String get insightRunwaySetupTitle => 'How long will your cash last?';
+
+  @override
+  String get insightRunwaySetupBody => 'Set opening cash in Settings to see.';
+
+  @override
+  String get insightRunwayNoSpendTitle => 'No spending in the last 30 days';
+
+  @override
+  String get insightRunwayNoSpendBody =>
+      'Cash runway is estimated from recent spending.';
+
+  @override
+  String get insightRunwayLongTitle => 'Cash lasts over a year';
+
+  @override
+  String get insightForecastWaitTitle => 'Projected profit';
+
+  @override
+  String get insightForecastEarlyBody =>
+      'Available after the first 7 days of the period.';
+
+  @override
+  String get insightForecastDoneBody =>
+      'This period has ended. The final profit is shown above.';
+
+  @override
+  String get insightNoIncreaseTitle => 'No sharp rise in spending';
+
+  @override
+  String get insightNoIncreaseBody =>
+      'No expense category grew by 20% or more compared with the previous period.';
 }
