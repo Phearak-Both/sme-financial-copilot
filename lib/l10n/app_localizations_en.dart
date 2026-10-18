@@ -657,4 +657,151 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get insightNoIncreaseBody =>
       'No expense category grew by 20% or more compared with the previous period.';
+
+  @override
+  String get chatHistory => 'History';
+
+  @override
+  String get noChats => 'No conversations yet';
+
+  @override
+  String get photoChat => 'Receipt photo';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get deleteChatTitle => 'Delete this conversation?';
+
+  @override
+  String get deleteChatBody =>
+      'It will be removed for good. Entries you saved from it stay in the ledger.';
+
+  @override
+  String get last7Days => 'Last 7 days';
+
+  @override
+  String get last30Days => 'Last 30 days';
+
+  @override
+  String get pickDates => 'Pick dates';
+
+  @override
+  String get noChatsInRange => 'No conversations in this period';
+
+  @override
+  String get authLogInSubtitle => 'Log in to keep your records safe.';
+
+  @override
+  String get authSignUpSubtitle => 'Create an account for your business.';
+
+  @override
+  String get logIn => 'Log in';
+
+  @override
+  String get signUp => 'Sign up';
+
+  @override
+  String get fullName => 'Name';
+
+  @override
+  String get email => 'Email';
+
+  @override
+  String get password => 'Password';
+
+  @override
+  String get confirmPassword => 'Confirm password';
+
+  @override
+  String get noAccount => 'Don\'t have an account?';
+
+  @override
+  String get haveAccount => 'Already have an account?';
+
+  @override
+  String get nameRequired => 'Enter your name';
+
+  @override
+  String get emailInvalid => 'Enter a valid email';
+
+  @override
+  String get passwordTooShort => 'Use at least 6 characters';
+
+  @override
+  String get passwordMismatch => 'Passwords don\'t match';
+
+  @override
+  String get authWrongCredentials => 'Wrong email or password.';
+
+  @override
+  String get authEmailNotConfirmed =>
+      'Please confirm your email first. Check your inbox.';
+
+  @override
+  String get authUserExists =>
+      'This email already has an account. Log in instead.';
+
+  @override
+  String get authWeakPassword => 'Choose a stronger password.';
+
+  @override
+  String get authRateLimited =>
+      'Too many attempts. Please wait a moment and try again.';
+
+  @override
+  String get authNetwork =>
+      'Couldn\'t connect. Check your internet and try again.';
+
+  @override
+  String get authOther => 'Couldn\'t complete that. Please try again.';
+
+  @override
+  String get checkEmailTitle => 'Check your email';
+
+  @override
+  String checkEmailBody(String email) {
+    return 'We sent a confirmation link to $email. Open it, then log in here.';
+  }
+
+  @override
+  String get ok => 'OK';
+
+  @override
+  String get account => 'Account';
+
+  @override
+  String get logOut => 'Log out';
+
+  @override
+  String get logOutTitle => 'Log out?';
+
+  @override
+  String get logOutBody => 'Your records stay on this device.';
+
+  @override
+  String get showPassword => 'Show password';
+
+  @override
+  String get hidePassword => 'Hide password';
+
+  @override
+  String get authEmailRejected =>
+      'This email address wasn\'t accepted. Please use an email you can receive mail at.';
+
+  @override
+  String get phone => 'Phone';
+
+  @override
+  String get phoneNumber => 'Phone number';
+
+  @override
+  String get phoneInvalid => 'Enter a valid phone number';
+
+  @override
+  String get authWrongCredentialsPhone => 'Wrong phone number or password.';
+
+  @override
+  String get authUserExistsPhone =>
+      'This phone number already has an account. Log in instead.';
 }

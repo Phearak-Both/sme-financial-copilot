@@ -6,6 +6,9 @@ import '../../ai/gemini_client.dart';
 import '../../ai/ocr_client.dart';
 import '../../ai/whisper_client.dart';
 import '../../app/providers.dart';
+import '../../data/chat_repository.dart';
+import '../../data/database.dart';
+import 'chat_codec.dart';
 
 final geminiClientProvider = Provider<GeminiClient>((ref) {
   final client = GeminiClient();
@@ -32,6 +35,15 @@ final copilotServiceProvider = Provider<CopilotService>(
     whisper: ref.watch(whisperClientProvider),
     ocr: ref.watch(ocrClientProvider),
   ),
+);
+
+final chatRepositoryProvider = Provider<ChatRepository>(
+  (ref) => ChatRepository(ref.watch(databaseProvider)),
+);
+
+/// Saved conversations, most recently active first.
+final chatsProvider = StreamProvider<List<ChatRow>>(
+  (ref) => ref.watch(chatRepositoryProvider).watchChats(),
 );
 
 /// Set once the user agrees that AI input is sent to Gemini.
@@ -69,10 +81,18 @@ class FailureMessage extends ChatMessage {
   final AskFailure failure;
 }
 
-/// The conversation on the Ask screen. Kept in memory for the session.
+/// The conversation on the Ask screen. Saved after every reply so it can be
+/// reopened from the history.
 class AskController extends Notifier<List<ChatMessage>> {
   @override
   List<ChatMessage> build() => const [];
+
+  /// The saved chat being shown; null until the first reply is saved.
+  String? get chatId => _chatId;
+  String? _chatId;
+
+  /// Saves run one after another so a chat is never created twice.
+  Future<void> _saving = Future.value();
 
   bool get isBusy => state.lastOrNull is PendingMessage;
 
@@ -116,6 +136,7 @@ class AskController extends Notifier<List<ChatMessage>> {
     }
     debugPrint('[ai] done in ${watch.elapsedMilliseconds} ms: $result');
     state = [...state.where((m) => m is! PendingMessage), result];
+    await _save();
   }
 
   void markSaved(AssistantMessage message) {
@@ -125,9 +146,49 @@ class AskController extends Notifier<List<ChatMessage>> {
             ? AssistantMessage(message.reply, saved: true)
             : m,
     ];
+    _save();
   }
 
-  void clear() => state = const [];
+  /// Starts a new, empty chat.
+  void clear() {
+    if (isBusy) return;
+    _chatId = null;
+    state = const [];
+  }
+
+  /// Shows a saved chat.
+  Future<void> open(String chatId) async {
+    if (isBusy || chatId == _chatId) return;
+    final data = await ref.read(chatRepositoryProvider).loadMessages(chatId);
+    _chatId = chatId;
+    state = [for (final d in data) ?decodeMessage(d)];
+  }
+
+  Future<void> delete(String chatId) async {
+    if (chatId == _chatId) clear();
+    await ref.read(chatRepositoryProvider).delete(chatId);
+  }
+
+  Future<void> _save() => _saving = _saving.then((_) async {
+        final messages = state;
+        final data = [for (final m in messages) ?encodeMessage(m)];
+        if (data.isEmpty) return;
+        final repo = ref.read(chatRepositoryProvider);
+        try {
+          if (_chatId == null) {
+            final first = messages.whereType<UserMessage>().firstOrNull;
+            final title = (first?.text ?? '').trim();
+            _chatId = await repo.create(
+              title.length > 80 ? '${title.substring(0, 80)}…' : title,
+              data,
+            );
+          } else {
+            await repo.update(_chatId!, data);
+          }
+        } catch (e) {
+          debugPrint('[ai] saving chat failed: $e');
+        }
+      });
 }
 
 final askControllerProvider =

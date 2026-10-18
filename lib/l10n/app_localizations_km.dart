@@ -653,4 +653,152 @@ class AppLocalizationsKm extends AppLocalizations {
   @override
   String get insightNoIncreaseBody =>
       'គ្មានប្រភេទចំណាយណាកើនឡើង 20% ឬច្រើនជាងនេះ បើធៀបនឹងរយៈពេលមុន។';
+
+  @override
+  String get chatHistory => 'ប្រវត្តិ';
+
+  @override
+  String get noChats => 'មិនទាន់មានការសន្ទនា';
+
+  @override
+  String get photoChat => 'រូបថតបង្កាន់ដៃ';
+
+  @override
+  String get delete => 'លុប';
+
+  @override
+  String get deleteChatTitle => 'លុបការសន្ទនានេះ?';
+
+  @override
+  String get deleteChatBody =>
+      'ការសន្ទនានេះនឹងត្រូវលុបជាអចិន្ត្រៃយ៍។ កំណត់ត្រាដែលបានរក្សាទុករួច នៅតែមានក្នុងបញ្ជីប្រាក់។';
+
+  @override
+  String get last7Days => '7 ថ្ងៃចុងក្រោយ';
+
+  @override
+  String get last30Days => '30 ថ្ងៃចុងក្រោយ';
+
+  @override
+  String get pickDates => 'ជ្រើសកាលបរិច្ឆេទ';
+
+  @override
+  String get noChatsInRange => 'គ្មានការសន្ទនាក្នុងរយៈពេលនេះ';
+
+  @override
+  String get authLogInSubtitle =>
+      'ចូលគណនី ដើម្បីរក្សាកំណត់ត្រារបស់អ្នកឱ្យមានសុវត្ថិភាព។';
+
+  @override
+  String get authSignUpSubtitle => 'បង្កើតគណនីសម្រាប់អាជីវកម្មរបស់អ្នក។';
+
+  @override
+  String get logIn => 'ចូលគណនី';
+
+  @override
+  String get signUp => 'បង្កើតគណនី';
+
+  @override
+  String get fullName => 'ឈ្មោះ';
+
+  @override
+  String get email => 'អ៊ីមែល';
+
+  @override
+  String get password => 'ពាក្យសម្ងាត់';
+
+  @override
+  String get confirmPassword => 'បញ្ជាក់ពាក្យសម្ងាត់';
+
+  @override
+  String get noAccount => 'មិនទាន់មានគណនី?';
+
+  @override
+  String get haveAccount => 'មានគណនីរួចហើយ?';
+
+  @override
+  String get nameRequired => 'សូមបញ្ចូលឈ្មោះ';
+
+  @override
+  String get emailInvalid => 'សូមបញ្ចូលអ៊ីមែលឱ្យបានត្រឹមត្រូវ';
+
+  @override
+  String get passwordTooShort => 'ប្រើយ៉ាងតិច 6 តួអក្សរ';
+
+  @override
+  String get passwordMismatch => 'ពាក្យសម្ងាត់មិនដូចគ្នា';
+
+  @override
+  String get authWrongCredentials => 'អ៊ីមែល ឬពាក្យសម្ងាត់មិនត្រឹមត្រូវ។';
+
+  @override
+  String get authEmailNotConfirmed =>
+      'សូមបញ្ជាក់អ៊ីមែលរបស់អ្នកជាមុនសិន។ សូមពិនិត្យប្រអប់សំបុត្រ។';
+
+  @override
+  String get authUserExists => 'អ៊ីមែលនេះមានគណនីរួចហើយ។ សូមចូលគណនីវិញ។';
+
+  @override
+  String get authWeakPassword => 'សូមជ្រើសពាក្យសម្ងាត់ដែលរឹងមាំជាងនេះ។';
+
+  @override
+  String get authRateLimited =>
+      'ព្យាយាមច្រើនដងពេក។ សូមរង់ចាំបន្តិច ហើយព្យាយាមម្តងទៀត។';
+
+  @override
+  String get authNetwork =>
+      'មិនអាចភ្ជាប់បាន។ សូមពិនិត្យអ៊ីនធឺណិត ហើយព្យាយាមម្តងទៀត។';
+
+  @override
+  String get authOther => 'មិនអាចបញ្ចប់បានទេ។ សូមព្យាយាមម្តងទៀត។';
+
+  @override
+  String get checkEmailTitle => 'សូមពិនិត្យអ៊ីមែល';
+
+  @override
+  String checkEmailBody(String email) {
+    return 'យើងបានផ្ញើតំណបញ្ជាក់ទៅ $email។ សូមបើកតំណនោះ រួចចូលគណនីនៅទីនេះ។';
+  }
+
+  @override
+  String get ok => 'យល់ព្រម';
+
+  @override
+  String get account => 'គណនី';
+
+  @override
+  String get logOut => 'ចាកចេញ';
+
+  @override
+  String get logOutTitle => 'ចាកចេញពីគណនី?';
+
+  @override
+  String get logOutBody => 'កំណត់ត្រារបស់អ្នកនៅតែមាននៅលើឧបករណ៍នេះ។';
+
+  @override
+  String get showPassword => 'បង្ហាញពាក្យសម្ងាត់';
+
+  @override
+  String get hidePassword => 'លាក់ពាក្យសម្ងាត់';
+
+  @override
+  String get authEmailRejected =>
+      'អ៊ីមែលនេះមិនត្រូវបានទទួលយកទេ។ សូមប្រើអ៊ីមែលពិតដែលអ្នកអាចទទួលសំបុត្របាន។';
+
+  @override
+  String get phone => 'ទូរស័ព្ទ';
+
+  @override
+  String get phoneNumber => 'លេខទូរស័ព្ទ';
+
+  @override
+  String get phoneInvalid => 'សូមបញ្ចូលលេខទូរស័ព្ទឱ្យបានត្រឹមត្រូវ';
+
+  @override
+  String get authWrongCredentialsPhone =>
+      'លេខទូរស័ព្ទ ឬពាក្យសម្ងាត់មិនត្រឹមត្រូវ។';
+
+  @override
+  String get authUserExistsPhone =>
+      'លេខទូរស័ព្ទនេះមានគណនីរួចហើយ។ សូមចូលគណនីវិញ។';
 }

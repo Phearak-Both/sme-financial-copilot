@@ -1,5 +1,7 @@
 {
   "GEMINI_API_KEY": "paste-your-key-here",
   "WHISPER_URL": "https://<your-space>.hf.space",
-  "WHISPER_TOKEN": ""
+  "WHISPER_TOKEN": "",
+  "SUPABASE_URL": "https://<project-ref>.supabase.co",
+  "SUPABASE_PUBLISHABLE_KEY": "sb_publishable_..."
 }
