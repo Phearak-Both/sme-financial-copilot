@@ -53,3 +53,7 @@ app.*.map.json
 # Local secrets (API keys). Copy env/dev.example.json to env/dev.json.
 /env/*.json
 !/env/*.example.json
+
+# Editor and Supabase CLI local files.
+/.kilo/
+/supabase/.temp/
