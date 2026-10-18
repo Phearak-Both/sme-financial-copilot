@@ -77,7 +77,7 @@ flutter run --dart-define-from-file=env/dev.json
 
 | Key | Purpose |
 |---|---|
-| `GEMINI_API_KEY` | Enables the AI assistant |
+| `GEMINI_API_KEY` | Only without Supabase: calls Gemini directly |
 | `WHISPER_URL` | Speech/OCR service, e.g. `http://127.0.0.1:7860` |
 | `WHISPER_TOKEN` | Shared secret, if the service sets one |
 | `SUPABASE_URL` | Supabase project URL, for accounts |
@@ -92,6 +92,15 @@ Create a project, then run
 [`supabase/migrations/0001_cloud_ledger.sql`](supabase/migrations/0001_cloud_ledger.sql)
 once in **SQL Editor**. For phone sign-up without SMS, turn off
 **Authentication → Sign In / Providers → Email → Confirm email**.
+
+The assistant calls Gemini through the `gemini` Edge Function, so the
+Gemini key stays on the server and only signed-in users can use it:
+
+```sh
+npx supabase@2 login
+npx supabase@2 secrets set --project-ref <project-ref> GEMINI_API_KEY=<key>
+npx supabase@2 functions deploy gemini --project-ref <project-ref> --use-api
+```
 
 ### Run the speech/OCR service
 

@@ -6,8 +6,8 @@ import 'package:http/http.dart' as http;
 
 /// Set at build time: `flutter run --dart-define-from-file=env/dev.json`.
 ///
-/// Development only. Before real users, the key moves behind the Supabase
-/// Edge Function proxy so it never ships inside the app.
+/// Only used without Supabase (local development). With Supabase, requests
+/// go through the `gemini` Edge Function, which holds the key as a secret.
 const geminiApiKey = String.fromEnvironment('GEMINI_API_KEY');
 // Flash-Lite answers in about a second; Flash sometimes took 15-60 s.
 const geminiModel = String.fromEnvironment(
@@ -38,6 +38,23 @@ class BytesPart extends AiPart {
   final String mimeType;
 }
 
+/// The Supabase Edge Function that forwards requests to Gemini with the
+/// server-side key. Callers must be signed in.
+class GeminiProxy {
+  const GeminiProxy({
+    required this.url,
+    required this.publishableKey,
+    required this.accessToken,
+  });
+
+  /// e.g. `https://<project>.supabase.co/functions/v1/gemini`.
+  final Uri url;
+  final String publishableKey;
+
+  /// The signed-in user's token, or null when signed out.
+  final String? Function() accessToken;
+}
+
 class AiException implements Exception {
   const AiException(this.message, {this.isQuota = false});
 
@@ -54,6 +71,7 @@ class AiException implements Exception {
 class GeminiClient {
   GeminiClient({
     this.apiKey = geminiApiKey,
+    this.proxy,
     String model = geminiModel,
     List<String> fallbackModels = geminiFallbackModels,
     this.modelTimeout = _modelTimeout,
@@ -62,6 +80,9 @@ class GeminiClient {
        _http = httpClient ?? http.Client();
 
   final String apiKey;
+
+  /// When set, requests go through the proxy and [apiKey] is not used.
+  final GeminiProxy? proxy;
 
   /// The preferred model first, then fallbacks.
   final List<String> models;
@@ -73,7 +94,7 @@ class GeminiClient {
   /// Index of the first model not known to be out of quota this session.
   int _current = 0;
 
-  bool get isConfigured => apiKey.isNotEmpty;
+  bool get isConfigured => proxy != null || apiKey.isNotEmpty;
 
   /// Sends [parts] and returns the model's JSON reply, shaped by [schema].
   Future<Map<String, dynamic>> generateJson({
@@ -134,20 +155,34 @@ class GeminiClient {
   }
 
   Future<http.Response> _post(String model, Map<String, dynamic> body) async {
-    final uri = Uri.https(
-      'generativelanguage.googleapis.com',
-      '/v1beta/models/$model:generateContent',
-    );
+    final proxy = this.proxy;
+    final Uri uri;
+    final Map<String, String> headers;
+    final Object payload;
+    if (proxy != null) {
+      final token = proxy.accessToken();
+      if (token == null) throw const AiException('Sign in required');
+      uri = proxy.url;
+      headers = {
+        'Content-Type': 'application/json',
+        'apikey': proxy.publishableKey,
+        'Authorization': 'Bearer $token',
+      };
+      payload = {'model': model, 'request': body};
+    } else {
+      uri = Uri.https(
+        'generativelanguage.googleapis.com',
+        '/v1beta/models/$model:generateContent',
+      );
+      headers = {
+        'Content-Type': 'application/json',
+        'x-goog-api-key': apiKey,
+      };
+      payload = body;
+    }
     try {
       return await _http
-          .post(
-            uri,
-            headers: {
-              'Content-Type': 'application/json',
-              'x-goog-api-key': apiKey,
-            },
-            body: jsonEncode(body),
-          )
+          .post(uri, headers: headers, body: jsonEncode(payload))
           .timeout(modelTimeout);
     } on TimeoutException {
       throw const _SlowModel();
