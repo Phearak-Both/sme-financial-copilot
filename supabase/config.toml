@@ -1,0 +1,8 @@
+# Only the settings this repo relies on. Link the CLI to your project with
+# `supabase link --project-ref <ref>` before deploying functions.
+project_id = "sme-financial-copilot"
+
+[functions.gemini]
+# The function checks the user's token itself: the project signs tokens with
+# asymmetric keys, which the built-in verify_jwt check doesn't support.
+verify_jwt = false

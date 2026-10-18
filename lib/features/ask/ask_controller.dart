@@ -1,17 +1,29 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' show Supabase;
 
 import '../../ai/copilot_service.dart';
 import '../../ai/gemini_client.dart';
 import '../../ai/ocr_client.dart';
 import '../../ai/whisper_client.dart';
 import '../../app/providers.dart';
+import '../../cloud/supabase_config.dart';
 import '../../data/chat_repository.dart';
 import '../../data/database.dart';
 import 'chat_codec.dart';
 
 final geminiClientProvider = Provider<GeminiClient>((ref) {
-  final client = GeminiClient();
+  // With Supabase, the Gemini key stays on the server (Edge Function).
+  final client = GeminiClient(
+    proxy: supabaseReady
+        ? GeminiProxy(
+            url: Uri.parse('$supabaseUrl/functions/v1/gemini'),
+            publishableKey: supabasePublishableKey,
+            accessToken: () =>
+                Supabase.instance.client.auth.currentSession?.accessToken,
+          )
+        : null,
+  );
   ref.onDispose(client.close);
   return client;
 });
