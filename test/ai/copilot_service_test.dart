@@ -324,6 +324,76 @@ void main() {
     );
   });
 
+  test('asks the next model too when one is slow; the first answer wins',
+      () async {
+    final asked = <String>[];
+    final client = GeminiClient(
+      apiKey: 'test',
+      model: 'slow',
+      fallbackModels: const ['quick'],
+      hedgeDelay: const Duration(milliseconds: 50),
+      httpClient: MockClient((request) async {
+        final model = request.url.path.split('/').last.split(':').first;
+        asked.add(model);
+        if (model == 'slow') {
+          await Future<void>.delayed(const Duration(milliseconds: 400));
+        }
+        return geminiReply({'model': model});
+      }),
+    );
+    final watch = Stopwatch()..start();
+    final result = await client.generateJson(
+      systemInstruction: '',
+      parts: const [TextPart('hi')],
+      schema: const {},
+    );
+    expect(result['model'], 'quick');
+    expect(asked, ['slow', 'quick']);
+    expect(watch.elapsedMilliseconds, lessThan(400));
+  });
+
+  test('tries every model once more after a pause when all are busy',
+      () async {
+    var calls = 0;
+    final client = GeminiClient(
+      apiKey: 'test',
+      model: 'a',
+      fallbackModels: const ['b'],
+      retryDelay: Duration.zero,
+      httpClient: MockClient((_) async {
+        calls++;
+        return calls <= 2
+            ? http.Response('high demand', 503)
+            : geminiReply({'ok': true});
+      }),
+    );
+    final result = await client.generateJson(
+      systemInstruction: '',
+      parts: const [TextPart('hi')],
+      schema: const {},
+    );
+    expect(result['ok'], isTrue);
+    expect(calls, 3);
+  });
+
+  test('says the assistant is busy when every model stays busy', () async {
+    final client = GeminiClient(
+      apiKey: 'test',
+      model: 'a',
+      fallbackModels: const ['b'],
+      retryDelay: Duration.zero,
+      httpClient: MockClient((_) async => http.Response('high demand', 503)),
+    );
+    await expectLater(
+      client.generateJson(
+        systemInstruction: '',
+        parts: const [TextPart('hi')],
+        schema: const {},
+      ),
+      throwsA(isA<AiException>().having((e) => e.isBusy, 'isBusy', isTrue)),
+    );
+  });
+
   test('tries the next model when the connection drops', () async {
     final client = GeminiClient(
       apiKey: 'test',

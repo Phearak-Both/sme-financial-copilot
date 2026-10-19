@@ -1,14 +1,14 @@
-import 'dart:io';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:file_selector/file_selector.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
+import '../../app/theme.dart';
 import '../../core/date_only.dart';
 import '../../core/money/currency.dart';
 import '../../core/money/money.dart';
@@ -281,6 +281,7 @@ Future<pw.Widget> _shapedText(
         leadingDistribution: TextLeadingDistribution.even,
         color: color,
         fontWeight: bold ? FontWeight.w700 : FontWeight.w400,
+        fontFamilyFallback: khmerFontFallback,
       ),
     ),
     textDirection: ui.TextDirection.ltr,
@@ -307,9 +308,15 @@ Future<pw.Widget> _shapedText(
 }
 
 /// Saves [pdf]: a Save dialog on desktop, the share sheet (which has
-/// "Save to Files") on phones. Returns false if the user cancelled.
+/// "Save to Files") on phones, and a download in a browser. Returns false if
+/// the user cancelled.
 Future<bool> savePdf(Uint8List pdf, String filename) async {
-  if (Platform.isMacOS || Platform.isWindows || Platform.isLinux) {
+  const desktop = {
+    TargetPlatform.macOS,
+    TargetPlatform.windows,
+    TargetPlatform.linux,
+  };
+  if (!kIsWeb && desktop.contains(defaultTargetPlatform)) {
     final location = await getSaveLocation(
       suggestedName: filename,
       acceptedTypeGroups: const [
@@ -322,7 +329,8 @@ Future<bool> savePdf(Uint8List pdf, String filename) async {
       ],
     );
     if (location == null) return false;
-    await File(location.path).writeAsBytes(pdf, flush: true);
+    await XFile.fromData(pdf, mimeType: 'application/pdf')
+        .saveTo(location.path);
     return true;
   }
   await Printing.sharePdf(bytes: pdf, filename: filename);

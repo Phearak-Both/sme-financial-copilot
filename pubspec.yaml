@@ -79,6 +79,18 @@ flutter:
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/to/asset-from-package
 
+  # Noto Sans Khmer (SIL Open Font License, see assets/fonts), for the web.
+  fonts:
+    - family: NotoSansKhmer
+      fonts:
+        - asset: assets/fonts/NotoSansKhmer-Regular.ttf
+        - asset: assets/fonts/NotoSansKhmer-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/NotoSansKhmer-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/NotoSansKhmer-Bold.ttf
+          weight: 700
+
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
   # "family" key with the font family name, and a "fonts" key with a

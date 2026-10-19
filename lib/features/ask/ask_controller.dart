@@ -72,7 +72,7 @@ class PendingMessage extends ChatMessage {
   const PendingMessage();
 }
 
-enum AskFailure { notConfigured, quota, other }
+enum AskFailure { notConfigured, quota, busy, other }
 
 class FailureMessage extends ChatMessage {
   const FailureMessage(this.failure);
@@ -139,7 +139,13 @@ class AskController extends Notifier<List<ChatMessage>> {
       } on AiException catch (e) {
         debugPrint('[ai] failed: $e');
         results.add(
-          FailureMessage(e.isQuota ? AskFailure.quota : AskFailure.other),
+          FailureMessage(
+            e.isQuota
+                ? AskFailure.quota
+                : e.isBusy
+                ? AskFailure.busy
+                : AskFailure.other,
+          ),
         );
       } catch (e, stack) {
         debugPrint('[ai] failed: $e\n$stack');

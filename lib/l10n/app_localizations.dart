@@ -788,6 +788,12 @@ abstract class AppLocalizations {
   /// **'Sorry, something went wrong. Check your internet connection and try again.'**
   String get askError;
 
+  /// No description provided for @askBusy.
+  ///
+  /// In en, this message translates to:
+  /// **'The assistant is busy right now. Please try again in a minute.'**
+  String get askBusy;
+
   /// No description provided for @askQuota.
   ///
   /// In en, this message translates to:
