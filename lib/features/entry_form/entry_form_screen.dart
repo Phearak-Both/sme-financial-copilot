@@ -13,8 +13,6 @@ import '../../domain/entry_draft.dart';
 import '../../domain/entry_proposal.dart';
 import '../../domain/enums.dart';
 
-const lastCurrencySettingKey = 'last_currency';
-
 /// Add a new entry, or edit [initial] when given. A [proposal] from the
 /// assistant pre-fills a new entry for the user to check and save.
 class EntryFormScreen extends ConsumerStatefulWidget {

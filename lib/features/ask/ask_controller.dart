@@ -8,6 +8,7 @@ import '../../ai/ocr_client.dart';
 import '../../ai/whisper_client.dart';
 import '../../app/providers.dart';
 import '../../cloud/supabase_config.dart';
+import '../../core/money/currency.dart';
 import '../../data/chat_repository.dart';
 import '../../data/database.dart';
 import 'chat_codec.dart';
@@ -125,9 +126,9 @@ class AskController extends Notifier<List<ChatMessage>> {
     final service = ref.read(copilotServiceProvider);
     final watch = Stopwatch()..start();
     debugPrint('[ai] send ${input.runtimeType}');
-    ChatMessage result;
+    final results = <ChatMessage>[];
     if (!service.isConfigured) {
-      result = const FailureMessage(AskFailure.notConfigured);
+      results.add(const FailureMessage(AskFailure.notConfigured));
     } else {
       try {
         // Read straight from the database: categoriesProvider's stream is
@@ -136,24 +137,33 @@ class AskController extends Notifier<List<ChatMessage>> {
             .read(ledgerRepositoryProvider)
             .watchCategories()
             .first;
+        final settings = ref.read(settingsStoreProvider);
+        final currencyCode = await settings.get(lastCurrencySettingKey);
         final reply = await service.handle(
           input,
           categories: categories,
           languageCode: languageCode,
+          businessName: await settings.get(businessNameSettingKey) ?? '',
+          defaultCurrency: Currency.values
+              .where((c) => c.code == currencyCode)
+              .firstOrNull,
         );
-        result = AssistantMessage(reply);
+        results.add(AssistantMessage(reply));
+        if (reply.declined case final declined?) {
+          results.add(AssistantMessage(MessageReply(declined)));
+        }
       } on AiException catch (e) {
         debugPrint('[ai] failed: $e');
-        result = FailureMessage(
-          e.isQuota ? AskFailure.quota : AskFailure.other,
+        results.add(
+          FailureMessage(e.isQuota ? AskFailure.quota : AskFailure.other),
         );
       } catch (e, stack) {
         debugPrint('[ai] failed: $e\n$stack');
-        result = const FailureMessage(AskFailure.other);
+        results.add(const FailureMessage(AskFailure.other));
       }
     }
-    debugPrint('[ai] done in ${watch.elapsedMilliseconds} ms: $result');
-    state = [...state.where((m) => m is! PendingMessage), result];
+    debugPrint('[ai] done in ${watch.elapsedMilliseconds} ms: $results');
+    state = [...state.where((m) => m is! PendingMessage), ...results];
     await _save();
   }
 

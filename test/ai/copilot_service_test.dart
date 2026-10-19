@@ -388,4 +388,68 @@ void main() {
       expect(body, contains('inlineData'));
     });
   });
+
+  group('scope', () {
+    test('off-topic requests get the fixed refusal, not model text', () async {
+      for (final (lang, refusal) in [
+        ('km', 'សុំទោស ខ្ញុំអាចជួយបានតែលើហិរញ្ញវត្ថុអាជីវកម្មរបស់អ្នកប៉ុណ្ណោះ។'),
+        ('en', 'Sorry, I can only help with your business finances.'),
+      ]) {
+        final reply = await service([
+          {
+            'intent': 'outOfScope',
+            'language': lang,
+            'reply': 'Sure! Here is your essay...',
+          },
+        ]).handle(
+          const TextInput('write my homework essay'),
+          categories: await repo.watchCategories().first,
+          languageCode: lang,
+        );
+        expect((reply as MessageReply).message, refusal);
+        expect(reply.declined, isNull);
+      }
+    });
+
+    test('a mixed message keeps the allowed part and declines the rest',
+        () async {
+      final reply = await service([
+        {
+          'intent': 'record',
+          'language': 'en',
+          'alsoOutOfScope': true,
+          'entry': {'type': 'income', 'amount': '20', 'currency': 'USD'},
+        },
+      ]).handle(
+        const TextInput('sold rice 20 dollars, and who won the football?'),
+        categories: await repo.watchCategories().first,
+        languageCode: 'en',
+      );
+      expect((reply as ProposalReply).proposal.amountText, '20');
+      expect(reply.declined,
+          'Sorry, I can only help with your business finances.');
+    });
+
+    test('the prompt carries the scope rules and business details', () async {
+      String? prompt;
+      final client = GeminiClient(
+        apiKey: 'test',
+        httpClient: MockClient((request) async {
+          prompt = request.body;
+          return geminiReply({'intent': 'other', 'language': 'en', 'reply': 'Hi!'});
+        }),
+      );
+      await CopilotService(client, repo, clock: () => now).handle(
+        const TextInput('hello'),
+        categories: await repo.watchCategories().first,
+        languageCode: 'en',
+        businessName: 'Sokha Shop',
+        defaultCurrency: Currency.khr,
+      );
+      expect(prompt, contains('Business name: Sokha Shop'));
+      expect(prompt, contains('Default currency: KHR'));
+      expect(prompt, contains('Current date: 2026-10-16'));
+      expect(prompt, contains('Scope enforcement'));
+    });
+  });
 }

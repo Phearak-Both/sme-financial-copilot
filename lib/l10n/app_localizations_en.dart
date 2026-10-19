@@ -810,4 +810,411 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tryAgain => 'Try again';
+
+  @override
+  String get patternsTitle => 'Patterns from your history';
+
+  @override
+  String get patternsSubtitle =>
+      'Worked out from months of records, not only the period above.';
+
+  @override
+  String runwayScale(String days, String max) {
+    return '$days of $max days';
+  }
+
+  @override
+  String get chartOther => 'Other';
+
+  @override
+  String get expenseTotal => 'Total spent';
+
+  @override
+  String get usualTitle => 'This month vs your usual';
+
+  @override
+  String get usualSubtitle =>
+      'Spending from the 1st to today, against the average of the same days in the last 3 months. Regular bills are left out.';
+
+  @override
+  String get usualThisMonth => 'This month';
+
+  @override
+  String get usualAverage => 'Usual';
+
+  @override
+  String usualAlert(String category, String percent) {
+    return '$category is $percent% higher than usual';
+  }
+
+  @override
+  String usualAlertBody(String amount, String usual) {
+    return '$amount more than the usual $usual for this point in the month.';
+  }
+
+  @override
+  String get usualNoAlert => 'No category is far above its usual level.';
+
+  @override
+  String get usualNoHistory => 'Shown once you have a month of records.';
+
+  @override
+  String get usualNew => 'New';
+
+  @override
+  String get recurringTitle => 'Regular payments';
+
+  @override
+  String get recurringSubtitle =>
+      'Expenses you pay about once a month. They aren\'t counted as surprises above.';
+
+  @override
+  String recurringUpcoming(String amount) {
+    return 'Due in the next 7 days: $amount';
+  }
+
+  @override
+  String get recurringNoneSoon => 'Nothing due in the next 7 days.';
+
+  @override
+  String get recurringDueToday => 'Due today';
+
+  @override
+  String get recurringDueTomorrow => 'Due tomorrow';
+
+  @override
+  String recurringDueIn(String days) {
+    return 'In $days days';
+  }
+
+  @override
+  String get recurringLate => 'Not paid yet';
+
+  @override
+  String get recurringPaid => 'Paid';
+
+  @override
+  String recurringEvery(String amount, String day) {
+    return 'About $amount around day $day';
+  }
+
+  @override
+  String get recurringNone =>
+      'Regular payments appear after about 3 months of records.';
+
+  @override
+  String get withdrawChartTitle => 'Profit vs money taken out';
+
+  @override
+  String get chartProfit => 'Profit';
+
+  @override
+  String get chartWithdrawn => 'Taken out';
+
+  @override
+  String withdrawThisMonth(String withdrawn, String profit) {
+    return 'This month you took out $withdrawn but the business made $profit profit.';
+  }
+
+  @override
+  String withdrawMonthsOver(String count) {
+    return 'In $count of the last 6 months you took out more than the business made.';
+  }
+
+  @override
+  String get withdrawNeverOver =>
+      'In the last 6 months you never took out more than the business made.';
+
+  @override
+  String get weekdayTitle => 'Best and worst days';
+
+  @override
+  String get weekdaySubtitle => 'Average income on each day, last 12 weeks.';
+
+  @override
+  String weekdayRatio(String best, String ratio, String worst) {
+    return '$best brings in $ratio× the income of $worst.';
+  }
+
+  @override
+  String weekdayNoIncome(String best, String worst) {
+    return '$best brings in the most; $worst usually has none.';
+  }
+
+  @override
+  String get seasonTitle => 'Income through the year';
+
+  @override
+  String seasonPeaks(String peak, String low) {
+    return 'Income peaks in $peak and is lowest in $low. Save during the busy months for the lean ones.';
+  }
+
+  @override
+  String get seasonNeedYear =>
+      'Busy and lean months are named after a full year of records.';
+
+  @override
+  String get sampleData => 'Sample data';
+
+  @override
+  String get loadSampleData => 'Load sample data';
+
+  @override
+  String get loadSampleHelp =>
+      'Adds two years of example records for a shop with a rice field, so every dashboard chart has something to show.';
+
+  @override
+  String get loadSampleTitle => 'Add sample data?';
+
+  @override
+  String loadSampleBody(String count) {
+    return 'This adds about $count example entries to this account. Entries can be voided but not deleted, so use a test account to keep your real records clean.';
+  }
+
+  @override
+  String loadSampleDone(String count) {
+    return 'Added $count sample entries.';
+  }
+
+  @override
+  String get add => 'Add';
+
+  @override
+  String get incomeTotal => 'Total income';
+
+  @override
+  String get topSellersTitle => 'Top sellers';
+
+  @override
+  String get topSellersSubtitle =>
+      'Income by item, from the description of each entry.';
+
+  @override
+  String topSellerShare(String item, String percent) {
+    return '$item brings in $percent% of your income.';
+  }
+
+  @override
+  String topSellerRising(String item, String change) {
+    return '$item grew the most: $change vs the previous period.';
+  }
+
+  @override
+  String salesCount(String count) {
+    return 'sold $count times';
+  }
+
+  @override
+  String otherItems(String count) {
+    return '$count other items';
+  }
+
+  @override
+  String get topSellersEmpty =>
+      'When you record income, add a description such as \"Rice\" or \"Drinks\" to see what sells best.';
+
+  @override
+  String get navExport => 'Export';
+
+  @override
+  String get exportPageTitle => 'Export reports';
+
+  @override
+  String get exportPageIntro =>
+      'Choose a report, pick the options and save it as a PDF.';
+
+  @override
+  String get reportAccountStatement => 'Account statement';
+
+  @override
+  String get reportAccountStatementDesc =>
+      'Every entry with the running cash balance.';
+
+  @override
+  String get reportIncomeStatement => 'Income statement';
+
+  @override
+  String get reportIncomeStatementDesc =>
+      'Income, expenses and profit by category.';
+
+  @override
+  String get reportCashFlow => 'Cash flow report';
+
+  @override
+  String get reportCashFlowDesc => 'Cash in and out, month by month.';
+
+  @override
+  String get reportLoanSummary => 'Loan-ready financial summary';
+
+  @override
+  String get reportLoanSummaryDesc =>
+      'The key figures a bank or microfinance lender asks for.';
+
+  @override
+  String get reportLanguage => 'Report language';
+
+  @override
+  String get periodLast12Months => 'Last 12 months';
+
+  @override
+  String get businessName => 'Business name';
+
+  @override
+  String get ownerName => 'Owner name';
+
+  @override
+  String get savePdf => 'Save PDF';
+
+  @override
+  String get isIncome => 'Income';
+
+  @override
+  String get isExpenses => 'Expenses';
+
+  @override
+  String get isTotalExpenses => 'Total expenses';
+
+  @override
+  String get isNetProfit => 'Net profit (loss)';
+
+  @override
+  String get isMargin => 'Profit margin';
+
+  @override
+  String get colThisPeriod => 'This period';
+
+  @override
+  String get colPrevious => 'Previous period';
+
+  @override
+  String get colChange => 'Change';
+
+  @override
+  String isComparedWith(String from, String to) {
+    return 'Previous period: $from – $to';
+  }
+
+  @override
+  String isOwnerNote(String contributed, String withdrawn) {
+    return 'Owner contributions ($contributed) and withdrawals ($withdrawn) move cash but are not business income or expenses, so they are not included above.';
+  }
+
+  @override
+  String get reportBasisNote =>
+      'Cash basis: income and expenses are counted on the day money is received or paid. Voided entries are left out. Prepared from the owner\'s own records; not audited.';
+
+  @override
+  String get cfOpening => 'Opening cash';
+
+  @override
+  String get cfCashIn => 'Cash in';
+
+  @override
+  String get cfCashOut => 'Cash out';
+
+  @override
+  String get cfOwnerIn => 'Owner contributions';
+
+  @override
+  String get cfOwnerOut => 'Owner withdrawals';
+
+  @override
+  String get cfTotalIn => 'Total cash in';
+
+  @override
+  String get cfTotalOut => 'Total cash out';
+
+  @override
+  String get cfNet => 'Net change in cash';
+
+  @override
+  String get cfClosing => 'Closing cash';
+
+  @override
+  String get cfByMonth => 'Month by month';
+
+  @override
+  String get colMonth => 'Month';
+
+  @override
+  String get colNet => 'Net';
+
+  @override
+  String get cfNoOpening =>
+      'Opening and closing cash need an opening cash amount dated on or before the start of the period (Settings → Opening cash).';
+
+  @override
+  String get lsBusiness => 'Business';
+
+  @override
+  String get lsOwner => 'Owner';
+
+  @override
+  String get lsRecordsSince => 'Records kept since';
+
+  @override
+  String get lsKeyFigures => 'Key figures';
+
+  @override
+  String lsAveragesNote(String count) {
+    return 'Monthly averages are over the $count finished months of the period.';
+  }
+
+  @override
+  String get lsAvgIncome => 'Average monthly income';
+
+  @override
+  String get lsAvgExpenses => 'Average monthly expenses';
+
+  @override
+  String get lsAvgProfit => 'Average monthly profit';
+
+  @override
+  String get lsAvgWithdrawals => 'Average monthly owner withdrawals';
+
+  @override
+  String get lsAvgSurplus => 'Average monthly cash left after withdrawals';
+
+  @override
+  String get lsProfitableMonths => 'Profitable months';
+
+  @override
+  String lsOutOf(String count, String total) {
+    return '$count of $total';
+  }
+
+  @override
+  String get lsRunway => 'Cash runway';
+
+  @override
+  String lsDays(String days) {
+    return '$days days';
+  }
+
+  @override
+  String get lsMonthly => 'Monthly results';
+
+  @override
+  String get lsIncomeSources => 'Main income sources';
+
+  @override
+  String get lsShare => 'Share';
+
+  @override
+  String get lsCommitments =>
+      'Regular monthly payments (including existing loans)';
+
+  @override
+  String get lsCommitmentsTotal => 'Total per month';
+
+  @override
+  String get lsNoCommitments =>
+      'No regular monthly payments were found in the records.';
+
+  @override
+  String get lsDayOfMonth => 'Usual day';
+
+  @override
+  String get lsDisclaimer =>
+      'Prepared by the business owner from their own records using SME Financial Copilot. Figures are on a cash basis and have not been audited.';
 }

@@ -18,7 +18,10 @@ class InsightsCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final insights = data.insights;
+    // How long cash lasts is shown on the cash card.
+    final insights = data.insights
+        .where((i) => i is! RunwayInsight && i is! RunwayStatusInsight)
+        .toList();
     if (insights.isEmpty) return const SizedBox.shrink();
     final textTheme = Theme.of(context).textTheme;
     final categories = ref.watch(categoriesByIdProvider);

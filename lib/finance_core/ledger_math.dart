@@ -20,6 +20,7 @@ class LedgerEntry {
     required this.occurredOn,
     required this.status,
     this.categoryId,
+    this.description = '',
   });
 
   final String id;
@@ -31,6 +32,7 @@ class LedgerEntry {
   final String occurredOn;
   final EntryStatus status;
   final String? categoryId;
+  final String description;
 }
 
 /// Totals for one currency over one period.

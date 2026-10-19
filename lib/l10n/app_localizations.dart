@@ -1483,6 +1483,696 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Try again'**
   String get tryAgain;
+
+  /// No description provided for @patternsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Patterns from your history'**
+  String get patternsTitle;
+
+  /// No description provided for @patternsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Worked out from months of records, not only the period above.'**
+  String get patternsSubtitle;
+
+  /// No description provided for @runwayScale.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} of {max} days'**
+  String runwayScale(String days, String max);
+
+  /// No description provided for @chartOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get chartOther;
+
+  /// No description provided for @expenseTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Total spent'**
+  String get expenseTotal;
+
+  /// No description provided for @usualTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'This month vs your usual'**
+  String get usualTitle;
+
+  /// No description provided for @usualSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Spending from the 1st to today, against the average of the same days in the last 3 months. Regular bills are left out.'**
+  String get usualSubtitle;
+
+  /// No description provided for @usualThisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'This month'**
+  String get usualThisMonth;
+
+  /// No description provided for @usualAverage.
+  ///
+  /// In en, this message translates to:
+  /// **'Usual'**
+  String get usualAverage;
+
+  /// No description provided for @usualAlert.
+  ///
+  /// In en, this message translates to:
+  /// **'{category} is {percent}% higher than usual'**
+  String usualAlert(String category, String percent);
+
+  /// No description provided for @usualAlertBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} more than the usual {usual} for this point in the month.'**
+  String usualAlertBody(String amount, String usual);
+
+  /// No description provided for @usualNoAlert.
+  ///
+  /// In en, this message translates to:
+  /// **'No category is far above its usual level.'**
+  String get usualNoAlert;
+
+  /// No description provided for @usualNoHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Shown once you have a month of records.'**
+  String get usualNoHistory;
+
+  /// No description provided for @usualNew.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get usualNew;
+
+  /// No description provided for @recurringTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Regular payments'**
+  String get recurringTitle;
+
+  /// No description provided for @recurringSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Expenses you pay about once a month. They aren\'t counted as surprises above.'**
+  String get recurringSubtitle;
+
+  /// No description provided for @recurringUpcoming.
+  ///
+  /// In en, this message translates to:
+  /// **'Due in the next 7 days: {amount}'**
+  String recurringUpcoming(String amount);
+
+  /// No description provided for @recurringNoneSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing due in the next 7 days.'**
+  String get recurringNoneSoon;
+
+  /// No description provided for @recurringDueToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Due today'**
+  String get recurringDueToday;
+
+  /// No description provided for @recurringDueTomorrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Due tomorrow'**
+  String get recurringDueTomorrow;
+
+  /// No description provided for @recurringDueIn.
+  ///
+  /// In en, this message translates to:
+  /// **'In {days} days'**
+  String recurringDueIn(String days);
+
+  /// No description provided for @recurringLate.
+  ///
+  /// In en, this message translates to:
+  /// **'Not paid yet'**
+  String get recurringLate;
+
+  /// No description provided for @recurringPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get recurringPaid;
+
+  /// No description provided for @recurringEvery.
+  ///
+  /// In en, this message translates to:
+  /// **'About {amount} around day {day}'**
+  String recurringEvery(String amount, String day);
+
+  /// No description provided for @recurringNone.
+  ///
+  /// In en, this message translates to:
+  /// **'Regular payments appear after about 3 months of records.'**
+  String get recurringNone;
+
+  /// No description provided for @withdrawChartTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Profit vs money taken out'**
+  String get withdrawChartTitle;
+
+  /// No description provided for @chartProfit.
+  ///
+  /// In en, this message translates to:
+  /// **'Profit'**
+  String get chartProfit;
+
+  /// No description provided for @chartWithdrawn.
+  ///
+  /// In en, this message translates to:
+  /// **'Taken out'**
+  String get chartWithdrawn;
+
+  /// No description provided for @withdrawThisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'This month you took out {withdrawn} but the business made {profit} profit.'**
+  String withdrawThisMonth(String withdrawn, String profit);
+
+  /// No description provided for @withdrawMonthsOver.
+  ///
+  /// In en, this message translates to:
+  /// **'In {count} of the last 6 months you took out more than the business made.'**
+  String withdrawMonthsOver(String count);
+
+  /// No description provided for @withdrawNeverOver.
+  ///
+  /// In en, this message translates to:
+  /// **'In the last 6 months you never took out more than the business made.'**
+  String get withdrawNeverOver;
+
+  /// No description provided for @weekdayTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Best and worst days'**
+  String get weekdayTitle;
+
+  /// No description provided for @weekdaySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Average income on each day, last 12 weeks.'**
+  String get weekdaySubtitle;
+
+  /// No description provided for @weekdayRatio.
+  ///
+  /// In en, this message translates to:
+  /// **'{best} brings in {ratio}× the income of {worst}.'**
+  String weekdayRatio(String best, String ratio, String worst);
+
+  /// No description provided for @weekdayNoIncome.
+  ///
+  /// In en, this message translates to:
+  /// **'{best} brings in the most; {worst} usually has none.'**
+  String weekdayNoIncome(String best, String worst);
+
+  /// No description provided for @seasonTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Income through the year'**
+  String get seasonTitle;
+
+  /// No description provided for @seasonPeaks.
+  ///
+  /// In en, this message translates to:
+  /// **'Income peaks in {peak} and is lowest in {low}. Save during the busy months for the lean ones.'**
+  String seasonPeaks(String peak, String low);
+
+  /// No description provided for @seasonNeedYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Busy and lean months are named after a full year of records.'**
+  String get seasonNeedYear;
+
+  /// No description provided for @sampleData.
+  ///
+  /// In en, this message translates to:
+  /// **'Sample data'**
+  String get sampleData;
+
+  /// No description provided for @loadSampleData.
+  ///
+  /// In en, this message translates to:
+  /// **'Load sample data'**
+  String get loadSampleData;
+
+  /// No description provided for @loadSampleHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Adds two years of example records for a shop with a rice field, so every dashboard chart has something to show.'**
+  String get loadSampleHelp;
+
+  /// No description provided for @loadSampleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add sample data?'**
+  String get loadSampleTitle;
+
+  /// No description provided for @loadSampleBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This adds about {count} example entries to this account. Entries can be voided but not deleted, so use a test account to keep your real records clean.'**
+  String loadSampleBody(String count);
+
+  /// No description provided for @loadSampleDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Added {count} sample entries.'**
+  String loadSampleDone(String count);
+
+  /// No description provided for @add.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get add;
+
+  /// No description provided for @incomeTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Total income'**
+  String get incomeTotal;
+
+  /// No description provided for @topSellersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Top sellers'**
+  String get topSellersTitle;
+
+  /// No description provided for @topSellersSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Income by item, from the description of each entry.'**
+  String get topSellersSubtitle;
+
+  /// No description provided for @topSellerShare.
+  ///
+  /// In en, this message translates to:
+  /// **'{item} brings in {percent}% of your income.'**
+  String topSellerShare(String item, String percent);
+
+  /// No description provided for @topSellerRising.
+  ///
+  /// In en, this message translates to:
+  /// **'{item} grew the most: {change} vs the previous period.'**
+  String topSellerRising(String item, String change);
+
+  /// No description provided for @salesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'sold {count} times'**
+  String salesCount(String count);
+
+  /// No description provided for @otherItems.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} other items'**
+  String otherItems(String count);
+
+  /// No description provided for @topSellersEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'When you record income, add a description such as \"Rice\" or \"Drinks\" to see what sells best.'**
+  String get topSellersEmpty;
+
+  /// No description provided for @navExport.
+  ///
+  /// In en, this message translates to:
+  /// **'Export'**
+  String get navExport;
+
+  /// No description provided for @exportPageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Export reports'**
+  String get exportPageTitle;
+
+  /// No description provided for @exportPageIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a report, pick the options and save it as a PDF.'**
+  String get exportPageIntro;
+
+  /// No description provided for @reportAccountStatement.
+  ///
+  /// In en, this message translates to:
+  /// **'Account statement'**
+  String get reportAccountStatement;
+
+  /// No description provided for @reportAccountStatementDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Every entry with the running cash balance.'**
+  String get reportAccountStatementDesc;
+
+  /// No description provided for @reportIncomeStatement.
+  ///
+  /// In en, this message translates to:
+  /// **'Income statement'**
+  String get reportIncomeStatement;
+
+  /// No description provided for @reportIncomeStatementDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Income, expenses and profit by category.'**
+  String get reportIncomeStatementDesc;
+
+  /// No description provided for @reportCashFlow.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash flow report'**
+  String get reportCashFlow;
+
+  /// No description provided for @reportCashFlowDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash in and out, month by month.'**
+  String get reportCashFlowDesc;
+
+  /// No description provided for @reportLoanSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Loan-ready financial summary'**
+  String get reportLoanSummary;
+
+  /// No description provided for @reportLoanSummaryDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The key figures a bank or microfinance lender asks for.'**
+  String get reportLoanSummaryDesc;
+
+  /// No description provided for @reportLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Report language'**
+  String get reportLanguage;
+
+  /// No description provided for @periodLast12Months.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 12 months'**
+  String get periodLast12Months;
+
+  /// No description provided for @businessName.
+  ///
+  /// In en, this message translates to:
+  /// **'Business name'**
+  String get businessName;
+
+  /// No description provided for @ownerName.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner name'**
+  String get ownerName;
+
+  /// No description provided for @savePdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Save PDF'**
+  String get savePdf;
+
+  /// No description provided for @isIncome.
+  ///
+  /// In en, this message translates to:
+  /// **'Income'**
+  String get isIncome;
+
+  /// No description provided for @isExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Expenses'**
+  String get isExpenses;
+
+  /// No description provided for @isTotalExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Total expenses'**
+  String get isTotalExpenses;
+
+  /// No description provided for @isNetProfit.
+  ///
+  /// In en, this message translates to:
+  /// **'Net profit (loss)'**
+  String get isNetProfit;
+
+  /// No description provided for @isMargin.
+  ///
+  /// In en, this message translates to:
+  /// **'Profit margin'**
+  String get isMargin;
+
+  /// No description provided for @colThisPeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'This period'**
+  String get colThisPeriod;
+
+  /// No description provided for @colPrevious.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous period'**
+  String get colPrevious;
+
+  /// No description provided for @colChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get colChange;
+
+  /// No description provided for @isComparedWith.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous period: {from} – {to}'**
+  String isComparedWith(String from, String to);
+
+  /// No description provided for @isOwnerNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner contributions ({contributed}) and withdrawals ({withdrawn}) move cash but are not business income or expenses, so they are not included above.'**
+  String isOwnerNote(String contributed, String withdrawn);
+
+  /// No description provided for @reportBasisNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash basis: income and expenses are counted on the day money is received or paid. Voided entries are left out. Prepared from the owner\'s own records; not audited.'**
+  String get reportBasisNote;
+
+  /// No description provided for @cfOpening.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening cash'**
+  String get cfOpening;
+
+  /// No description provided for @cfCashIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash in'**
+  String get cfCashIn;
+
+  /// No description provided for @cfCashOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash out'**
+  String get cfCashOut;
+
+  /// No description provided for @cfOwnerIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner contributions'**
+  String get cfOwnerIn;
+
+  /// No description provided for @cfOwnerOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner withdrawals'**
+  String get cfOwnerOut;
+
+  /// No description provided for @cfTotalIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Total cash in'**
+  String get cfTotalIn;
+
+  /// No description provided for @cfTotalOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Total cash out'**
+  String get cfTotalOut;
+
+  /// No description provided for @cfNet.
+  ///
+  /// In en, this message translates to:
+  /// **'Net change in cash'**
+  String get cfNet;
+
+  /// No description provided for @cfClosing.
+  ///
+  /// In en, this message translates to:
+  /// **'Closing cash'**
+  String get cfClosing;
+
+  /// No description provided for @cfByMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Month by month'**
+  String get cfByMonth;
+
+  /// No description provided for @colMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Month'**
+  String get colMonth;
+
+  /// No description provided for @colNet.
+  ///
+  /// In en, this message translates to:
+  /// **'Net'**
+  String get colNet;
+
+  /// No description provided for @cfNoOpening.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening and closing cash need an opening cash amount dated on or before the start of the period (Settings → Opening cash).'**
+  String get cfNoOpening;
+
+  /// No description provided for @lsBusiness.
+  ///
+  /// In en, this message translates to:
+  /// **'Business'**
+  String get lsBusiness;
+
+  /// No description provided for @lsOwner.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner'**
+  String get lsOwner;
+
+  /// No description provided for @lsRecordsSince.
+  ///
+  /// In en, this message translates to:
+  /// **'Records kept since'**
+  String get lsRecordsSince;
+
+  /// No description provided for @lsKeyFigures.
+  ///
+  /// In en, this message translates to:
+  /// **'Key figures'**
+  String get lsKeyFigures;
+
+  /// No description provided for @lsAveragesNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly averages are over the {count} finished months of the period.'**
+  String lsAveragesNote(String count);
+
+  /// No description provided for @lsAvgIncome.
+  ///
+  /// In en, this message translates to:
+  /// **'Average monthly income'**
+  String get lsAvgIncome;
+
+  /// No description provided for @lsAvgExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Average monthly expenses'**
+  String get lsAvgExpenses;
+
+  /// No description provided for @lsAvgProfit.
+  ///
+  /// In en, this message translates to:
+  /// **'Average monthly profit'**
+  String get lsAvgProfit;
+
+  /// No description provided for @lsAvgWithdrawals.
+  ///
+  /// In en, this message translates to:
+  /// **'Average monthly owner withdrawals'**
+  String get lsAvgWithdrawals;
+
+  /// No description provided for @lsAvgSurplus.
+  ///
+  /// In en, this message translates to:
+  /// **'Average monthly cash left after withdrawals'**
+  String get lsAvgSurplus;
+
+  /// No description provided for @lsProfitableMonths.
+  ///
+  /// In en, this message translates to:
+  /// **'Profitable months'**
+  String get lsProfitableMonths;
+
+  /// No description provided for @lsOutOf.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} of {total}'**
+  String lsOutOf(String count, String total);
+
+  /// No description provided for @lsRunway.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash runway'**
+  String get lsRunway;
+
+  /// No description provided for @lsDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} days'**
+  String lsDays(String days);
+
+  /// No description provided for @lsMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly results'**
+  String get lsMonthly;
+
+  /// No description provided for @lsIncomeSources.
+  ///
+  /// In en, this message translates to:
+  /// **'Main income sources'**
+  String get lsIncomeSources;
+
+  /// No description provided for @lsShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get lsShare;
+
+  /// No description provided for @lsCommitments.
+  ///
+  /// In en, this message translates to:
+  /// **'Regular monthly payments (including existing loans)'**
+  String get lsCommitments;
+
+  /// No description provided for @lsCommitmentsTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Total per month'**
+  String get lsCommitmentsTotal;
+
+  /// No description provided for @lsNoCommitments.
+  ///
+  /// In en, this message translates to:
+  /// **'No regular monthly payments were found in the records.'**
+  String get lsNoCommitments;
+
+  /// No description provided for @lsDayOfMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Usual day'**
+  String get lsDayOfMonth;
+
+  /// No description provided for @lsDisclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'Prepared by the business owner from their own records using SME Financial Copilot. Figures are on a cash basis and have not been audited.'**
+  String get lsDisclaimer;
 }
 
 class _AppLocalizationsDelegate
