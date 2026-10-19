@@ -21,13 +21,39 @@ const ALLOWED_MODELS = new Set([
 // A receipt photo (~1600 px JPEG) base64-encoded stays well under this.
 const MAX_BODY_BYTES = 8 * 1024 * 1024;
 
-const json = (status: number, body: unknown) =>
-  new Response(JSON.stringify(body), {
-    status,
-    headers: { "Content-Type": "application/json" },
-  });
+// Browsers only call another site's function if it allows their origin:
+// the web app on Netlify (and its deploy previews) and local testing. The
+// phone and desktop apps send no Origin and don't need this.
+const ALLOWED_ORIGINS = [
+  /^https:\/\/sme-copilot\.netlify\.app$/,
+  /^https:\/\/[a-z0-9-]+--sme-copilot\.netlify\.app$/,
+  /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/,
+];
+
+const corsHeaders = (origin: string | null): Record<string, string> =>
+  origin && ALLOWED_ORIGINS.some((re) => re.test(origin))
+    ? {
+      "Access-Control-Allow-Origin": origin,
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Headers":
+        "authorization, apikey, content-type, x-client-info",
+      "Access-Control-Max-Age": "86400",
+      "Vary": "Origin",
+    }
+    : {};
 
 Deno.serve(async (req) => {
+  const cors = corsHeaders(req.headers.get("Origin"));
+  const json = (status: number, body: unknown) =>
+    new Response(JSON.stringify(body), {
+      status,
+      headers: { ...cors, "Content-Type": "application/json" },
+    });
+
+  // The browser's permission check before the real request.
+  if (req.method === "OPTIONS") {
+    return new Response(null, { status: 204, headers: cors });
+  }
   if (req.method !== "POST") return json(405, { error: "POST only" });
 
   // Signed-in users only. The project uses asymmetric JWT signing keys, so
@@ -72,6 +98,6 @@ Deno.serve(async (req) => {
   );
   return new Response(upstream.body, {
     status: upstream.status,
-    headers: { "Content-Type": "application/json" },
+    headers: { ...cors, "Content-Type": "application/json" },
   });
 });
