@@ -48,11 +48,6 @@ class _AskScreenState extends ConsumerState<AskScreen> {
 
   /// What the text box held before recording started.
   String _prefix = '';
-  int _liveSentBytes = 0;
-  bool _liveInFlight = false;
-
-  /// Bumped on every start and stop so late previews are dropped.
-  int _liveGeneration = 0;
 
   bool _recording = false;
   bool _transcribing = false;
@@ -115,7 +110,7 @@ class _AskScreenState extends ConsumerState<AskScreen> {
       return;
     }
     if (!mounted) return;
-    // 16 kHz mono 16-bit PCM, streamed so previews can start right away.
+    // 16 kHz mono 16-bit PCM, wrapped as WAV when recording stops.
     final stream = await _recorder.startStream(
       const RecordConfig(
         encoder: AudioEncoder.pcm16bits,
@@ -124,8 +119,6 @@ class _AskScreenState extends ConsumerState<AskScreen> {
       ),
     );
     _pcm.clear();
-    _liveSentBytes = 0;
-    _liveGeneration++;
     _prefix = _text.text.trim();
     _audioSub = stream.listen(_pcm.add);
     setState(() {
@@ -135,42 +128,8 @@ class _AskScreenState extends ConsumerState<AskScreen> {
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       setState(() => _elapsed += const Duration(seconds: 1));
       // Keep requests small for the free tier.
-      if (_elapsed.inSeconds >= 60) {
-        _stopRecording();
-      } else {
-        _updateLivePreview();
-      }
+      if (_elapsed.inSeconds >= 60) _stopRecording();
     });
-  }
-
-  /// Re-transcribes everything said so far and shows it in the text box.
-  /// One request at a time; skipped when less than a second is new.
-  Future<void> _updateLivePreview() async {
-    final service = ref.read(copilotServiceProvider);
-    if (!service.canTranscribeLive || _liveInFlight || !_recording) return;
-    final length = _pcm.length;
-    // Past one 30 s window a preview is as slow as the final pass.
-    if (length - _liveSentBytes < _bytesPerSecond ||
-        length > 30 * _bytesPerSecond) {
-      return;
-    }
-    _liveInFlight = true;
-    final generation = _liveGeneration;
-    final pcm = _pcm.toBytes();
-    _liveSentBytes = pcm.length;
-    final text = await service.transcribeLive(
-      pcm16ToWav(pcm),
-      languageCode: _languageCode,
-    );
-    _liveInFlight = false;
-    if (!mounted ||
-        !_recording ||
-        generation != _liveGeneration ||
-        text == null ||
-        text.isEmpty) {
-      return;
-    }
-    _showInTextBox(text);
   }
 
   void _showInTextBox(String transcript) {
@@ -182,7 +141,6 @@ class _AskScreenState extends ConsumerState<AskScreen> {
     // The 60-second auto-stop and a tap can both arrive.
     if (!_recording) return;
     _timer?.cancel();
-    _liveGeneration++; // Ignore previews still in flight.
     await _recorder.stop();
     await _audioSub?.cancel();
     _audioSub = null;
@@ -192,7 +150,6 @@ class _AskScreenState extends ConsumerState<AskScreen> {
       _text.text = _prefix;
       return;
     }
-    // A full-accuracy pass replaces the live preview.
     await _transcribeIntoTextBox(pcm16ToWav(pcm), 'audio/wav');
   }
 
@@ -220,13 +177,11 @@ class _AskScreenState extends ConsumerState<AskScreen> {
       if (mounted) setState(() => _transcribing = false);
     }
     if (!mounted) return;
-    if (transcript.isNotEmpty) {
-      _showInTextBox(transcript);
-    } else if (_text.text.trim() == _prefix) {
-      // Nothing from the final pass and no live preview to keep.
+    if (transcript.isEmpty) {
       messenger.showSnackBar(SnackBar(content: Text(l10n.askNothingHeard)));
       return;
     }
+    _showInTextBox(transcript);
     _fromVoice = true;
     _focus.requestFocus();
   }

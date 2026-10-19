@@ -7,8 +7,6 @@ import 'package:http/testing.dart';
 import 'package:sme_financial_copilot/data/cloud_store.dart';
 import 'package:sme_financial_copilot/ai/copilot_service.dart';
 import 'package:sme_financial_copilot/ai/gemini_client.dart';
-import 'package:sme_financial_copilot/ai/ocr_client.dart';
-import 'package:sme_financial_copilot/ai/whisper_client.dart';
 import 'package:sme_financial_copilot/core/money/currency.dart';
 import 'package:sme_financial_copilot/data/ledger_repository.dart';
 import 'package:sme_financial_copilot/domain/entry_draft.dart';
@@ -162,58 +160,42 @@ void main() {
     },
   );
 
-  group('voice through Whisper', () {
-    const fertilizer = {
-      'intent': 'record',
-      'language': 'km',
-      'entry': {'type': 'expense', 'amount': '50000', 'currency': 'KHR'},
-    };
+  test('Gemini listens to a voice message and reads a receipt', () async {
+    final bodies = <String>[];
+    final copilot = CopilotService(
+      GeminiClient(
+        apiKey: 'test',
+        httpClient: MockClient((request) async {
+          bodies.add(request.body);
+          return geminiReply({
+            'intent': 'record',
+            'language': 'km',
+            'transcript': 'ហាងលក់ជី សរុប 50,000 ៛',
+            'entry': {'type': 'expense', 'amount': '50000', 'currency': 'KHR'},
+          });
+        }),
+      ),
+      repo,
+      clock: () => now,
+    );
+    final categories = await repo.watchCategories().first;
 
-    Future<(CopilotReply, List<String>)> speak(
-      http.Response whisperResponse,
-    ) async {
-      final geminiBodies = <String>[];
-      final copilot = CopilotService(
-        GeminiClient(
-          apiKey: 'test',
-          httpClient: MockClient((request) async {
-            geminiBodies.add(request.body);
-            return geminiReply(fertilizer);
-          }),
-        ),
-        repo,
-        whisper: WhisperClient(
-          baseUrl: 'http://whisper.test',
-          httpClient: MockClient((_) async => whisperResponse),
-        ),
-        clock: () => now,
-      );
-      final reply = await copilot.handle(
-        VoiceInput(Uint8List.fromList([1, 2, 3]), 'audio/wav'),
-        categories: await repo.watchCategories().first,
-        languageCode: 'km',
-      );
-      return (reply, geminiBodies);
-    }
+    final voice = await copilot.handle(
+      VoiceInput(Uint8List.fromList([1, 2, 3]), 'audio/wav'),
+      categories: categories,
+      languageCode: 'km',
+    );
+    final photo = await copilot.handle(
+      PhotoInput(Uint8List.fromList([1, 2]), 'image/jpeg'),
+      categories: categories,
+      languageCode: 'km',
+    );
 
-    test('sends the transcript to Gemini as text, not the audio', () async {
-      final (reply, bodies) = await speak(
-        http.Response.bytes(
-          utf8.encode(jsonEncode({'text': 'ទិញ ជី ប្រាំ មឿន រាល'})),
-          200,
-        ),
-      );
-      expect(reply.transcript, 'ទិញ ជី ប្រាំ មឿន រាល');
-      expect((reply as ProposalReply).proposal.source, EntrySource.voice);
-      expect(bodies.single, contains('ទិញ ជី ប្រាំ មឿន រាល'));
-      expect(bodies.single, isNot(contains('inlineData')));
-    });
-
-    test('falls back to Gemini audio when Whisper is down', () async {
-      final (reply, bodies) = await speak(http.Response('boom', 503));
-      expect(reply, isA<ProposalReply>());
-      expect(bodies.single, contains('inlineData'));
-    });
+    expect((voice as ProposalReply).proposal.source, EntrySource.voice);
+    final proposal = (photo as ProposalReply).proposal;
+    expect(proposal.source, EntrySource.receipt);
+    expect(proposal.rawInput, 'ហាងលក់ជី សរុប 50,000 ៛');
+    expect(bodies, everyElement(contains('inlineData')));
   });
 
   test('switches to the next model when one runs out of free quota', () async {
@@ -241,36 +223,20 @@ void main() {
     expect(asked, ['a', 'b', 'b']);
   });
 
-  group('transcribe into the text box', () {
-    CopilotService withWhisper(http.Response whisperResponse) => CopilotService(
+  test('transcribes a recording into the text box', () async {
+    final copilot = CopilotService(
       GeminiClient(
         apiKey: 'test',
         httpClient: MockClient(
-          (_) async => geminiReply({'transcript': 'ពីGemini'}),
+          (_) async => geminiReply({'transcript': 'ទិញ ជី ប្រាំ ម៉ឺន រៀល'}),
         ),
       ),
       repo,
-      whisper: WhisperClient(
-        baseUrl: 'http://whisper.test',
-        httpClient: MockClient((_) async => whisperResponse),
-      ),
     );
-
-    test('uses the Khmer Whisper transcript', () async {
-      final text = await withWhisper(
-        http.Response.bytes(
-          utf8.encode(jsonEncode({'text': 'ទិញ ជី ប្រាំ ម៉ឺន រៀល'})),
-          200,
-        ),
-      ).transcribe(Uint8List.fromList([1]), 'audio/wav');
-      expect(text, 'ទិញ ជី ប្រាំ ម៉ឺន រៀល');
-    });
-
-    test('falls back to Gemini when Whisper fails', () async {
-      final text = await withWhisper(http.Response('down', 503))
-          .transcribe(Uint8List.fromList([1]), 'audio/wav');
-      expect(text, 'ពីGemini');
-    });
+    expect(
+      await copilot.transcribe(Uint8List.fromList([1]), 'audio/wav'),
+      'ទិញ ជី ប្រាំ ម៉ឺន រៀល',
+    );
   });
 
   test('a sent transcript is recorded as a voice entry', () async {
@@ -311,82 +277,99 @@ void main() {
     expect(result['model'], 'fast:generateContent');
   });
 
-  test('asks Whisper for the app language', () async {
-    final urls = <Uri>[];
-    final copilot = CopilotService(
-      GeminiClient(apiKey: 'test'),
-      repo,
-      whisper: WhisperClient(
-        baseUrl: 'http://whisper.test',
-        httpClient: MockClient((request) async {
-          urls.add(request.url);
-          return http.Response('{"text":"Bought fertilizer for \$50."}', 200);
-        }),
-      ),
+  test('tries the next model when one is overloaded, this time only',
+      () async {
+    final asked = <String>[];
+    var overloaded = true;
+    final client = GeminiClient(
+      apiKey: 'test',
+      model: 'a',
+      fallbackModels: const ['b'],
+      httpClient: MockClient((request) async {
+        final model = request.url.path.split('/').last.split(':').first;
+        asked.add(model);
+        return model == 'a' && overloaded
+            ? http.Response('high demand', 503)
+            : geminiReply({'ok': true});
+      }),
     );
-    final audio = Uint8List.fromList([1]);
-
-    expect(
-      await copilot.transcribe(audio, 'audio/wav', languageCode: 'en'),
-      'Bought fertilizer for \$50.',
+    Future<void> ask() => client.generateJson(
+      systemInstruction: '',
+      parts: const [TextPart('hi')],
+      schema: const {},
     );
-    await copilot.transcribeLive(audio);
 
-    expect(urls[0].queryParameters, {'lang': 'en'});
-    expect(urls[1].queryParameters, {'lang': 'km', 'live': '1'});
+    await ask();
+    overloaded = false;
+    await ask();
+    expect(asked, ['a', 'b', 'a']);
   });
 
-  group('receipt photos through Tesseract OCR', () {
-    const receiptReply = {
-      'intent': 'record',
-      'language': 'km',
-      'entry': {'type': 'expense', 'amount': '50000', 'currency': 'KHR'},
-    };
+  test('transcribing asks Gemini for minimal thinking', () async {
+    final bodies = <Map<String, dynamic>>[];
+    final copilot = CopilotService(
+      GeminiClient(
+        apiKey: 'test',
+        httpClient: MockClient((request) async {
+          bodies.add(jsonDecode(request.body) as Map<String, dynamic>);
+          return geminiReply({'transcript': 'hi'});
+        }),
+      ),
+      repo,
+    );
+    await copilot.transcribe(Uint8List.fromList([1]), 'audio/wav');
+    expect(
+      bodies.single['generationConfig']['thinkingConfig']['thinkingLevel'],
+      'minimal',
+    );
+  });
 
-    Future<(CopilotReply, String)> snap(http.Response ocrResponse) async {
-      late String geminiBody;
-      final copilot = CopilotService(
-        GeminiClient(
-          apiKey: 'test',
-          httpClient: MockClient((request) async {
-            geminiBody = request.body;
-            return geminiReply(receiptReply);
-          }),
-        ),
-        repo,
-        ocr: OcrClient(
-          baseUrl: 'http://ocr.test',
-          httpClient: MockClient((_) async => ocrResponse),
-        ),
-      );
-      final reply = await copilot.handle(
-        PhotoInput(Uint8List.fromList([1, 2]), 'image/jpeg'),
-        categories: await repo.watchCategories().first,
-        languageCode: 'km',
-      );
-      return (reply, geminiBody);
-    }
+  test('tries the next model when the connection drops', () async {
+    final client = GeminiClient(
+      apiKey: 'test',
+      model: 'a',
+      fallbackModels: const ['b'],
+      httpClient: MockClient((request) async {
+        if (request.url.path.contains('/a:')) {
+          throw http.ClientException('Connection terminated during handshake');
+        }
+        return geminiReply({'ok': true});
+      }),
+    );
+    final result = await client.generateJson(
+      systemInstruction: '',
+      parts: const [TextPart('hi')],
+      schema: const {},
+    );
+    expect(result['ok'], isTrue);
+  });
 
-    test('sends the OCR text and the image to Gemini', () async {
-      final (reply, body) = await snap(
-        http.Response.bytes(
-          utf8.encode(jsonEncode({'text': 'ហាងលក់ជី\nសរុប 50,000 ៛\n'})),
-          200,
-        ),
-      );
-      final proposal = (reply as ProposalReply).proposal;
-      expect(proposal.source, EntrySource.receipt);
-      expect(proposal.rawInput, 'ហាងលក់ជី\nសរុប 50,000 ៛');
-      expect(body, contains('សរុប 50,000 ៛'));
-      expect(body, contains('inlineData'));
-    });
-
-    test('falls back to Gemini reading the image when OCR fails', () async {
-      final (reply, body) = await snap(http.Response('down', 503));
-      expect(reply, isA<ProposalReply>());
-      expect(body, isNot(contains('OCR')));
-      expect(body, contains('inlineData'));
-    });
+  test('asks again at low thinking when a model has no minimal level',
+      () async {
+    final levels = <String>[];
+    final client = GeminiClient(
+      apiKey: 'test',
+      httpClient: MockClient((request) async {
+        final body = jsonDecode(request.body) as Map<String, dynamic>;
+        final level =
+            body['generationConfig']['thinkingConfig']['thinkingLevel'];
+        levels.add(level as String);
+        return level == 'minimal'
+            ? http.Response(
+                'Thinking level MINIMAL is not supported for this model.',
+                400,
+              )
+            : geminiReply({'ok': true});
+      }),
+    );
+    final result = await client.generateJson(
+      systemInstruction: '',
+      parts: const [TextPart('hi')],
+      schema: const {},
+      thinkingLevel: 'minimal',
+    );
+    expect(result['ok'], isTrue);
+    expect(levels, ['minimal', 'low']);
   });
 
   group('scope', () {

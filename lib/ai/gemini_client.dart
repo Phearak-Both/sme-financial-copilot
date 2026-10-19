@@ -97,14 +97,19 @@ class GeminiClient {
   bool get isConfigured => proxy != null || apiKey.isNotEmpty;
 
   /// Sends [parts] and returns the model's JSON reply, shaped by [schema].
+  ///
+  /// [thinkingLevel] `minimal` suits plain tasks like transcribing: a short
+  /// voice clip took about 8 s at `low` and 2 s at `minimal`. Models that
+  /// don't support `minimal` are asked again at `low`.
   Future<Map<String, dynamic>> generateJson({
     required String systemInstruction,
     required List<AiPart> parts,
     required Map<String, dynamic> schema,
+    String thinkingLevel = 'low',
   }) async {
     if (!isConfigured) throw const AiException('GEMINI_API_KEY is not set');
 
-    final body = {
+    Map<String, dynamic> requestBody(String thinkingLevel) => {
       'systemInstruction': {
         'parts': [
           {'text': systemInstruction},
@@ -118,24 +123,40 @@ class GeminiClient {
       ],
       'generationConfig': {
         // Low thinking keeps replies to a few seconds; default can take 30s+.
-        'thinkingConfig': {'thinkingLevel': 'low'},
+        'thinkingConfig': {'thinkingLevel': thinkingLevel},
         // Replies are small JSON; a cap stops a rambling model early.
         'maxOutputTokens': 2048,
         'responseMimeType': 'application/json',
         'responseSchema': schema,
       },
     };
+    // Audio and images vary most: the same 8 s voice clip took 3 to 19 s.
+    // Cutting them off early throws away an answer that was nearly done.
+    final timeout = parts.any((p) => p is BytesPart)
+        ? modelTimeout * 2
+        : modelTimeout;
 
     var timedOut = false;
+    Object? networkError;
     for (var i = _current; i < models.length; i++) {
-      final http.Response response;
+      http.Response response;
       final watch = Stopwatch()..start();
       try {
-        response = await _post(models[i], body);
+        response = await _post(models[i], requestBody(thinkingLevel), timeout);
+        if (response.statusCode == 400 &&
+            thinkingLevel != 'low' &&
+            response.body.contains('Thinking level')) {
+          response = await _post(models[i], requestBody('low'), timeout);
+        }
       } on _SlowModel {
         // Slow right now, not broken: try the next model this time only.
         debugPrint('[ai] ${models[i]} timed out');
         timedOut = true;
+        continue;
+      } on _NetworkFailure catch (e) {
+        // A dropped connection is usually brief; the next try may get through.
+        debugPrint('[ai] ${models[i]} network error: ${e.error}');
+        networkError = e.error;
         continue;
       }
       debugPrint(
@@ -147,14 +168,23 @@ class GeminiClient {
         _current = i + 1 < models.length ? i + 1 : _current;
         continue;
       }
+      if (response.statusCode >= 500 && i + 1 < models.length) {
+        // Overloaded ("high demand") or down: try the next model this time.
+        continue;
+      }
       return _parse(response);
     }
+    if (networkError != null) throw AiException('Network error: $networkError');
     throw timedOut
         ? const AiException('All models timed out')
         : const AiException('Rate limit reached', isQuota: true);
   }
 
-  Future<http.Response> _post(String model, Map<String, dynamic> body) async {
+  Future<http.Response> _post(
+    String model,
+    Map<String, dynamic> body,
+    Duration timeout,
+  ) async {
     final proxy = this.proxy;
     final Uri uri;
     final Map<String, String> headers;
@@ -183,11 +213,11 @@ class GeminiClient {
     try {
       return await _http
           .post(uri, headers: headers, body: jsonEncode(payload))
-          .timeout(modelTimeout);
+          .timeout(timeout);
     } on TimeoutException {
       throw const _SlowModel();
     } catch (e) {
-      throw AiException('Network error: $e');
+      throw _NetworkFailure(e);
     }
   }
 
@@ -227,4 +257,9 @@ class GeminiClient {
 
 class _SlowModel implements Exception {
   const _SlowModel();
+}
+
+class _NetworkFailure implements Exception {
+  const _NetworkFailure(this.error);
+  final Object error;
 }
