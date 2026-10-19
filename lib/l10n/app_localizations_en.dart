@@ -445,9 +445,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get exportPdf => 'Export PDF';
-
-  @override
   String get exportFailed => 'Couldn\'t create the PDF. Please try again.';
 
   @override

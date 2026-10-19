@@ -854,12 +854,6 @@ abstract class AppLocalizations {
   /// **'Read: “{text}”'**
   String askRead(String text);
 
-  /// No description provided for @exportPdf.
-  ///
-  /// In en, this message translates to:
-  /// **'Export PDF'**
-  String get exportPdf;
-
   /// No description provided for @exportFailed.
   ///
   /// In en, this message translates to:

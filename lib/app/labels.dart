@@ -6,6 +6,7 @@ import '../core/money/money_parser.dart';
 import '../data/database.dart';
 import '../domain/enums.dart';
 import '../finance_core/period_math.dart';
+import '../finance_core/reports.dart';
 import '../l10n/app_localizations.dart';
 
 /// Localised labels for domain values.
@@ -42,6 +43,15 @@ extension DomainLabels on AppLocalizations {
     ReportPeriod.lastMonth => periodLastMonth,
     ReportPeriod.last3Months => periodLast3Months,
     ReportPeriod.thisYear => periodThisYear,
+  };
+
+  String reportRangeLabel(ReportRange range) => switch (range) {
+    ReportRange.thisMonth => periodThisMonth,
+    ReportRange.lastMonth => periodLastMonth,
+    ReportRange.last3Months => periodLast3Months,
+    ReportRange.last6Months => periodLast6Months,
+    ReportRange.last12Months => periodLast12Months,
+    ReportRange.thisYear => periodThisYear,
   };
 
   String amountError(AmountError error, String currencyCode) => switch (error) {

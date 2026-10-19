@@ -126,7 +126,6 @@
   "askListening": "កំពុងស្តាប់… សូមនិយាយ",
   "askDoneTalking": "និយាយរួចហើយ",
   "askRead": "បានអាន៖ «{text}»",
-  "exportPdf": "ទាញយក PDF",
   "exportFailed": "មិនអាចបង្កើត PDF បានទេ។ សូមព្យាយាមម្តងទៀត។",
   "glTitle": "សៀវភៅគណនី",
   "glAccount": "គណនីសាច់ប្រាក់ ({currency})",
