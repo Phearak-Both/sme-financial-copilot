@@ -112,6 +112,19 @@ Gemini also transcribes voice and reads receipt photos, so nothing needs to
 run on your computer. A voice message uses two Gemini requests: one for the
 transcript, which the user can correct, and one for the reply.
 
+### Run in a browser
+
+The web version lets anyone try the app on their own phone from a link:
+
+```sh
+flutter build web --dart-define-from-file=env/dev.json
+```
+
+Host `build/web` on any static host with HTTPS (Firebase Hosting, Netlify,
+Cloudflare Pages); the microphone only works over HTTPS. Only the Supabase
+URL and publishable key are built in, and both are meant to be public. The
+app bundles Noto Sans Khmer so Khmer text lays out correctly in browsers.
+
 ### Run on an iPhone
 
 1. Open `ios/Runner.xcworkspace` in Xcode and choose your team under

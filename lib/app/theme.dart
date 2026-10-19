@@ -1,4 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+
+/// The bundled Khmer font, used on the web. Phones and desktops have a
+/// system Khmer font; a browser would download one after the first layout,
+/// leaving text measured too narrow and clipped.
+const List<String>? khmerFontFallback = kIsWeb ? ['NotoSansKhmer'] : null;
 
 /// Brand palette: deep forest green on warm beige.
 class Brand {
@@ -81,6 +87,7 @@ ThemeData buildAppTheme(Brightness brightness) {
     useMaterial3: true,
     scaffoldBackgroundColor: scheme.surface,
     splashFactory: InkSparkle.splashFactory,
+    fontFamilyFallback: khmerFontFallback,
   );
 
   // Khmer stacked consonants need extra line height to avoid clipping.
