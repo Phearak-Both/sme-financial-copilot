@@ -57,9 +57,6 @@ extension on ReportKind {
       };
 }
 
-/// Saved so the loan summary remembers the business name.
-const businessNameSettingKey = 'businessName';
-
 class ExportScreen extends StatelessWidget {
   const ExportScreen({super.key});
 

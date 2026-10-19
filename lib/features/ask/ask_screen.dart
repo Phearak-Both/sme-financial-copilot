@@ -21,7 +21,6 @@ import '../../core/money/money_parser.dart';
 import '../../domain/entry_draft.dart';
 import '../../domain/entry_proposal.dart';
 import '../../domain/enums.dart';
-import '../entry_form/entry_form_screen.dart';
 import 'ask_controller.dart';
 import 'chat_history_drawer.dart';
 

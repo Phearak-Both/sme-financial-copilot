@@ -55,6 +55,14 @@ final categoriesByIdProvider = Provider<Map<String, CategoryRow>>((ref) {
   return {for (final c in categories) c.id: c};
 });
 
+// ----------------------------------------------------------------- settings
+
+/// The currency last used for an entry; new entries start with it.
+const lastCurrencySettingKey = 'last_currency';
+
+/// Set on the Export page; also tells the assistant whose business it is.
+const businessNameSettingKey = 'businessName';
+
 // ----------------------------------------------------------------- language
 
 const localeSettingKey = 'locale';
