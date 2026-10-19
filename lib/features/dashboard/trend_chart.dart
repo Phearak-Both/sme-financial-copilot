@@ -5,9 +5,9 @@ import 'package:intl/intl.dart';
 import '../../app/labels.dart';
 import '../../core/date_only.dart';
 import '../../core/money/currency.dart';
-import '../../core/money/money.dart';
 import '../../core/money/money_format.dart';
 import '../../finance_core/period_math.dart';
+import 'chart_style.dart';
 
 /// Money in vs money out per week or month, for one currency.
 ///
@@ -18,14 +18,6 @@ class TrendChart extends StatelessWidget {
 
   final List<TrendBucket> buckets;
   final Currency currency;
-
-  double _major(Money m) {
-    var factor = 1;
-    for (var i = 0; i < currency.exponent; i++) {
-      factor *= 10;
-    }
-    return m.minor / factor;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,12 +34,12 @@ class TrendChart extends StatelessWidget {
 
     final maxValue = buckets.fold<double>(
       0,
-      (m, t) => [m, _major(t.income), _major(t.expense)].reduce(
+      (m, t) => [m, toMajor(t.income), toMajor(t.expense)].reduce(
         (a, b) => a > b ? a : b,
       ),
     );
     // Four evenly spaced grid lines on a rounded-up scale.
-    final interval = _niceStep(maxValue == 0 ? 1 : maxValue / 4);
+    final interval = niceStep(maxValue == 0 ? 1 : maxValue / 4);
     final maxY = interval * 4;
     // Wide enough for the longest axis label, e.g. Khmer "១ ពាន់".
     final axisWidth = [
@@ -118,13 +110,13 @@ class TrendChart extends StatelessWidget {
                             barsSpace: rodWidth / 4,
                             barRods: [
                               BarChartRodData(
-                                toY: _major(bucket.income),
+                                toY: toMajor(bucket.income),
                                 color: inColor,
                                 width: rodWidth,
                                 borderRadius: rodRadius,
                               ),
                               BarChartRodData(
-                                toY: _major(bucket.expense),
+                                toY: toMajor(bucket.expense),
                                 color: outColor,
                                 width: rodWidth,
                                 borderRadius: rodRadius,
@@ -220,21 +212,6 @@ class TrendChart extends StatelessWidget {
       ),
     );
   }
-}
-
-/// The smallest 1, 2, 2.5 or 5 × 10ⁿ that is at least [raw].
-double _niceStep(double raw) {
-  var magnitude = 1.0;
-  while (magnitude * 10 <= raw) {
-    magnitude *= 10;
-  }
-  while (magnitude > raw) {
-    magnitude /= 10;
-  }
-  for (final m in const [1.0, 2.0, 2.5, 5.0, 10.0]) {
-    if (m * magnitude >= raw) return m * magnitude;
-  }
-  return 10 * magnitude;
 }
 
 /// `Oct` for a whole month, `1-7` for a week (days within the month).

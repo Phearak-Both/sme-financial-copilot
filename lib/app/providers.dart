@@ -13,7 +13,9 @@ import '../data/ledger_repository.dart';
 import '../data/settings_store.dart';
 import '../finance_core/insights.dart';
 import '../finance_core/ledger_math.dart';
+import '../finance_core/patterns.dart';
 import '../finance_core/period_math.dart';
+import '../finance_core/sales.dart';
 
 /// Where records live: the signed-in user's rows in Supabase, or memory when
 /// Supabase isn't set up (nothing is kept after the app closes).
@@ -164,6 +166,7 @@ class DashboardData {
     required this.previous,
     required this.trend,
     required this.expenseCategories,
+    required this.topSellers,
     required this.currenciesWithData,
     required this.insights,
   });
@@ -176,6 +179,8 @@ class DashboardData {
   final CurrencyTotals previous;
   final List<TrendBucket> trend;
   final List<MapEntry<String?, Money>> expenseCategories;
+  /// Income by item (description), against the comparison period.
+  final List<SalesItem> topSellers;
 
   /// Currencies that have entries in [range], to hint at the other currency.
   final Set<Currency> currenciesWithData;
@@ -221,6 +226,7 @@ final dashboardProvider = StreamProvider<DashboardData>((ref) {
       trend: periodTrend(entries, currency, range),
       expenseCategories:
           expensesByCategory(entries, range)[currency] ?? const [],
+      topSellers: topSellers(entries, currency, range, comparison),
       currenciesWithData: current.byCurrency.keys.toSet(),
       insights: buildInsights(
         entries: entries,
@@ -230,6 +236,53 @@ final dashboardProvider = StreamProvider<DashboardData>((ref) {
         today: today,
         cash: cash,
       ),
+    );
+  });
+});
+
+/// Patterns that look at months or years of history rather than the
+/// selected period: regular payments, unusual spending, seasons, busy days
+/// and withdrawals against profit.
+class DashboardPatterns {
+  const DashboardPatterns({
+    required this.recurring,
+    required this.spending,
+    required this.seasons,
+    required this.weekdays,
+    required this.withdrawals,
+  });
+
+  final List<RecurringExpense> recurring;
+  final List<CategoryComparison> spending;
+  final Seasonality? seasons;
+  final WeekdayIncome? weekdays;
+  final List<MonthProfitWithdrawal> withdrawals;
+}
+
+final dashboardPatternsProvider = StreamProvider<DashboardPatterns>((ref) {
+  final currency = ref.watch(dashboardCurrencyProvider);
+  final today = DateTime.now();
+  // Three calendar years covers the seasonality chart and everything else.
+  final window = DateRange(
+    DateTime(today.year - 2),
+    addDays(dateOnly(today), 1),
+  );
+
+  return ref.watch(ledgerRepositoryProvider).watchLedgerEntries(window).map((
+    entries,
+  ) {
+    final recurring = detectRecurring(entries, currency, today);
+    return DashboardPatterns(
+      recurring: recurring,
+      spending: compareWithUsual(
+        entries,
+        currency,
+        today,
+        recurringKeys: {for (final r in recurring) r.key},
+      ),
+      seasons: seasonality(entries, currency, today),
+      weekdays: weekdayIncome(entries, currency, today),
+      withdrawals: profitVsWithdrawals(entries, currency, today),
     );
   });
 });

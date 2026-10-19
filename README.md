@@ -17,15 +17,28 @@ cloud, private to that account; the AI assistant is optional.
   daily subtotals.
 - Edit and void entries with a full revision history. Nothing is deleted.
 - Duplicate warning before saving.
-- Export a general ledger (សៀវភៅគណនី) as PDF, per currency, for this month or
-  the last 3, 6 or 12 months.
 
 **Dashboard**
 - Money in, money out, profit and net cash flow for the selected period,
   compared with the same elapsed days of the previous period.
 - Cash on hand, from an opening balance per currency.
+- Cash runway: how many days cash on hand lasts at recent spending.
 - Money in vs out chart (weekly for one month, monthly for longer periods)
-  and an expense breakdown by category.
+  and a donut of where the money went.
+- Patterns from history: spending this month against the usual level
+  (same days of the last 3 months), regular monthly payments and what is due
+  this week, profit against owner withdrawals for the last 6 months, the best
+  and worst days of the week, and income by month across years to show busy
+  and lean seasons.
+- Settings → Sample data loads two years of example records so every view
+  has something to show.
+
+**Export**
+- Save four PDF reports, per currency, for a preset period or any dates,
+  in Khmer or English: an account statement (every entry with the running
+  cash balance), an income statement against the previous period, a cash
+  flow report month by month, and a loan-ready financial summary with
+  monthly averages, results by month, income sources and regular payments.
 
 **AI assistant**
 - Describe a transaction in Khmer or English, by text or voice, and get a

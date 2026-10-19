@@ -1,207 +1,16 @@
-import 'dart:io';
 import 'dart:typed_data';
-import 'dart:ui' as ui;
 
-import 'package:file_selector/file_selector.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
 
 import '../../app/labels.dart';
-import '../../app/providers.dart';
 import '../../core/date_only.dart';
 import '../../core/money/currency.dart';
 import '../../data/database.dart';
-import '../../data/ledger_repository.dart';
 import '../../domain/enums.dart';
 import '../../finance_core/period_math.dart';
 import '../../l10n/app_localizations.dart';
-
-/// Periods offered for export. Whole calendar months, including the
-/// current one (like the dashboard's "last 3 months").
-enum ExportPeriod {
-  thisMonth(1),
-  last3Months(3),
-  last6Months(6),
-  lastYear(12);
-
-  const ExportPeriod(this.months);
-  final int months;
-
-  DateRange rangeFor(DateTime today) => DateRange(
-    DateTime(today.year, today.month - (months - 1)),
-    DateTime(today.year, today.month + 1),
-  );
-}
-
-// ------------------------------------------------------------ options UI
-
-/// Asks which currency and period to export, then exports.
-Future<void> showExportSheet(BuildContext context) =>
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      showDragHandle: true,
-      builder: (_) => const _ExportSheet(),
-    );
-
-class _ExportSheet extends ConsumerStatefulWidget {
-  const _ExportSheet();
-
-  @override
-  ConsumerState<_ExportSheet> createState() => _ExportSheetState();
-}
-
-class _ExportSheetState extends ConsumerState<_ExportSheet> {
-  Currency _currency = Currency.usd;
-  ExportPeriod _period = ExportPeriod.thisMonth;
-  bool _busy = false;
-
-  String _periodLabel(AppLocalizations l10n, ExportPeriod period) =>
-      switch (period) {
-        ExportPeriod.thisMonth => l10n.periodThisMonth,
-        ExportPeriod.last3Months => l10n.periodLast3Months,
-        ExportPeriod.last6Months => l10n.periodLast6Months,
-        ExportPeriod.lastYear => l10n.periodLastYear,
-      };
-
-  Future<void> _export() async {
-    setState(() => _busy = true);
-    final navigator = Navigator.of(context);
-    await exportGeneralLedger(context, ref, _currency, _period);
-    if (mounted) navigator.pop();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final textTheme = Theme.of(context).textTheme;
-    final today = dateOnly(DateTime.now());
-    final dates = DateFormat('dd/MM/yyyy');
-
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(l10n.exportTitle, style: textTheme.titleLarge),
-            const SizedBox(height: 16),
-            Text(l10n.exportCurrency, style: textTheme.titleSmall),
-            const SizedBox(height: 8),
-            SegmentedButton<Currency>(
-              showSelectedIcon: false,
-              segments: [
-                for (final c in Currency.values)
-                  ButtonSegment(
-                    value: c,
-                    label: Text('${c.code} (${c.symbol})'),
-                  ),
-              ],
-              selected: {_currency},
-              onSelectionChanged: _busy
-                  ? null
-                  : (value) => setState(() => _currency = value.single),
-            ),
-            const SizedBox(height: 16),
-            Text(l10n.exportPeriod, style: textTheme.titleSmall),
-            const SizedBox(height: 4),
-            for (final period in ExportPeriod.values)
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                enabled: !_busy,
-                selected: period == _period,
-                title: Text(_periodLabel(l10n, period)),
-                subtitle: Text(
-                  '${dates.format(period.rangeFor(today).start)} – '
-                  '${dates.format(today)}',
-                ),
-                trailing: Icon(
-                  period == _period
-                      ? Icons.radio_button_checked
-                      : Icons.radio_button_unchecked,
-                ),
-                onTap: () => setState(() => _period = period),
-              ),
-            const SizedBox(height: 12),
-            FilledButton.icon(
-              icon: _busy
-                  ? const SizedBox.square(
-                      dimension: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Icon(Icons.ios_share),
-              label: Text(l10n.exportPdf),
-              onPressed: _busy ? null : _export,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// Builds the general ledger PDF for [currency] over [period] and opens
-/// the share sheet (save to Files, AirDrop, print, ...).
-Future<void> exportGeneralLedger(
-  BuildContext context,
-  WidgetRef ref,
-  Currency currency,
-  ExportPeriod period,
-) async {
-  final l10n = context.l10n;
-  final locale = context.localeTag;
-  final isKhmer = context.isKhmer;
-  final messenger = ScaffoldMessenger.of(context);
-  final repo = ref.read(ledgerRepositoryProvider);
-  try {
-    final now = DateTime.now();
-    final ledger = buildGeneralLedger(
-      entries: await repo.watchEntries(const LedgerFilter()).first,
-      openings: await repo.watchOpeningBalances().first,
-      categories: {for (final c in await repo.watchCategories().first) c.id: c},
-      currency: currency,
-      range: period.rangeFor(now),
-      today: now,
-      l10n: l10n,
-      isKhmer: isKhmer,
-    );
-    final pdf = await renderGeneralLedgerPdf(
-      ledger,
-      l10n: l10n,
-      locale: locale,
-      generatedAt: now,
-    );
-    final filename = 'general-ledger-${currency.code}-${toDateKey(now)}.pdf';
-    if (Platform.isMacOS || Platform.isWindows || Platform.isLinux) {
-      // Desktop: a normal Save dialog that writes a .pdf file.
-      final location = await getSaveLocation(
-        suggestedName: filename,
-        acceptedTypeGroups: const [
-          XTypeGroup(
-            label: 'PDF',
-            extensions: ['pdf'],
-            mimeTypes: ['application/pdf'],
-            uniformTypeIdentifiers: ['com.adobe.pdf'],
-          ),
-        ],
-      );
-      if (location == null) return; // cancelled
-      await File(location.path).writeAsBytes(pdf, flush: true);
-      messenger.showSnackBar(SnackBar(content: Text(l10n.exportSaved)));
-    } else {
-      // Phones: the share sheet, which has "Save to Files" as well.
-      await Printing.sharePdf(bytes: pdf, filename: filename);
-    }
-  } catch (e, stack) {
-    debugPrint('[export] failed: $e\n$stack');
-    messenger.showSnackBar(SnackBar(content: Text(l10n.exportFailed)));
-  }
-}
+import '../export/pdf_kit.dart';
 
 // ------------------------------------------------------------------ model
 
@@ -395,25 +204,9 @@ GeneralLedger buildGeneralLedger({
 
 /// Amount without a symbol (the account heading names the currency), e.g.
 /// `1,234.50` for USD or `50,000` for KHR.
-String glAmount(int minor, Currency currency) {
-  final format = NumberFormat.decimalPatternDigits(
-    locale: 'en',
-    decimalDigits: currency.exponent,
-  );
-  var value = minor.abs().toDouble();
-  for (var i = 0; i < currency.exponent; i++) {
-    value /= 10;
-  }
-  return '${minor < 0 ? '-' : ''}${format.format(value)}';
-}
+String glAmount(int minor, Currency currency) => pdfAmount(minor, currency);
 
 // ----------------------------------------------------------------- render
-
-const _forest = PdfColor.fromInt(0xFF1E4D3B);
-const _beige = PdfColor.fromInt(0xFFF4EEE3);
-const _ivory = PdfColor.fromInt(0xFFFAF7F1);
-const _line = PdfColor.fromInt(0xFFC9C2B4);
-const _muted = PdfColor.fromInt(0xFF555555);
 
 /// Lays out the ledger as an A4 PDF.
 ///
@@ -425,57 +218,15 @@ Future<Uint8List> renderGeneralLedgerPdf(
   required AppLocalizations l10n,
   required String locale,
   required DateTime generatedAt,
+  String? title,
 }) async {
-  final regular = pw.Font.helvetica();
-  final bold = pw.Font.helveticaBold();
+  final kit = PdfText();
+  final text = kit.text;
+  final number = kit.number;
+  final cell = kit.cell;
   final day = DateFormat('dd/MM/yyyy');
   String date(String key) => day.format(fromDateKey(key));
   final c = ledger.currency;
-
-  Future<pw.Widget> text(
-    String value, {
-    double size = 8.5,
-    bool isBold = false,
-    PdfColor color = PdfColors.black,
-    double? maxWidth,
-  }) async {
-    if (!_needsShaping(value)) {
-      return _latinLine(
-        size,
-        pw.Text(
-          value,
-          style: pw.TextStyle(
-            font: isBold ? bold : regular,
-            fontSize: size,
-            color: color,
-          ),
-        ),
-      );
-    }
-    return _shapedText(
-      value,
-      size: size,
-      bold: isBold,
-      color: Color(color.toInt()),
-      maxWidth: maxWidth,
-    );
-  }
-
-  pw.Widget number(String value, {bool isBold = false}) => _latinLine(
-    8.5,
-    pw.Text(
-      value,
-      textAlign: pw.TextAlign.right,
-      style: pw.TextStyle(font: isBold ? bold : regular, fontSize: 8.5),
-    ),
-  );
-
-  pw.Widget cell(pw.Widget child, {bool right = false}) => pw.Padding(
-    padding: const pw.EdgeInsets.symmetric(horizontal: 4, vertical: 3),
-    child: right
-        ? pw.Align(alignment: pw.Alignment.topRight, child: child)
-        : child,
-  );
 
   // Column widths in points; description takes the rest of the page.
   const descriptionWidth = 140.0;
@@ -514,7 +265,7 @@ Future<Uint8List> renderGeneralLedgerPdf(
   final rows = <pw.TableRow>[
     pw.TableRow(
       repeat: true,
-      decoration: const pw.BoxDecoration(color: _beige),
+      decoration: const pw.BoxDecoration(color: pdfBeige),
       children: [
         for (final (i, h) in header.indexed)
           cell(
@@ -527,7 +278,7 @@ Future<Uint8List> renderGeneralLedgerPdf(
   for (final r in ledger.rows) {
     rows.add(
       pw.TableRow(
-        decoration: r.isOpening ? const pw.BoxDecoration(color: _ivory) : null,
+        decoration: r.isOpening ? const pw.BoxDecoration(color: pdfIvory) : null,
         children: [
           cell(number(r.no?.toString() ?? ''), right: true),
           cell(number(date(r.day))),
@@ -562,7 +313,7 @@ Future<Uint8List> renderGeneralLedgerPdf(
   // No. to Category, so the labels start at the left edge.
   final totalRows = <pw.TableRow>[
     pw.TableRow(
-      decoration: const pw.BoxDecoration(color: _ivory),
+      decoration: const pw.BoxDecoration(color: pdfIvory),
       children: [
         cell(await text(l10n.glTotals, isBold: true)),
         cell(number(glAmount(ledger.totalDebit, c), isBold: true), right: true),
@@ -574,7 +325,7 @@ Future<Uint8List> renderGeneralLedgerPdf(
       ],
     ),
     pw.TableRow(
-      decoration: const pw.BoxDecoration(color: _ivory),
+      decoration: const pw.BoxDecoration(color: pdfIvory),
       children: [
         cell(await text(l10n.glClosing, isBold: true)),
         pw.SizedBox(),
@@ -591,24 +342,24 @@ Future<Uint8List> renderGeneralLedgerPdf(
   ];
 
   final body = <pw.Widget>[
-    await text(l10n.glTitle, size: 18, isBold: true, color: _forest),
+    await text(title ?? l10n.glTitle, size: 18, isBold: true, color: pdfForest),
     pw.SizedBox(height: 4),
     await text(
       l10n.glPeriod(date(ledger.firstDay), date(ledger.lastDay)),
-      color: _muted,
+      color: pdfMuted,
       size: 9,
     ),
     await text(
       l10n.glGenerated(DateFormat.yMMMd(locale).add_Hm().format(generatedAt)),
-      color: _muted,
+      color: pdfMuted,
       size: 9,
     ),
     pw.SizedBox(height: 16),
-    await text(l10n.glAccount(c.code), size: 12, isBold: true, color: _forest),
+    await text(l10n.glAccount(c.code), size: 12, isBold: true, color: pdfForest),
     pw.SizedBox(height: 6),
     pw.Table(
       columnWidths: widths,
-      border: pw.TableBorder.all(color: _line, width: 0.6),
+      border: pw.TableBorder.all(color: pdfLine, width: 0.6),
       children: rows,
     ),
     pw.Table(
@@ -619,95 +370,21 @@ Future<Uint8List> renderGeneralLedgerPdf(
         3: widths[6]!,
       },
       border: const pw.TableBorder(
-        left: pw.BorderSide(color: _line, width: 0.6),
-        right: pw.BorderSide(color: _line, width: 0.6),
-        bottom: pw.BorderSide(color: _line, width: 0.6),
-        horizontalInside: pw.BorderSide(color: _line, width: 0.6),
-        verticalInside: pw.BorderSide(color: _line, width: 0.6),
+        left: pw.BorderSide(color: pdfLine, width: 0.6),
+        right: pw.BorderSide(color: pdfLine, width: 0.6),
+        bottom: pw.BorderSide(color: pdfLine, width: 0.6),
+        horizontalInside: pw.BorderSide(color: pdfLine, width: 0.6),
+        verticalInside: pw.BorderSide(color: pdfLine, width: 0.6),
       ),
       children: totalRows,
     ),
     if (ledger.entryCount == 0) ...[
       pw.SizedBox(height: 10),
-      await text(l10n.glNoEntries, color: _muted),
+      await text(l10n.glNoEntries, color: pdfMuted),
     ],
     pw.SizedBox(height: 14),
-    await text(l10n.glVoidedNote, color: _muted, size: 8, maxWidth: 520),
+    await text(l10n.glVoidedNote, color: pdfMuted, size: 8, maxWidth: 520),
   ];
 
-  final doc = pw.Document(title: l10n.glTitle);
-  doc.addPage(
-    pw.MultiPage(
-      pageFormat: PdfPageFormat.a4,
-      margin: const pw.EdgeInsets.symmetric(horizontal: 34, vertical: 40),
-      crossAxisAlignment: pw.CrossAxisAlignment.start,
-      footer: (context) => pw.Align(
-        alignment: pw.Alignment.centerRight,
-        child: pw.Text(
-          '${context.pageNumber} / ${context.pagesCount}',
-          style: pw.TextStyle(font: regular, fontSize: 8, color: _muted),
-        ),
-      ),
-      build: (_) => body,
-    ),
-  );
-  return doc.save();
-}
-
-/// Pads plain PDF text so its baseline lines up with shaped (image) text
-/// of the same [size], which carries extra leading and margin.
-pw.Widget _latinLine(double size, pw.Widget child) => pw.Padding(
-  padding: pw.EdgeInsets.only(top: size * 0.48, bottom: size * 0.42),
-  child: child,
-);
-
-/// Anything beyond Latin-1 (Khmer, ៛, curly quotes) needs Flutter's shaping.
-bool _needsShaping(String value) => value.runes.any((r) => r > 0xFF);
-
-/// Draws [value] with Flutter's text engine at 4x and wraps it as a PDF
-/// image sized in points.
-Future<pw.Widget> _shapedText(
-  String value, {
-  required double size,
-  required bool bold,
-  required Color color,
-  double? maxWidth,
-}) async {
-  // Khmer vowels and subscript consonants reach well above and below the
-  // line, so lines get generous, evenly split leading plus a margin around
-  // the image; otherwise the tops and bottoms get cropped.
-  final padX = 1.0;
-  final padY = size * 0.3;
-  final painter = TextPainter(
-    text: TextSpan(
-      text: value,
-      style: TextStyle(
-        fontSize: size,
-        height: 1.7,
-        leadingDistribution: TextLeadingDistribution.even,
-        color: color,
-        fontWeight: bold ? FontWeight.w700 : FontWeight.w400,
-      ),
-    ),
-    textDirection: ui.TextDirection.ltr,
-  )..layout(maxWidth: maxWidth == null ? double.infinity : maxWidth - 2 * padX);
-  final width = painter.width + 2 * padX;
-  final height = painter.height + 2 * padY;
-
-  const scale = 4.0;
-  final recorder = ui.PictureRecorder();
-  final canvas = Canvas(recorder)..scale(scale);
-  painter.paint(canvas, Offset(padX, padY));
-  painter.dispose();
-  final image = await recorder.endRecording().toImage(
-    (width * scale).ceil().clamp(1, 100000),
-    (height * scale).ceil().clamp(1, 100000),
-  );
-  final png = await image.toByteData(format: ui.ImageByteFormat.png);
-  image.dispose();
-  return pw.Image(
-    pw.MemoryImage(png!.buffer.asUint8List()),
-    width: width,
-    height: height,
-  );
+  return kit.document(title ?? l10n.glTitle, body);
 }

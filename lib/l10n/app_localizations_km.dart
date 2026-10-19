@@ -806,4 +806,409 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get tryAgain => 'ព្យាយាមម្តងទៀត';
+
+  @override
+  String get patternsTitle => 'លំនាំពីប្រវត្តិរបស់អ្នក';
+
+  @override
+  String get patternsSubtitle =>
+      'គណនាពីកំណត់ត្រាច្រើនខែ មិនមែនតែរយៈពេលខាងលើទេ។';
+
+  @override
+  String runwayScale(String days, String max) {
+    return '$days ក្នុង $max ថ្ងៃ';
+  }
+
+  @override
+  String get chartOther => 'ផ្សេងៗ';
+
+  @override
+  String get expenseTotal => 'ចំណាយសរុប';
+
+  @override
+  String get usualTitle => 'ខែនេះ ធៀបនឹងធម្មតា';
+
+  @override
+  String get usualSubtitle =>
+      'ការចំណាយពីថ្ងៃទី 1 ដល់ថ្ងៃនេះ ធៀបនឹងមធ្យមនៃថ្ងៃដូចគ្នាក្នុង 3 ខែមុន។ មិនរាប់វិក្កយបត្រប្រចាំខែទេ។';
+
+  @override
+  String get usualThisMonth => 'ខែនេះ';
+
+  @override
+  String get usualAverage => 'ធម្មតា';
+
+  @override
+  String usualAlert(String category, String percent) {
+    return '$category ខ្ពស់ជាងធម្មតា $percent%';
+  }
+
+  @override
+  String usualAlertBody(String amount, String usual) {
+    return 'ច្រើនជាងធម្មតា $amount (ធម្មតា $usual នៅពេលនេះនៃខែ)។';
+  }
+
+  @override
+  String get usualNoAlert => 'គ្មានប្រភេទចំណាយណាខ្ពស់ជាងធម្មតាខ្លាំងទេ។';
+
+  @override
+  String get usualNoHistory => 'នឹងបង្ហាញ នៅពេលមានកំណត់ត្រាមួយខែ។';
+
+  @override
+  String get usualNew => 'ថ្មី';
+
+  @override
+  String get recurringTitle => 'ការបង់ប្រាក់ទៀងទាត់';
+
+  @override
+  String get recurringSubtitle =>
+      'ការចំណាយដែលអ្នកបង់ប្រហែលម្តងក្នុងមួយខែ។ មិនរាប់ជាការចំណាយមិនធម្មតាខាងលើទេ។';
+
+  @override
+  String recurringUpcoming(String amount) {
+    return 'ត្រូវបង់ក្នុង 7 ថ្ងៃខាងមុខ៖ $amount';
+  }
+
+  @override
+  String get recurringNoneSoon => 'គ្មានអ្វីត្រូវបង់ក្នុង 7 ថ្ងៃខាងមុខទេ។';
+
+  @override
+  String get recurringDueToday => 'ត្រូវបង់ថ្ងៃនេះ';
+
+  @override
+  String get recurringDueTomorrow => 'ត្រូវបង់ថ្ងៃស្អែក';
+
+  @override
+  String recurringDueIn(String days) {
+    return 'ក្នុង $days ថ្ងៃទៀត';
+  }
+
+  @override
+  String get recurringLate => 'មិនទាន់បង់';
+
+  @override
+  String get recurringPaid => 'បានបង់';
+
+  @override
+  String recurringEvery(String amount, String day) {
+    return 'ប្រហែល $amount នៅថ្ងៃទី $day';
+  }
+
+  @override
+  String get recurringNone =>
+      'ការបង់ប្រាក់ទៀងទាត់នឹងបង្ហាញ ក្រោយមានកំណត់ត្រាប្រហែល 3 ខែ។';
+
+  @override
+  String get withdrawChartTitle => 'ប្រាក់ចំណេញ ធៀបនឹងប្រាក់ម្ចាស់ដក';
+
+  @override
+  String get chartProfit => 'ប្រាក់ចំណេញ';
+
+  @override
+  String get chartWithdrawn => 'ម្ចាស់ដក';
+
+  @override
+  String withdrawThisMonth(String withdrawn, String profit) {
+    return 'ខែនេះ អ្នកបានដក $withdrawn ប៉ុន្តែអាជីវកម្មរកប្រាក់ចំណេញបាន $profit។';
+  }
+
+  @override
+  String withdrawMonthsOver(String count) {
+    return 'ក្នុង $count ខែ នៃ 6 ខែចុងក្រោយ អ្នកដកប្រាក់លើសប្រាក់ចំណេញ។';
+  }
+
+  @override
+  String get withdrawNeverOver =>
+      'ក្នុង 6 ខែចុងក្រោយ អ្នកមិនដែលដកប្រាក់លើសប្រាក់ចំណេញទេ។';
+
+  @override
+  String get weekdayTitle => 'ថ្ងៃលក់ដាច់ និងមិនសូវដាច់';
+
+  @override
+  String get weekdaySubtitle =>
+      'ប្រាក់ចូលមធ្យមតាមថ្ងៃ ក្នុង 12 សប្តាហ៍ចុងក្រោយ។';
+
+  @override
+  String weekdayRatio(String best, String ratio, String worst) {
+    return '$best រកប្រាក់ចូលបាន $ratio ដងនៃ$worst។';
+  }
+
+  @override
+  String weekdayNoIncome(String best, String worst) {
+    return '$best រកបានច្រើនជាងគេ ចំណែក$worst ជាធម្មតាគ្មានប្រាក់ចូលទេ។';
+  }
+
+  @override
+  String get seasonTitle => 'ប្រាក់ចូលពេញមួយឆ្នាំ';
+
+  @override
+  String seasonPeaks(String peak, String low) {
+    return 'ប្រាក់ចូលខ្ពស់បំផុតនៅ $peak និងទាបបំផុតនៅ $low។ គួរសន្សំក្នុងខែរកស៊ីល្អ សម្រាប់ខែរកស៊ីយឺត។';
+  }
+
+  @override
+  String get seasonNeedYear =>
+      'ខែរកស៊ីល្អ និងខែយឺត នឹងបង្ហាញ ក្រោយមានកំណត់ត្រាពេញមួយឆ្នាំ។';
+
+  @override
+  String get sampleData => 'ទិន្នន័យគំរូ';
+
+  @override
+  String get loadSampleData => 'បញ្ចូលទិន្នន័យគំរូ';
+
+  @override
+  String get loadSampleHelp =>
+      'បន្ថែមកំណត់ត្រាគំរូរយៈពេលពីរឆ្នាំ សម្រាប់ហាងដែលមានស្រែ ដើម្បីឱ្យក្រាហ្វនីមួយៗមានទិន្នន័យបង្ហាញ។';
+
+  @override
+  String get loadSampleTitle => 'បន្ថែមទិន្នន័យគំរូ?';
+
+  @override
+  String loadSampleBody(String count) {
+    return 'វានឹងបន្ថែមកំណត់ត្រាគំរូប្រហែល $count ទៅគណនីនេះ។ កំណត់ត្រាអាចលុបចោលបាន ប៉ុន្តែមិនអាចលុបជាស្ថាពរទេ ដូច្នេះគួរប្រើគណនីសាកល្បង។';
+  }
+
+  @override
+  String loadSampleDone(String count) {
+    return 'បានបន្ថែមកំណត់ត្រាគំរូ $count។';
+  }
+
+  @override
+  String get add => 'បន្ថែម';
+
+  @override
+  String get incomeTotal => 'ប្រាក់ចូលសរុប';
+
+  @override
+  String get topSellersTitle => 'ទំនិញលក់ដាច់ជាងគេ';
+
+  @override
+  String get topSellersSubtitle =>
+      'ប្រាក់ចូលតាមទំនិញ តាមការពិពណ៌នានៃកំណត់ត្រានីមួយៗ។';
+
+  @override
+  String topSellerShare(String item, String percent) {
+    return '$item នាំមកប្រាក់ចូល $percent% របស់អ្នក។';
+  }
+
+  @override
+  String topSellerRising(String item, String change) {
+    return '$item កើនឡើងច្រើនជាងគេ៖ $change ធៀបនឹងរយៈពេលមុន។';
+  }
+
+  @override
+  String salesCount(String count) {
+    return 'លក់ $count ដង';
+  }
+
+  @override
+  String otherItems(String count) {
+    return 'ទំនិញផ្សេងទៀត $count';
+  }
+
+  @override
+  String get topSellersEmpty =>
+      'ពេលកត់ត្រាប្រាក់ចូល សូមបញ្ចូលការពិពណ៌នា ដូចជា \"អង្ករ\" ឬ \"ភេសជ្ជៈ\" ដើម្បីមើលថាទំនិញណាលក់ដាច់។';
+
+  @override
+  String get navExport => 'ទាញយក';
+
+  @override
+  String get exportPageTitle => 'ទាញយករបាយការណ៍';
+
+  @override
+  String get exportPageIntro => 'ជ្រើសរបាយការណ៍ កំណត់ជម្រើស ហើយរក្សាទុកជា PDF។';
+
+  @override
+  String get reportAccountStatement => 'របាយការណ៍គណនី';
+
+  @override
+  String get reportAccountStatementDesc =>
+      'កំណត់ត្រានីមួយៗ ជាមួយសមតុល្យសាច់ប្រាក់។';
+
+  @override
+  String get reportIncomeStatement => 'របាយការណ៍ចំណូលចំណាយ';
+
+  @override
+  String get reportIncomeStatementDesc =>
+      'ចំណូល ចំណាយ និងប្រាក់ចំណេញ តាមប្រភេទ។';
+
+  @override
+  String get reportCashFlow => 'របាយការណ៍លំហូរសាច់ប្រាក់';
+
+  @override
+  String get reportCashFlowDesc => 'សាច់ប្រាក់ចូល និងចេញ ប្រចាំខែ។';
+
+  @override
+  String get reportLoanSummary => 'សង្ខេបហិរញ្ញវត្ថុសម្រាប់ស្នើសុំកម្ចី';
+
+  @override
+  String get reportLoanSummaryDesc =>
+      'តួលេខសំខាន់ៗដែលធនាគារ ឬគ្រឹះស្ថានមីក្រូហិរញ្ញវត្ថុត្រូវការ។';
+
+  @override
+  String get reportLanguage => 'ភាសារបាយការណ៍';
+
+  @override
+  String get periodLast12Months => '12 ខែចុងក្រោយ';
+
+  @override
+  String get businessName => 'ឈ្មោះអាជីវកម្ម';
+
+  @override
+  String get ownerName => 'ឈ្មោះម្ចាស់អាជីវកម្ម';
+
+  @override
+  String get savePdf => 'រក្សាទុក PDF';
+
+  @override
+  String get isIncome => 'ចំណូល';
+
+  @override
+  String get isExpenses => 'ចំណាយ';
+
+  @override
+  String get isTotalExpenses => 'ចំណាយសរុប';
+
+  @override
+  String get isNetProfit => 'ប្រាក់ចំណេញសុទ្ធ (ខាត)';
+
+  @override
+  String get isMargin => 'អត្រាប្រាក់ចំណេញ';
+
+  @override
+  String get colThisPeriod => 'រយៈពេលនេះ';
+
+  @override
+  String get colPrevious => 'រយៈពេលមុន';
+
+  @override
+  String get colChange => 'បម្រែបម្រួល';
+
+  @override
+  String isComparedWith(String from, String to) {
+    return 'រយៈពេលមុន៖ $from – $to';
+  }
+
+  @override
+  String isOwnerNote(String contributed, String withdrawn) {
+    return 'ប្រាក់ម្ចាស់ដាក់ចូល ($contributed) និងដកចេញ ($withdrawn) ផ្លាស់ប្តូរសាច់ប្រាក់ ប៉ុន្តែមិនមែនជាចំណូល ឬចំណាយអាជីវកម្មទេ ដូច្នេះមិនរាប់បញ្ចូលខាងលើទេ។';
+  }
+
+  @override
+  String get reportBasisNote =>
+      'គិតតាមសាច់ប្រាក់៖ ចំណូល និងចំណាយត្រូវបានរាប់នៅថ្ងៃដែលទទួល ឬបង់ប្រាក់។ មិនរាប់កំណត់ត្រាដែលបានលុបចោល។ រៀបចំពីកំណត់ត្រារបស់ម្ចាស់ផ្ទាល់ មិនទាន់បានធ្វើសវនកម្ម។';
+
+  @override
+  String get cfOpening => 'សាច់ប្រាក់ដើមគ្រា';
+
+  @override
+  String get cfCashIn => 'សាច់ប្រាក់ចូល';
+
+  @override
+  String get cfCashOut => 'សាច់ប្រាក់ចេញ';
+
+  @override
+  String get cfOwnerIn => 'ម្ចាស់ដាក់ប្រាក់ចូល';
+
+  @override
+  String get cfOwnerOut => 'ម្ចាស់ដកប្រាក់';
+
+  @override
+  String get cfTotalIn => 'សាច់ប្រាក់ចូលសរុប';
+
+  @override
+  String get cfTotalOut => 'សាច់ប្រាក់ចេញសរុប';
+
+  @override
+  String get cfNet => 'បម្រែបម្រួលសាច់ប្រាក់សុទ្ធ';
+
+  @override
+  String get cfClosing => 'សាច់ប្រាក់ចុងគ្រា';
+
+  @override
+  String get cfByMonth => 'ប្រចាំខែ';
+
+  @override
+  String get colMonth => 'ខែ';
+
+  @override
+  String get colNet => 'សុទ្ធ';
+
+  @override
+  String get cfNoOpening =>
+      'សាច់ប្រាក់ដើមគ្រា និងចុងគ្រា ត្រូវការសាច់ប្រាក់ដើមគ្រាដែលមានកាលបរិច្ឆេទមុន ឬនៅថ្ងៃចាប់ផ្តើមរយៈពេល (ការកំណត់ → សាច់ប្រាក់ដើមគ្រា)។';
+
+  @override
+  String get lsBusiness => 'អាជីវកម្ម';
+
+  @override
+  String get lsOwner => 'ម្ចាស់';
+
+  @override
+  String get lsRecordsSince => 'មានកំណត់ត្រាតាំងពី';
+
+  @override
+  String get lsKeyFigures => 'តួលេខសំខាន់ៗ';
+
+  @override
+  String lsAveragesNote(String count) {
+    return 'មធ្យមប្រចាំខែ គណនាលើ $count ខែដែលបានបញ្ចប់ក្នុងរយៈពេលនេះ។';
+  }
+
+  @override
+  String get lsAvgIncome => 'ចំណូលមធ្យមប្រចាំខែ';
+
+  @override
+  String get lsAvgExpenses => 'ចំណាយមធ្យមប្រចាំខែ';
+
+  @override
+  String get lsAvgProfit => 'ប្រាក់ចំណេញមធ្យមប្រចាំខែ';
+
+  @override
+  String get lsAvgWithdrawals => 'ប្រាក់ម្ចាស់ដកមធ្យមប្រចាំខែ';
+
+  @override
+  String get lsAvgSurplus => 'សាច់ប្រាក់នៅសល់មធ្យមប្រចាំខែ ក្រោយម្ចាស់ដក';
+
+  @override
+  String get lsProfitableMonths => 'ខែដែលមានប្រាក់ចំណេញ';
+
+  @override
+  String lsOutOf(String count, String total) {
+    return '$count ក្នុងចំណោម $total';
+  }
+
+  @override
+  String get lsRunway => 'រយៈពេលសាច់ប្រាក់គ្រប់គ្រាន់';
+
+  @override
+  String lsDays(String days) {
+    return '$days ថ្ងៃ';
+  }
+
+  @override
+  String get lsMonthly => 'លទ្ធផលប្រចាំខែ';
+
+  @override
+  String get lsIncomeSources => 'ប្រភពចំណូលសំខាន់ៗ';
+
+  @override
+  String get lsShare => 'ចំណែក';
+
+  @override
+  String get lsCommitments => 'ការបង់ប្រាក់ប្រចាំខែ (រួមទាំងកម្ចីដែលមានស្រាប់)';
+
+  @override
+  String get lsCommitmentsTotal => 'សរុបក្នុងមួយខែ';
+
+  @override
+  String get lsNoCommitments => 'រកមិនឃើញការបង់ប្រាក់ប្រចាំខែក្នុងកំណត់ត្រាទេ។';
+
+  @override
+  String get lsDayOfMonth => 'ថ្ងៃធម្មតា';
+
+  @override
+  String get lsDisclaimer =>
+      'រៀបចំដោយម្ចាស់អាជីវកម្ម ពីកំណត់ត្រារបស់ខ្លួន ដោយប្រើ SME Financial Copilot។ តួលេខគិតតាមសាច់ប្រាក់ និងមិនទាន់បានធ្វើសវនកម្ម។';
 }

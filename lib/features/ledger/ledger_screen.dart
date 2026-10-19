@@ -13,7 +13,6 @@ import '../../domain/enums.dart';
 import '../../finance_core/ledger_math.dart';
 import '../../core/date_only.dart';
 import 'entry_tile.dart';
-import 'ledger_export.dart';
 
 class LedgerScreen extends ConsumerStatefulWidget {
   const LedgerScreen({super.key});
@@ -43,6 +42,10 @@ class _LedgerScreenState extends ConsumerState<LedgerScreen> {
     final l10n = context.l10n;
     final filter = ref.watch(ledgerFilterProvider);
     final entries = ref.watch(ledgerEntriesProvider);
+    // The dashboard can set a search; show it in the box.
+    ref.listen(ledgerFilterProvider, (_, next) {
+      if (next.query != _search.text) _search.text = next.query;
+    });
 
     return Scaffold(
       appBar: AppBar(
@@ -51,7 +54,7 @@ class _LedgerScreenState extends ConsumerState<LedgerScreen> {
           IconButton(
             tooltip: l10n.exportPdf,
             icon: const Icon(Icons.ios_share),
-            onPressed: () => showExportSheet(context),
+            onPressed: () => context.go('/export'),
           ),
         ],
       ),

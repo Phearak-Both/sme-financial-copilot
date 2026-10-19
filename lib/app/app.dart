@@ -11,6 +11,7 @@ import '../features/ask/ask_screen.dart';
 import '../features/auth/auth_screen.dart';
 import '../features/dashboard/dashboard_screen.dart';
 import '../features/entry_form/entry_form_screen.dart';
+import '../features/export/export_screen.dart';
 import '../features/ledger/entry_detail_screen.dart';
 import '../features/ledger/ledger_screen.dart';
 import '../features/settings/settings_screen.dart';
@@ -46,6 +47,11 @@ GoRouter _buildRouter(Listenable authRefresh) => GoRouter(
               path: '/dashboard',
               builder: (_, _) => const DashboardScreen(),
             ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(path: '/export', builder: (_, _) => const ExportScreen()),
           ],
         ),
         StatefulShellBranch(
@@ -150,6 +156,11 @@ class _Shell extends StatelessWidget {
             icon: const Icon(Icons.insights_outlined),
             selectedIcon: const Icon(Icons.insights),
             label: l10n.navDashboard,
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.download_outlined),
+            selectedIcon: const Icon(Icons.download),
+            label: l10n.navExport,
           ),
           NavigationDestination(
             icon: const Icon(Icons.settings_outlined),

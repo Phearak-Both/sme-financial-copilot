@@ -224,6 +224,21 @@ class LedgerRepository {
     return id;
   }
 
+  /// Saves many entries with a few requests, e.g. sample data. Every draft
+  /// is validated first, so nothing is saved if one is invalid.
+  Future<void> createAll(List<EntryDraft> drafts, {int chunkSize = 250}) async {
+    drafts.forEach(_validate);
+    final rows = [
+      for (final draft in drafts)
+        {'id': _uuid.v4(), ..._fields(draft), 'source': draft.source.name},
+    ];
+    for (var i = 0; i < rows.length; i += chunkSize) {
+      final end = i + chunkSize < rows.length ? i + chunkSize : rows.length;
+      await _store.insertAll('ledger_entries', rows.sublist(i, end));
+    }
+    await _entries.reload();
+  }
+
   Future<void> update(String id, EntryDraft draft) async {
     _validate(draft);
     await _requireActive(id);
@@ -406,4 +421,5 @@ LedgerEntry toLedgerEntry(EntryRow row) => LedgerEntry(
       occurredOn: row.occurredOn,
       status: row.status,
       categoryId: row.categoryId,
+      description: row.description,
     );

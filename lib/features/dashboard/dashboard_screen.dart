@@ -11,8 +11,12 @@ import '../../core/money/money_format.dart';
 import '../../data/ledger_repository.dart';
 import '../../domain/enums.dart';
 import '../../finance_core/period_math.dart';
+import '../../finance_core/insights.dart';
 import 'cash_balance_card.dart';
+import 'expense_donut.dart';
 import 'insights_card.dart';
+import 'patterns_section.dart';
+import 'top_sellers_card.dart';
 import 'trend_chart.dart';
 
 class DashboardScreen extends ConsumerWidget {
@@ -59,7 +63,12 @@ class DashboardScreen extends ConsumerWidget {
                 ref.read(dashboardCurrencyProvider.notifier).set(s.first),
           ),
           const SizedBox(height: 16),
-          CashBalanceCard(currency: currency),
+          CashBalanceCard(
+            currency: currency,
+            runway: data.value?.insights
+                .where((i) => i is RunwayInsight || i is RunwayStatusInsight)
+                .firstOrNull,
+          ),
           const SizedBox(height: 16),
           if (data.hasError && !data.hasValue)
             const LoadError()
@@ -72,6 +81,10 @@ class DashboardScreen extends ConsumerWidget {
             ),
             error: (_, _) => const LoadError(),
           ),
+          const SizedBox(height: 32),
+          const PatternsSection(),
+          const SizedBox(height: 16),
+          Text(l10n.dashboardFootnote, style: Theme.of(context).textTheme.bodySmall),
         ],
       ),
     );
@@ -85,8 +98,10 @@ void openLedgerFor(
   required DashboardData data,
   EntryType? type,
   String? categoryId,
+  String query = '',
 }) {
   ref.read(ledgerFilterProvider.notifier).set(LedgerFilter(
+        query: query,
         currency: data.currency,
         range: data.range,
         type: type,
@@ -103,7 +118,6 @@ class _DashboardBody extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final textTheme = Theme.of(context).textTheme;
     final current = data.current;
     final previous = data.previous;
 
@@ -167,12 +181,10 @@ class _DashboardBody extends ConsumerWidget {
         InsightsCard(data),
         const SizedBox(height: 16),
         TrendChart(buckets: data.trend, currency: data.currency),
-        const SizedBox(height: 24),
-        Text(l10n.expenseBreakdown, style: textTheme.titleMedium),
-        const SizedBox(height: 8),
-        _CategoryBreakdown(data),
         const SizedBox(height: 16),
-        Text(l10n.dashboardFootnote, style: textTheme.bodySmall),
+        TopSellersCard(data),
+        const SizedBox(height: 16),
+        ExpenseDonut(data),
       ],
     );
   }
@@ -246,70 +258,6 @@ class _KpiCard extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _CategoryBreakdown extends ConsumerWidget {
-  const _CategoryBreakdown(this.data);
-
-  final DashboardData data;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = context.l10n;
-    final categories = ref.watch(categoriesByIdProvider);
-    final rows = data.expenseCategories;
-    if (rows.isEmpty) return Text(l10n.noExpenses);
-
-    final total = data.current.expense.minor;
-    return Column(
-      children: [
-        for (final MapEntry(key: categoryId, value: amount) in rows)
-          () {
-            // Integer percentage, rounded; only used for display.
-            final percent = total == 0 ? 0 : (amount.minor * 100 + total ~/ 2) ~/ total;
-            return InkWell(
-              onTap: () => openLedgerFor(context, ref,
-                  data: data, type: EntryType.expense, categoryId: categoryId),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(context.categoryName(categories[categoryId])),
-                        ),
-                        Text(
-                          formatMoney(amount, locale: context.localeTag),
-                          style: const TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 6),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(4),
-                      child: LinearProgressIndicator(
-                        value: total == 0 ? 0 : amount.minor / total,
-                        minHeight: 8,
-                        color: MoneyColors.moneyOut(context),
-                        backgroundColor: MoneyColors.moneyOut(context)
-                            .withValues(alpha: 0.12),
-                        semanticsLabel: context.categoryName(categories[categoryId]),
-                        semanticsValue: l10n.percentOfTotal(percent),
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(l10n.percentOfTotal(percent),
-                        style: Theme.of(context).textTheme.bodySmall),
-                  ],
-                ),
-              ),
-            );
-          }(),
-      ],
     );
   }
 }

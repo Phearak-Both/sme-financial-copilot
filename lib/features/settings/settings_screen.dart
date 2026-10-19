@@ -10,6 +10,7 @@ import '../../core/money/currency.dart';
 import '../../core/money/money.dart';
 import '../../core/money/money_format.dart';
 import '../../core/money/money_parser.dart';
+import '../../data/demo_data.dart';
 import '../../finance_core/period_math.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -93,6 +94,9 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
           _SectionNote(l10n.openingCashHelp),
+          _SectionHeader(l10n.sampleData),
+          const _SampleDataTile(),
+          _SectionNote(l10n.loadSampleHelp),
         ],
       ),
     );
@@ -314,4 +318,70 @@ class _AccountSection extends ConsumerWidget {
     );
     if (ok == true) await signOut();
   }
+}
+
+/// Adds example records so every dashboard view has something to show.
+class _SampleDataTile extends ConsumerStatefulWidget {
+  const _SampleDataTile();
+
+  @override
+  ConsumerState<_SampleDataTile> createState() => _SampleDataTileState();
+}
+
+class _SampleDataTileState extends ConsumerState<_SampleDataTile> {
+  bool _loading = false;
+
+  Future<void> _load() async {
+    final l10n = context.l10n;
+    final count = demoDrafts(DateTime.now()).length;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.loadSampleTitle),
+        content: Text(l10n.loadSampleBody('$count')),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(l10n.add),
+          ),
+        ],
+      ),
+    );
+    if (ok != true || !mounted) return;
+    final messenger = ScaffoldMessenger.of(context);
+    setState(() => _loading = true);
+    try {
+      final added = await loadDemoData(ref.read(ledgerRepositoryProvider));
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.loadSampleDone('$added'))),
+      );
+    } catch (_) {
+      messenger.showSnackBar(SnackBar(content: Text(l10n.saveFailed)));
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => Card(
+    margin: EdgeInsets.zero,
+    clipBehavior: Clip.antiAlias,
+    child: ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+      leading: const Icon(Icons.dataset_outlined),
+      title: Text(context.l10n.loadSampleData),
+      trailing: _loading
+          ? const SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            )
+          : const Icon(Icons.chevron_right),
+      onTap: _loading ? null : _load,
+    ),
+  );
 }
