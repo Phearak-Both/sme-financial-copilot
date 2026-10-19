@@ -443,9 +443,6 @@ class AppLocalizationsKm extends AppLocalizations {
   }
 
   @override
-  String get exportPdf => 'ទាញយក PDF';
-
-  @override
   String get exportFailed => 'មិនអាចបង្កើត PDF បានទេ។ សូមព្យាយាមម្តងទៀត។';
 
   @override

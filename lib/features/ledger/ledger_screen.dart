@@ -11,6 +11,7 @@ import '../../data/database.dart';
 import '../../data/ledger_repository.dart';
 import '../../domain/enums.dart';
 import '../../finance_core/ledger_math.dart';
+import '../../finance_core/reports.dart';
 import '../../core/date_only.dart';
 import 'entry_tile.dart';
 
@@ -48,16 +49,7 @@ class _LedgerScreenState extends ConsumerState<LedgerScreen> {
     });
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.navLedger),
-        actions: [
-          IconButton(
-            tooltip: l10n.exportPdf,
-            icon: const Icon(Icons.ios_share),
-            onPressed: () => context.go('/export'),
-          ),
-        ],
-      ),
+      appBar: AppBar(title: Text(l10n.navLedger)),
       floatingActionButton: FloatingActionButton(
         tooltip: l10n.newEntry,
         onPressed: () =>
@@ -113,6 +105,36 @@ class _FilterBar extends StatelessWidget {
   final LedgerFilter filter;
   final void Function(LedgerFilter Function(LedgerFilter)) onChanged;
 
+  Future<void> _pickRange(BuildContext context) async {
+    final today = dateOnly(DateTime.now());
+    final picked = await showModalBottomSheet<_RangeChoice>(
+      context: context,
+      showDragHandle: true,
+      builder: (_) => _DateRangeSheet(current: filter.range, today: today),
+    );
+    if (picked == null || !context.mounted) return;
+    var range = picked.range;
+    if (picked.custom) {
+      final current = filter.range;
+      final dates = await showDateRangePicker(
+        context: context,
+        firstDate: DateTime(2000),
+        lastDate: today,
+        initialDateRange: current == null || current.start.isAfter(today)
+            ? null
+            : DateTimeRange(
+                start: current.start,
+                end: addDays(current.end, -1).isAfter(today)
+                    ? today
+                    : addDays(current.end, -1),
+              ),
+      );
+      if (dates == null) return;
+      range = DateRange(dates.start, addDays(dates.end, 1));
+    }
+    onChanged((f) => f.copyWith(range: () => range));
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -130,6 +152,23 @@ class _FilterBar extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
       child: Row(
         children: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: FilterChip(
+              avatar: const Icon(Icons.date_range, size: 18),
+              label: Text(
+                filter.range == null
+                    ? l10n.date
+                    : context.rangeLabel(filter.range!),
+              ),
+              selected: filter.range != null,
+              showCheckmark: false,
+              onSelected: (_) => _pickRange(context),
+              onDeleted: filter.range == null
+                  ? null
+                  : () => onChanged((f) => f.copyWith(range: () => null)),
+            ),
+          ),
           chip(l10n.filterAll, filter.type == null,
               () => onChanged((f) => f.copyWith(type: () => null))),
           for (final type in EntryType.values)
@@ -154,6 +193,81 @@ class _FilterBar extends StatelessWidget {
   }
 }
 
+/// What was chosen in [_DateRangeSheet]: a fixed range, no range (all
+/// dates), or [custom] to pick dates on a calendar.
+class _RangeChoice {
+  const _RangeChoice(this.range, {this.custom = false});
+  final DateRange? range;
+  final bool custom;
+}
+
+class _DateRangeSheet extends StatelessWidget {
+  const _DateRangeSheet({required this.current, required this.today});
+
+  final DateRange? current;
+  final DateTime today;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final tomorrow = addDays(today, 1);
+    // Ranges stop at today, so the dates shown never run into the future.
+    DateRange upToToday(DateRange r) =>
+        r.end.isAfter(tomorrow) ? DateRange(r.start, tomorrow) : r;
+    final presets = <(String, DateRange?)>[
+      (l10n.filterAll, null),
+      (l10n.today, DateRange(today, tomorrow)),
+      for (final r in [
+        ReportRange.thisMonth,
+        ReportRange.lastMonth,
+        ReportRange.last3Months,
+        ReportRange.thisYear,
+      ])
+        (l10n.reportRangeLabel(r), upToToday(r.rangeFor(today))),
+    ];
+    final isPreset = presets.any((p) => p.$2 == current);
+
+    return SafeArea(
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
+              child: Text(
+                l10n.date,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
+            for (final (label, range) in presets)
+              ListTile(
+                title: Text(label),
+                // Today needs no dates under it.
+                subtitle: range == null || addDays(range.start, 1) == range.end
+                    ? null
+                    : Text(context.rangeLabel(range)),
+                trailing: range == current ? const Icon(Icons.check) : null,
+                onTap: () => Navigator.pop(context, _RangeChoice(range)),
+              ),
+            ListTile(
+              leading: const Icon(Icons.calendar_month_outlined),
+              title: Text(l10n.pickDates),
+              subtitle: isPreset ? null : Text(context.rangeLabel(current!)),
+              trailing: isPreset ? null : const Icon(Icons.check),
+              onTap: () => Navigator.pop(
+                context,
+                const _RangeChoice(null, custom: true),
+              ),
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 /// Chips for filters set from elsewhere (e.g. dashboard drill-down) that the
 /// filter bar doesn't show, so the user can see and remove them.
 class _ActiveFilters extends ConsumerWidget {
@@ -164,7 +278,7 @@ class _ActiveFilters extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (filter.range == null && filter.categoryId == null) {
+    if (filter.categoryId == null) {
       return const SizedBox.shrink();
     }
     final categories = ref.watch(categoriesByIdProvider);
@@ -174,12 +288,6 @@ class _ActiveFilters extends ConsumerWidget {
         spacing: 8,
         runSpacing: 8,
         children: [
-          if (filter.range != null)
-            InputChip(
-              avatar: const Icon(Icons.date_range, size: 18),
-              label: Text(context.rangeLabel(filter.range!)),
-              onDeleted: () => onChanged((f) => f.copyWith(range: () => null)),
-            ),
           if (filter.categoryId != null)
             InputChip(
               avatar: const Icon(Icons.label_outline, size: 18),

@@ -224,15 +224,6 @@ class _ReportOptionsSheetState extends ConsumerState<_ReportOptionsSheet> {
 
   DateRange get _range => _custom ?? _preset!.rangeFor(DateTime.now());
 
-  String _presetLabel(AppLocalizations l10n, ReportRange r) => switch (r) {
-        ReportRange.thisMonth => l10n.periodThisMonth,
-        ReportRange.lastMonth => l10n.periodLastMonth,
-        ReportRange.last3Months => l10n.periodLast3Months,
-        ReportRange.last6Months => l10n.periodLast6Months,
-        ReportRange.last12Months => l10n.periodLast12Months,
-        ReportRange.thisYear => l10n.periodThisYear,
-      };
-
   Future<void> _pickDates() async {
     final today = dateOnly(DateTime.now());
     final current = _range;
@@ -393,7 +384,7 @@ class _ReportOptionsSheetState extends ConsumerState<_ReportOptionsSheet> {
                 children: [
                   for (final r in ReportRange.values)
                     ChoiceChip(
-                      label: Text(_presetLabel(l10n, r)),
+                      label: Text(l10n.reportRangeLabel(r)),
                       selected: _preset == r,
                       onSelected: _busy
                           ? null

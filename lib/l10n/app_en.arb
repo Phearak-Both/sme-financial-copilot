@@ -223,7 +223,6 @@
       }
     }
   },
-  "exportPdf": "Export PDF",
   "exportFailed": "Couldn't create the PDF. Please try again.",
   "glTitle": "General Ledger",
   "glAccount": "Cash account ({currency})",
