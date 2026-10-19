@@ -4,8 +4,6 @@ import 'package:supabase_flutter/supabase_flutter.dart' show Supabase;
 
 import '../../ai/copilot_service.dart';
 import '../../ai/gemini_client.dart';
-import '../../ai/ocr_client.dart';
-import '../../ai/whisper_client.dart';
 import '../../app/providers.dart';
 import '../../cloud/supabase_config.dart';
 import '../../core/money/currency.dart';
@@ -29,24 +27,10 @@ final geminiClientProvider = Provider<GeminiClient>((ref) {
   return client;
 });
 
-final whisperClientProvider = Provider<WhisperClient>((ref) {
-  final client = WhisperClient();
-  ref.onDispose(client.close);
-  return client;
-});
-
-final ocrClientProvider = Provider<OcrClient>((ref) {
-  final client = OcrClient();
-  ref.onDispose(client.close);
-  return client;
-});
-
 final copilotServiceProvider = Provider<CopilotService>(
   (ref) => CopilotService(
     ref.watch(geminiClientProvider),
     ref.watch(ledgerRepositoryProvider),
-    whisper: ref.watch(whisperClientProvider),
-    ocr: ref.watch(ocrClientProvider),
   ),
 );
 
