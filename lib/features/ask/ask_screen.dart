@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -219,7 +220,11 @@ class _AskScreenState extends ConsumerState<AskScreen> {
   }
 
   Future<void> _choosePhotoSource() async {
-    final canUseCamera = _picker.supportsImageSource(ImageSource.camera);
+    // In a browser the picker must open within the tap itself: after our
+    // sheet closes, Safari no longer counts it as the user's action and
+    // ignores it. The browser's own picker offers the camera anyway.
+    final canUseCamera =
+        !kIsWeb && _picker.supportsImageSource(ImageSource.camera);
     if (!canUseCamera) return _pickPhoto(ImageSource.gallery);
     final l10n = context.l10n;
     final source = await showModalBottomSheet<ImageSource>(
