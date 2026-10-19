@@ -168,7 +168,13 @@ class _AskScreenState extends ConsumerState<AskScreen> {
     } on AiException catch (e) {
       messenger.showSnackBar(
         SnackBar(
-          content: Text(e.isQuota ? l10n.askQuota : l10n.askTranscribeFailed),
+          content: Text(
+            e.isQuota
+                ? l10n.askQuota
+                : e.isBusy
+                ? l10n.askBusy
+                : l10n.askTranscribeFailed,
+          ),
         ),
       );
     } catch (_) {
@@ -590,6 +596,7 @@ class _MessageView extends ConsumerWidget {
         child: Text(switch (failure) {
           AskFailure.notConfigured => l10n.askNotConfigured,
           AskFailure.quota => l10n.askQuota,
+          AskFailure.busy => l10n.askBusy,
           AskFailure.other => l10n.askError,
         }),
       ),

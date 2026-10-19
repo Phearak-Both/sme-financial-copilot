@@ -403,6 +403,10 @@ class AppLocalizationsKm extends AppLocalizations {
       'សូមទោស មានបញ្ហា។ សូមពិនិត្យអ៊ីនធឺណិត ហើយព្យាយាមម្តងទៀត។';
 
   @override
+  String get askBusy =>
+      'ជំនួយការកំពុងរវល់នៅពេលនេះ។ សូមព្យាយាមម្តងទៀតក្នុងរយៈពេលមួយនាទី។';
+
+  @override
   String get askQuota =>
       'បានដល់កម្រិត AI ឥតគិតថ្លៃហើយ។ សូមរង់ចាំមួយនាទី រួចព្យាយាមម្តងទៀត។';
 
@@ -1047,7 +1051,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get reportLanguage => 'ភាសារបាយការណ៍';
 
   @override
-  String get periodLast12Months => '12 ខែចុងក្រោយ';
+  String get periodLast12Months => '១២ ខែចុងក្រោយ';
 
   @override
   String get businessName => 'ឈ្មោះអាជីវកម្ម';

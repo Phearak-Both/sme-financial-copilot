@@ -205,6 +205,7 @@
   },
   "askNewChat": "New conversation",
   "askError": "Sorry, something went wrong. Check your internet connection and try again.",
+  "askBusy": "The assistant is busy right now. Please try again in a minute.",
   "askQuota": "The free AI limit was reached. Please wait a minute and try again.",
   "askNotConfigured": "AI is not set up. Run the app with --dart-define-from-file=env/dev.json.",
   "proposalReviewHint": "Filled in by the assistant. Check every field, then save.",

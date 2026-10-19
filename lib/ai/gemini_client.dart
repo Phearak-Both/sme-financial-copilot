@@ -56,12 +56,15 @@ class GeminiProxy {
 }
 
 class AiException implements Exception {
-  const AiException(this.message, {this.isQuota = false});
+  const AiException(this.message, {this.isQuota = false, this.isBusy = false});
 
   final String message;
 
   /// True when the free-tier rate limit was hit.
   final bool isQuota;
+
+  /// True when every model was overloaded or too slow, even after a retry.
+  final bool isBusy;
 
   @override
   String toString() => 'AiException($message)';
@@ -75,6 +78,8 @@ class GeminiClient {
     String model = geminiModel,
     List<String> fallbackModels = geminiFallbackModels,
     this.modelTimeout = _modelTimeout,
+    this.hedgeDelay = const Duration(seconds: 10),
+    this.retryDelay = const Duration(seconds: 2),
     http.Client? httpClient,
   }) : models = [model, ...fallbackModels.where((m) => m != model)],
        _http = httpClient ?? http.Client();
@@ -89,6 +94,13 @@ class GeminiClient {
 
   /// How long one model gets before the next one is tried.
   final Duration modelTimeout;
+
+  /// How long to wait for a model before also asking the next one; the
+  /// first answer wins. A slow request then costs two models' quota.
+  final Duration hedgeDelay;
+
+  /// The pause before one more round when every model was busy.
+  final Duration retryDelay;
   final http.Client _http;
 
   /// Index of the first model not known to be out of quota this session.
@@ -136,48 +148,117 @@ class GeminiClient {
         ? modelTimeout * 2
         : modelTimeout;
 
-    var timedOut = false;
-    Object? networkError;
-    for (var i = _current; i < models.length; i++) {
-      http.Response response;
-      final watch = Stopwatch()..start();
+    try {
+      return await _race(requestBody, thinkingLevel, timeout);
+    } on _AllBusy {
+      // "High demand" usually passes within seconds: one more round.
+      debugPrint('[ai] every model busy; trying once more');
+      await Future<void>.delayed(retryDelay);
       try {
-        response = await _post(models[i], requestBody(thinkingLevel), timeout);
-        if (response.statusCode == 400 &&
-            thinkingLevel != 'low' &&
-            response.body.contains('Thinking level')) {
-          response = await _post(models[i], requestBody('low'), timeout);
+        return await _race(requestBody, thinkingLevel, timeout);
+      } on _AllBusy {
+        throw const AiException('Every model is busy', isBusy: true);
+      }
+    }
+  }
+
+  /// Asks the models in order, moving on when one fails and also asking the
+  /// next when one is slower than [hedgeDelay]. Returns the first answer.
+  Future<Map<String, dynamic>> _race(
+    Map<String, dynamic> Function(String thinkingLevel) requestBody,
+    String thinkingLevel,
+    Duration timeout,
+  ) {
+    final done = Completer<Map<String, dynamic>>();
+    var next = _current;
+    var running = 0;
+    var busy = false;
+    Object? networkError;
+    AiException? failure;
+    Timer? hedge;
+
+    void finishIfIdle() {
+      if (done.isCompleted || running > 0 || next < models.length) return;
+      hedge?.cancel();
+      if (busy) {
+        done.completeError(const _AllBusy());
+      } else if (networkError != null) {
+        done.completeError(AiException('Network error: $networkError'));
+      } else {
+        done.completeError(
+          failure ?? const AiException('Rate limit reached', isQuota: true),
+        );
+      }
+    }
+
+    void launch() {
+      if (done.isCompleted || next >= models.length) return;
+      final i = next++;
+      running++;
+      hedge?.cancel();
+      hedge = Timer(hedgeDelay, launch);
+      _attempt(models[i], requestBody, thinkingLevel, timeout).then((outcome) {
+        running--;
+        if (done.isCompleted) return;
+        switch (outcome) {
+          case _Answer(:final json):
+            hedge?.cancel();
+            done.complete(json);
+            return;
+          case _Quota():
+            // Out of quota: skip this model for the rest of the session.
+            if (i + 1 < models.length && i + 1 > _current) _current = i + 1;
+          case _Busy():
+            // Overloaded or slow right now: skip it this time only.
+            busy = true;
+          case _Network(:final error):
+            // A dropped connection is usually brief; the next try may work.
+            networkError = error;
+          case _Failed(:final error):
+            failure = error;
         }
-      } on _SlowModel {
-        // Slow right now, not broken: try the next model this time only.
-        debugPrint('[ai] ${models[i]} timed out');
-        timedOut = true;
-        continue;
-      } on _NetworkFailure catch (e) {
-        // A dropped connection is usually brief; the next try may get through.
-        debugPrint('[ai] ${models[i]} network error: ${e.error}');
-        networkError = e.error;
-        continue;
+        launch();
+        finishIfIdle();
+      });
+    }
+
+    launch();
+    return done.future;
+  }
+
+  Future<_Outcome> _attempt(
+    String model,
+    Map<String, dynamic> Function(String thinkingLevel) requestBody,
+    String thinkingLevel,
+    Duration timeout,
+  ) async {
+    final watch = Stopwatch()..start();
+    try {
+      var response = await _post(model, requestBody(thinkingLevel), timeout);
+      if (response.statusCode == 400 &&
+          thinkingLevel != 'low' &&
+          response.body.contains('Thinking level')) {
+        response = await _post(model, requestBody('low'), timeout);
       }
       debugPrint(
-        '[ai] ${models[i]} -> ${response.statusCode} '
+        '[ai] $model -> ${response.statusCode} '
         'in ${watch.elapsedMilliseconds} ms',
       );
-      if (response.statusCode == 429) {
-        // Out of quota: skip this model for the rest of the session.
-        _current = i + 1 < models.length ? i + 1 : _current;
-        continue;
-      }
-      if (response.statusCode >= 500 && i + 1 < models.length) {
-        // Overloaded ("high demand") or down: try the next model this time.
-        continue;
-      }
-      return _parse(response);
+      if (response.statusCode == 429) return const _Quota();
+      if (response.statusCode >= 500) return const _Busy();
+      return _Answer(_parse(response));
+    } on _SlowModel {
+      debugPrint('[ai] $model timed out');
+      return const _Busy();
+    } on _NetworkFailure catch (e) {
+      debugPrint('[ai] $model network error: ${e.error}');
+      return _Network(e.error);
+    } on AiException catch (e) {
+      return _Failed(e);
+    } catch (e) {
+      // Anything unexpected must still end the attempt, or the race hangs.
+      return _Failed(AiException('$e'));
     }
-    if (networkError != null) throw AiException('Network error: $networkError');
-    throw timedOut
-        ? const AiException('All models timed out')
-        : const AiException('Rate limit reached', isQuota: true);
   }
 
   Future<http.Response> _post(
@@ -262,4 +343,36 @@ class _SlowModel implements Exception {
 class _NetworkFailure implements Exception {
   const _NetworkFailure(this.error);
   final Object error;
+}
+
+class _AllBusy implements Exception {
+  const _AllBusy();
+}
+
+/// How one model's attempt ended.
+sealed class _Outcome {
+  const _Outcome();
+}
+
+class _Answer extends _Outcome {
+  const _Answer(this.json);
+  final Map<String, dynamic> json;
+}
+
+class _Quota extends _Outcome {
+  const _Quota();
+}
+
+class _Busy extends _Outcome {
+  const _Busy();
+}
+
+class _Network extends _Outcome {
+  const _Network(this.error);
+  final Object error;
+}
+
+class _Failed extends _Outcome {
+  const _Failed(this.error);
+  final AiException error;
 }

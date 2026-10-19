@@ -405,6 +405,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Sorry, something went wrong. Check your internet connection and try again.';
 
   @override
+  String get askBusy =>
+      'The assistant is busy right now. Please try again in a minute.';
+
+  @override
   String get askQuota =>
       'The free AI limit was reached. Please wait a minute and try again.';
 
