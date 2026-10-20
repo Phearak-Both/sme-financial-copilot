@@ -8,6 +8,37 @@ and are never mixed.
 Built with Flutter and Supabase. Each account's records are stored in the
 cloud, private to that account; the AI assistant is optional.
 
+## Try it
+
+**[sme-copilot.netlify.app](https://sme-copilot.netlify.app)**, the web
+version, hosted on Netlify. It is made for phones, so open it on one if you
+can.
+
+Log in with the demo account, which already has two years of sample records
+for a shop with a rice field:
+
+| | |
+|---|---|
+| Phone | `099 999 999` |
+| Password | `demo1234` |
+
+Or tap **Create account** to start with an empty one. The demo account is
+shared, so others may have changed its records.
+
+Things to try:
+- On **Assistant**, type a sale or expense in Khmer or English, such as
+  `លក់អង្ករ ៥០០០០ រៀល`, record a voice message, or photograph a receipt.
+  Every amount is shown for you to confirm before it is saved.
+- **Dashboard**: cash on hand, insights, spending patterns and busy seasons.
+- **Export**: save reports such as the general ledger as PDFs.
+- **Settings**: switch between Khmer and English and between light and dark.
+
+Good to know:
+- The first visit takes a few seconds to load, longer in Safari. Later
+  visits are faster.
+- The assistant uses Gemini's free tier, which has a small daily limit. If
+  it says it is busy, try again later; everything else works without it.
+
 ## Features
 
 **Ledger**
