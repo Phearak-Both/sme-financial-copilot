@@ -170,6 +170,17 @@ void main() {
     expect(result.peakMonths, isEmpty);
   });
 
+  test('seasonality has nothing to show until a month with income is over',
+      () {
+    // A new account whose only income is this month, still in progress.
+    expect(
+      seasonality([
+        _entry(EntryType.income, 1000, '2026-10-02', category: 'sales'),
+      ], Currency.usd, today),
+      isNull,
+    );
+  });
+
   test('weekday income averages over 12 weeks and compares best to worst', () {
     final entries = [
       for (var d = 0; d < 84; d++)

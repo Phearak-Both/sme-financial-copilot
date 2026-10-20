@@ -221,7 +221,8 @@ class Seasonality {
 }
 
 /// Income by month for up to the last [maxYears] calendar years that have
-/// income. Null when there's no income at all.
+/// income. Null until a month with income is over, since there is nothing
+/// to chart before then.
 Seasonality? seasonality(
   Iterable<LedgerEntry> entries,
   Currency currency,
@@ -255,6 +256,9 @@ Seasonality? seasonality(
               : Money(totals[year]![m - 1], currency),
       ],
   };
+  if (series.values.every((months) => months.every((m) => m == null))) {
+    return null;
+  }
 
   // Average each calendar month over the years where it is complete.
   final averages = <int, int>{};
