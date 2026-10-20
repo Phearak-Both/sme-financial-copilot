@@ -48,7 +48,8 @@ cloud, private to that account; the AI assistant is optional.
 - Every amount is shown for confirmation before anything is saved.
 
 **General**
-- Khmer (default) and English interface, light and dark themes.
+- Khmer (default) and English interface; a beige light theme (default) and a
+  navy dark theme, switched in Settings or on the sign-in page.
 - Amounts are stored as integer minor units, so totals are exact.
 
 ## Architecture
@@ -62,7 +63,7 @@ Flutter app ──► Supabase Edge Function ──► Gemini API
 Records (entries, edit history, opening cash and assistant chats) live in
 Supabase Postgres. Row-Level Security limits every table to the signed-in
 user's own rows, and the edit history is written by a database trigger so it
-can't be altered. Device preferences such as the language stay on the device.
+can't be altered. Device preferences such as the language and theme stay on the device.
 The schema is in [`supabase/migrations`](supabase/migrations).
 
 ## Getting started
