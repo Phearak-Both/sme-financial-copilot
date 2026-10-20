@@ -411,11 +411,9 @@ class _LanguageButton extends ConsumerWidget {
       onPressed: () => ref
           .read(settingsStoreProvider)
           .set(localeSettingKey, other),
-      // Flag of the language you switch to.
-      icon: Text(
-        other == 'en' ? '🇬🇧' : '🇰🇭',
-        style: const TextStyle(fontSize: 18),
-      ),
+      // An icon, not a flag: emoji would make the web app fetch a large
+      // emoji font before the sign-in page settles.
+      icon: const Icon(Icons.translate, size: 18),
       label: Text(other == 'en' ? 'English' : 'ខ្មែរ'),
     );
   }
