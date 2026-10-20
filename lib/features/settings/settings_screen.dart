@@ -23,6 +23,7 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final current = ref.watch(localeProvider).value ?? defaultLocale;
+    final themeMode = ref.watch(themeModeProvider).value ?? ThemeMode.light;
     final openings = {
       for (final o in ref.watch(openingBalancesProvider).value ?? const [])
         o.currency: o,
@@ -48,6 +49,24 @@ class SettingsScreen extends ConsumerWidget {
             onSelectionChanged: (selection) => ref
                 .read(settingsStoreProvider)
                 .set(localeSettingKey, selection.first),
+          ),
+          _SectionHeader(l10n.appearance),
+          SegmentedButton<ThemeMode>(
+            showSelectedIcon: false,
+            segments: [
+              ButtonSegment(
+                value: ThemeMode.light,
+                label: Text(l10n.themeLight),
+              ),
+              ButtonSegment(
+                value: ThemeMode.dark,
+                label: Text(l10n.themeDark),
+              ),
+            ],
+            selected: {themeMode},
+            onSelectionChanged: (selection) => ref
+                .read(settingsStoreProvider)
+                .set(themeModeSettingKey, selection.first.name),
           ),
           _SectionHeader(l10n.openingCash),
           Card(

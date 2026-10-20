@@ -109,6 +109,7 @@ class _SmeCopilotAppState extends ConsumerState<SmeCopilotApp> {
   @override
   Widget build(BuildContext context) {
     final locale = ref.watch(localeProvider).value ?? defaultLocale;
+    final themeMode = ref.watch(themeModeProvider).value ?? ThemeMode.light;
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       onGenerateTitle: (context) => context.l10n.appTitle,
@@ -122,6 +123,7 @@ class _SmeCopilotAppState extends ConsumerState<SmeCopilotApp> {
       ],
       theme: buildAppTheme(Brightness.light),
       darkTheme: buildAppTheme(Brightness.dark),
+      themeMode: themeMode,
       routerConfig: _router,
     );
   }
