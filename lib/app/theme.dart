@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 /// leaving text measured too narrow and clipped.
 const List<String>? khmerFontFallback = kIsWeb ? ['NotoSansKhmer'] : null;
 
-/// Brand palette: deep forest green on warm beige.
+/// Brand palette: deep forest green on warm beige, and on dark navy at night.
 class Brand {
   static const forest = Color(0xFF1E4D3B);
   static const forestDeep = Color(0xFF143628);
@@ -18,11 +18,11 @@ class Brand {
   static const inkMuted = Color(0xFF5E6A62);
   static const line = Color(0xFFE2D8C6);
 
-  // Dark mode: green-black surfaces with beige text.
-  static const nightBg = Color(0xFF111A15);
-  static const nightSurface = Color(0xFF18241D);
-  static const nightRaised = Color(0xFF203029);
-  static const nightLine = Color(0xFF2E4036);
+  // Dark mode: navy surfaces with beige text.
+  static const nightBg = Color(0xFF0F1A2E);
+  static const nightSurface = Color(0xFF16233B);
+  static const nightRaised = Color(0xFF1E2E4A);
+  static const nightLine = Color(0xFF2C3E5E);
   static const mint = Color(0xFF9CCBB0);
   static const parchment = Color(0xFFEDE5D6);
 }
@@ -34,12 +34,12 @@ ThemeData buildAppTheme(Brightness brightness) {
       ? const ColorScheme(
           brightness: Brightness.dark,
           primary: Brand.mint,
-          onPrimary: Brand.forestDeep,
-          primaryContainer: Color(0xFF2A4A3B),
+          onPrimary: Color(0xFF0B2A20),
+          primaryContainer: Color(0xFF1F4645),
           onPrimaryContainer: Brand.parchment,
           secondary: Color(0xFFD8C8A8),
           onSecondary: Color(0xFF2E2717),
-          secondaryContainer: Color(0xFF3A3326),
+          secondaryContainer: Color(0xFF2E3B55),
           onSecondaryContainer: Brand.parchment,
           tertiary: Color(0xFFD9B77A),
           onTertiary: Color(0xFF2E2310),
@@ -47,13 +47,13 @@ ThemeData buildAppTheme(Brightness brightness) {
           onError: Color(0xFF4A1408),
           surface: Brand.nightBg,
           onSurface: Brand.parchment,
-          onSurfaceVariant: Color(0xFFB4BDB5),
-          surfaceContainerLowest: Color(0xFF0C130F),
+          onSurfaceVariant: Color(0xFFB0BBCD),
+          surfaceContainerLowest: Color(0xFF0A1322),
           surfaceContainerLow: Brand.nightSurface,
           surfaceContainer: Brand.nightSurface,
           surfaceContainerHigh: Brand.nightRaised,
-          surfaceContainerHighest: Color(0xFF283A31),
-          outline: Color(0xFF55675C),
+          surfaceContainerHighest: Color(0xFF263856),
+          outline: Color(0xFF56698A),
           outlineVariant: Brand.nightLine,
         )
       : const ColorScheme(

@@ -226,6 +226,15 @@ class AppLocalizationsKm extends AppLocalizations {
   String get language => 'ភាសា';
 
   @override
+  String get appearance => 'រូបរាង';
+
+  @override
+  String get themeLight => 'ភ្លឺ';
+
+  @override
+  String get themeDark => 'ងងឹត';
+
+  @override
   String get today => 'ថ្ងៃនេះ';
 
   @override

@@ -1,4 +1,4 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart' show Locale, ThemeMode;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -81,6 +81,21 @@ final localeProvider = StreamProvider<Locale>(
           (locale) => locale.languageCode == code,
           orElse: () => defaultLocale,
         ),
+      ),
+);
+
+// -------------------------------------------------------------------- theme
+
+const themeModeSettingKey = 'themeMode';
+
+/// Light (beige) by default; users can switch to dark (navy).
+final themeModeProvider = StreamProvider<ThemeMode>(
+  (ref) => ref
+      .watch(settingsStoreProvider)
+      .watch(themeModeSettingKey)
+      .map(
+        (name) =>
+            name == ThemeMode.dark.name ? ThemeMode.dark : ThemeMode.light,
       ),
 );
 

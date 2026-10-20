@@ -365,10 +365,36 @@ class _AuthScreenState extends State<AuthScreen> {
                 ),
               ),
             ),
-            const Positioned(top: 8, right: 8, child: _LanguageButton()),
+            const Positioned(
+              top: 8,
+              right: 8,
+              child: Row(children: [_ThemeButton(), _LanguageButton()]),
+            ),
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Switches between light and dark before signing in.
+class _ThemeButton extends ConsumerWidget {
+  const _ThemeButton();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = context.l10n;
+    return IconButton(
+      tooltip: dark ? l10n.themeLight : l10n.themeDark,
+      // Icon of the mode you switch to.
+      icon: Icon(dark ? Icons.light_mode_outlined : Icons.dark_mode_outlined),
+      onPressed: () => ref
+          .read(settingsStoreProvider)
+          .set(
+            themeModeSettingKey,
+            (dark ? ThemeMode.light : ThemeMode.dark).name,
+          ),
     );
   }
 }
